@@ -1,6 +1,6 @@
 {
-  "version": 6,
-  "step": "kb",
+  "version": 11,
+  "step": "complete",
   "owner": "active-orchestrator",
   "discovery": {
     "created_by": "discovery-research",
@@ -74,9 +74,75 @@
     ],
     "notes": "Fuentes: PDF local provisto por el usuario e informe de mercado ampliado. El modelo no pudo leer el PDF directamente; el texto se extrajo con Python estándar (zlib + regex), sin instalar librerías. Usuario validó la tabla de fuente (Q0=a). Correcciones críticas del informe ampliado: no es cierto que nadie cobre seña con Mercado Pago ni que ningún proveedor declare Ley 25.326; los vacíos reales son precios predecibles, métricas verificables de ocupación/ausentismo, relleno automático con depósito y cumplimiento demostrable."
   },
+  "kb": {
+    "created_by": "kb-creator",
+    "variant": "interview",
+    "status": "done",
+    "generated_at": "2026-11-19",
+    "interview_record": ["docs/discovery/discovery.md", "docs/discovery/informe-discovery.md"],
+    "output_dir": "knowledge-base/",
+    "files": [
+      "knowledge-base/01_vision_y_objetivos.md",
+      "knowledge-base/02_descripcion_general.md",
+      "knowledge-base/03_actores_y_roles.md",
+      "knowledge-base/04_modelo_de_datos.md",
+      "knowledge-base/05_reglas_de_negocio.md",
+      "knowledge-base/06_funcionalidades.md",
+      "knowledge-base/07_flujos_principales.md",
+      "knowledge-base/08_arquitectura_propuesta.md",
+      "knowledge-base/09_decisiones_y_supuestos.md",
+      "knowledge-base/10_preguntas_abiertas.md",
+      "knowledge-base/README.md"
+    ],
+    "open_questions_file": "knowledge-base/10_preguntas_abiertas.md",
+    "inconsistencies": ["IN-01", "IN-02", "IN-03", "IN-04", "IN-05", "IN-06"],
+    "notes": "Interview variant executed from the corrected discovery record; no new user questions. Unresolved decisions are marked (TBD). Highest-impact open item is ARCA in MVP vs later (IN-01)."
+  },
+  "roadmap": {
+    "created_by": "roadmap-generator",
+    "source": "CHANGES.md",
+    "changes_file": "CHANGES.md",
+    "changes": ["C-01", "C-02", "C-03", "C-04", "C-05", "C-06", "C-07", "C-08", "C-09", "C-10", "C-11", "C-12", "C-13", "C-14", "C-15", "C-16", "C-17", "C-18", "C-19", "C-20", "C-21", "C-22"],
+    "phase_count": 8,
+    "gate_count": 15,
+    "agent_plan_count": 3,
+    "critical_path": ["C-01", "C-02", "C-03", "C-04", "C-08", "C-11", "C-12", "C-13", "C-17", "C-18"],
+    "governance_counts": { "critico": 7, "alto": 5, "medio": 4, "bajo": 6 },
+    "notes": "C-01 is a human-approval gate; stack and scale remain (TBD)."
+  },
+  "find_skills": {
+    "created_by": "find-skills",
+    "variant": "recommend",
+    "installed_performed": false,
+    "recommended": [
+      { "skill": "test-driven-development", "source": "obra/superpowers", "purpose": "testing/TDD", "changes": ["C-02", "C-03", "C-04", "C-05", "C-06", "C-07", "C-08", "C-09", "C-10", "C-11", "C-12", "C-13", "C-14", "C-15", "C-17", "C-18", "C-19", "C-21", "C-22"] },
+      { "skill": "domain-modeling", "source": "mattpocock/skills", "purpose": "data modeling", "changes": ["C-01", "C-03", "C-04", "C-08", "C-11", "C-14", "C-15"] },
+      { "skill": "codebase-design", "source": "mattpocock/skills", "purpose": "API/seams", "changes": ["C-02", "C-03", "C-05", "C-10", "C-15", "C-20"] },
+      { "skill": "web-security-review", "source": "owasp/secure-agent-playbook", "purpose": "security review", "changes": ["C-04", "C-05", "C-06", "C-10", "C-13", "C-15", "C-17", "C-18"] },
+      { "skill": "mercadopago-claude-marketplace", "source": "mercadopago", "purpose": "payments (conditional)", "changes": ["C-14", "C-15", "C-21"] }
+    ],
+    "no_recommendation": ["frontend/mockups", "ARCA/C-16", "WhatsApp/C-10", "observability", "docs/agent-instructions"],
+    "notes": "Recommendations only; no installs. ARCA and stack-specific skills remain blocked by C-01 (TBD)."
+  },
+  "registry": {
+    "created_by": "skill-registry",
+    "variant": "index",
+    "file": ".atl/skill-registry.md",
+    "installed_indexed": 11,
+    "recommended_not_installed": 5,
+    "notes": "skill-registry excluded by its own policy; no installs performed. Compact rules included for installed skills only."
+  },
+  "agents": {
+    "created_by": "agent-instruction",
+    "variant": "generate",
+    "files": ["AGENTS.md", "CLAUDE.md"],
+    "notes": "Root instructions generated from KB, CHANGES.md and skill registry; global client rules not duplicated."
+  },
   "foundation": {
     "version": 1,
+    "status": "complete",
     "approved_at": "2026-11-19",
+    "completed_at": "2026-11-19",
     "order": ["discovery", "kb", "roadmap", "find-skill", "registry", "agents"],
     "phases": {
       "discovery": {
@@ -89,35 +155,43 @@
       },
       "kb": {
         "variant": "interview",
-        "status": "pending",
+        "status": "done",
+        "completed_at": "2026-11-19",
         "requires": ["discovery"],
         "outputs": ["knowledge-base/"],
-        "notes": "Consumes docs/discovery/discovery.md and docs/discovery/informe-discovery.md"
+        "notes": "11 canonical files generated from corrected discovery record; (TBD) items consolidated in knowledge-base/10_preguntas_abiertas.md."
       },
       "roadmap": {
         "variant": "local-markdown",
-        "status": "pending",
+        "status": "done",
+        "completed_at": "2026-11-19",
         "requires": ["kb"],
-        "outputs": ["CHANGES.md"]
+        "outputs": ["CHANGES.md"],
+        "notes": "22 changes in 8 phases; 15 gates; critical path C-01→C-02→C-03→C-04→C-08→C-11→C-12→C-13→C-17→C-18."
       },
       "find-skill": {
         "variant": "recommend",
-        "status": "pending",
+        "status": "done",
+        "completed_at": "2026-11-19",
         "requires": ["kb"],
-        "outputs": []
+        "outputs": [],
+        "notes": "5 recommended skills; no installs performed; shortlist stored in state.find_skills."
       },
       "registry": {
         "variant": "index",
-        "status": "pending",
+        "status": "done",
+        "completed_at": "2026-11-19",
         "requires": ["find-skill"],
-        "outputs": [".atl/skill-registry.md"]
+        "outputs": [".atl/skill-registry.md"],
+        "notes": "11 installed skills indexed; 5 recommended skills marked NOT INSTALLED."
       },
       "agents": {
         "variant": "generate",
-        "status": "pending",
+        "status": "done",
+        "completed_at": "2026-11-19",
         "requires": ["kb", "roadmap", "registry"],
         "outputs": ["AGENTS.md", "CLAUDE.md"],
-        "notes": "Also generates root CLAUDE.md per user approval"
+        "notes": "Root AGENTS.md and CLAUDE.md generated and verified; foundation complete."
       }
     },
     "deferred": {
@@ -134,8 +208,8 @@
     },
     "checkpoint": {
       "after": "discovery",
-      "status": "awaiting_user",
-      "reason": "docs/discovery/informe-discovery.md was generated and QA-reviewed; do not start kb until the user explicitly confirms continuity"
+      "status": "cleared",
+      "reason": "User confirmed continuation on 2026-11-19; all approved foundation phases completed."
     }
   }
 }
