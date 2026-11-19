@@ -1,0 +1,141 @@
+{
+  "version": 6,
+  "step": "kb",
+  "owner": "active-orchestrator",
+  "discovery": {
+    "created_by": "discovery-research",
+    "sources": ["C:\\Users\\Cedib\\Downloads\\InvMercadoOdont.pdf"],
+    "sources_fetched_at": "2026-11-19",
+    "competitors": [
+      { "name": "Bilog", "notes_file": "docs/discovery/informe-discovery.md" },
+      { "name": "Órbita", "notes_file": "docs/discovery/informe-discovery.md" },
+      { "name": "Dentalink", "notes_file": "docs/discovery/informe-discovery.md" },
+      { "name": "DentalTec", "notes_file": "docs/discovery/informe-discovery.md" },
+      { "name": "DentalCore", "notes_file": "docs/discovery/informe-discovery.md" }
+    ],
+    "problema": "Problema dual: pacientes que deben llamar o mandar un mensaje para obtener, modificar o cancelar turnos odontológicos, y consultorios que quieren centralizar su agenda y evitar reservas dobles o pisadas.",
+    "usuarios": [
+      "Paciente: reserva, cancela y reprograma su turno",
+      "Recepcionista: gestiona la agenda del consultorio",
+      "Odontólogo: ve su agenda y la ficha clínica del paciente"
+    ],
+    "casos_de_uso": [
+      "Como paciente, quiero ver la disponibilidad para elegir un horario sin llamar",
+      "Como paciente, quiero reservar por link o QR para confirmar mi turno al instante",
+      "Como paciente, quiero cancelar o reprogramar para liberar el horario y recolocarme",
+      "Como recepcionista, quiero ver la agenda por sillón para detectar y evitar solapamientos",
+      "Como paciente, quiero recibir un recordatorio por WhatsApp para no olvidar el turno"
+    ],
+    "funcionalidades_necesarias": [
+      "Agenda multiprofesional y multisillón con duración variable, bloqueos, sobreturnos y prevención de solapamientos",
+      "Reserva online por enlace y QR con confirmación, cancelación y reprogramación",
+      "WhatsApp Business API con plantillas para confirmación y recordatorio",
+      "Ficha clínica, anamnesis y odontograma FDI con dientes temporales",
+      "Presupuesto, caja y señas",
+      "Roles, auditoría, exportación completa de datos y respaldo"
+    ],
+    "funcionalidades_opcionales": [
+      "Relleno automático de lista de espera con depósito y métricas de ocupación por sillón; seña con Mercado Pago ya es estándar y no es diferenciador",
+      "Recupero de ausentes y controles periódicos",
+      "Precio público con recordatorios incluidos",
+      "Etapas posteriores: obras sociales, facturación ARCA, periodontograma, radiología, API pública, Google Calendar e IA conversacional con derivación humana"
+    ],
+    "reglas_de_negocio": [
+      "No se pueden reservar turnos superpuestos en un mismo profesional o sillón",
+      "Duración variable por tipo de tratamiento, con bloqueos y sobreturnos permitidos",
+      "Cancelación configurable con ventana de 48 hs hábiles",
+      "Lista de espera para rellenar cancelaciones",
+      "Consentimientos con firma electrónica y evolución firmada con matrícula",
+      "Horarios laborales y feriados del consultorio"
+    ],
+    "integraciones": [
+      "WhatsApp Business API (obligatoria en el MVP)",
+      "Mercado Pago para señas (por paridad; ya ofrecido por DentalSoft, AgendaPro, FLAP, DentApp y Mi Agenda Profesional)",
+      "Google Calendar (etapa posterior)",
+      "ARCA y validación/liquidación de obras sociales (etapa posterior)"
+    ],
+    "restricciones": [
+      "Cumplimiento de la Ley 25.326 y facturación ARCA",
+      "Presupuesto acotado",
+      "Sin stack tecnológico impuesto"
+    ],
+    "riesgos": [
+      "Que los pacientes no usen la reserva online y sigan llamando por costumbre (riesgo principal, supuesto sin probar)",
+      "Cifras de adopción de competidores autopublicadas y no verificables",
+      "Diferenciadores del informe por validar en demo",
+      "Precios opacos en los líderes con liquidación de obras sociales",
+      "Declaraciones de Ley 25.326, ISO 27001 e HIPAA sin auditoría pública, RNBD por proveedor ni cláusulas AAIP 198/2023 publicadas para subprocessors"
+    ],
+    "preguntas_abiertas": [
+      "¿Incluir seña con Mercado Pago desde el MVP por paridad competitiva (no como diferenciador)?",
+      "¿Liquidación y validación de obras sociales dentro del MVP o después?",
+      "¿IA conversacional con derivación humana obligatoria ante urgencias?",
+      "¿Soporte multisede desde el día 1 o consultorio único?"
+    ],
+    "notes": "Fuentes: PDF local provisto por el usuario e informe de mercado ampliado. El modelo no pudo leer el PDF directamente; el texto se extrajo con Python estándar (zlib + regex), sin instalar librerías. Usuario validó la tabla de fuente (Q0=a). Correcciones críticas del informe ampliado: no es cierto que nadie cobre seña con Mercado Pago ni que ningún proveedor declare Ley 25.326; los vacíos reales son precios predecibles, métricas verificables de ocupación/ausentismo, relleno automático con depósito y cumplimiento demostrable."
+  },
+  "foundation": {
+    "version": 1,
+    "approved_at": "2026-11-19",
+    "order": ["discovery", "kb", "roadmap", "find-skill", "registry", "agents"],
+    "phases": {
+      "discovery": {
+        "variant": "interview",
+        "status": "done",
+        "completed_at": "2026-11-19",
+        "requires": [],
+        "outputs": ["docs/discovery/discovery.md", "docs/discovery/informe-discovery.md"],
+        "notes": "Output path changed from discovery/ to docs/discovery/ per user approval. Gate final confirmado. Informe ampliado generado y corregido el 2026-11-19; corrige dos afirmaciones del discovery inicial."
+      },
+      "kb": {
+        "variant": "interview",
+        "status": "pending",
+        "requires": ["discovery"],
+        "outputs": ["knowledge-base/"],
+        "notes": "Consumes docs/discovery/discovery.md and docs/discovery/informe-discovery.md"
+      },
+      "roadmap": {
+        "variant": "local-markdown",
+        "status": "pending",
+        "requires": ["kb"],
+        "outputs": ["CHANGES.md"]
+      },
+      "find-skill": {
+        "variant": "recommend",
+        "status": "pending",
+        "requires": ["kb"],
+        "outputs": []
+      },
+      "registry": {
+        "variant": "index",
+        "status": "pending",
+        "requires": ["find-skill"],
+        "outputs": [".atl/skill-registry.md"]
+      },
+      "agents": {
+        "variant": "generate",
+        "status": "pending",
+        "requires": ["kb", "roadmap", "registry"],
+        "outputs": ["AGENTS.md", "CLAUDE.md"],
+        "notes": "Also generates root CLAUDE.md per user approval"
+      }
+    },
+    "deferred": {
+      "visual-design": {
+        "status": "deferred",
+        "reason": "No UI phase selected; policy to be decided at first visual change (design-mockups)"
+      }
+    },
+    "skipped": {
+      "task-management": {
+        "status": "skipped",
+        "reason": "Not selected; active-roadmap skill unavailable, local-only foundation"
+      }
+    },
+    "checkpoint": {
+      "after": "discovery",
+      "status": "awaiting_user",
+      "reason": "docs/discovery/informe-discovery.md was generated and QA-reviewed; do not start kb until the user explicitly confirms continuity"
+    }
+  }
+}
