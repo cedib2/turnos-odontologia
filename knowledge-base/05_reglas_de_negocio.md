@@ -42,7 +42,7 @@ Cada regla tiene un código único `RN-{DOMINIO}-{NN}` para trazabilidad. `(TBD)
 - **RN-SE-03**: Exportación completa de datos y respaldo periódico; plazos, formato y frecuencia `(TBD)` (el informe propone 48 h y 10 años).
 - **RN-SE-04**: Cumplimiento de Ley 25.326, Ley 26.529 y Decreto 1089/2012 con **evidencia demostrable**: DPA responsable/encargado, cláusulas AAIP 198/2023 para subprocessors, registro RNBD/AAIP del responsable, roles, logs y exportación. **No basta con declararlo**: la declaración ya es habitual en Bilog, Odonthia, AgendaPro y otros.
 - **RN-SE-05**: Los datos personales y clínicos se tratan con cifrado en tránsito y en reposo; la ubicación de la infraestructura y de los subprocessores es `(TBD)`.
-- **RN-SE-06**: El precio del producto debe ser único, público y predecible, con costos de API detallados por separado; modelo exacto `(TBD)`.
+- **RN-SE-06**: El precio del producto es único, público, predecible y todo incluido, sin desglose de costos de API para el consultorio; modelo exacto: suscripción plana aprobada en C-01 (decisión A5=2, 2026-11-20).
 
 ## Dominio: Excepciones globales
 

@@ -163,7 +163,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 > No hay código en esta fase. Es el único punto donde se pueden resolver los `(TBD)` que bloquean el alcance.
 
 ### [C-01] `decisiones-habilitantes`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` completado
 - **Scope**:
   - Registrar, sin código, la resolución de: **IN-01 / DD-09** (facturación y conciliación ARCA en MVP o posterior), **DD-01** (lenguaje/framework, persistencia, `system_type`, escala, `needs_infra`, cloud/on-prem/local), **DD-10** (consultorio único vs multisede), **DD-11** (IA conversacional en MVP), **IN-04 / SU-06** (semántica operativa de sobreturno), **IN-05 / IN-06** (responsable de datos, marco Ley 25.326 + Ley 26.529 + Decreto 1089/2012 + Ley 25.506, plazos 48 h y 10 años), **IN-02** (reembolso y retención del hueco), zona horaria/feriados y cómputo de 48 hs hábiles, catálogo de tratamientos y duraciones, estructura de anamnesis, objetivos numéricos de métricas y modelo de precio único (RN-NT-04, RN-SE-06).
   - Registro de cada decisión con decisor (Product Owner / responsable legal / equipo técnico / odontólogo) y fecha; los ítems no respondidos siguen marcados `(TBD)` y bloquean la ficha que los consume.
@@ -184,7 +184,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 > C-04, C-05 y C-07 son paralelos; C-04 y C-05 se reúnen en C-08 junto con C-07.
 
 ### [C-02] `foundation-scaffolding`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` completado
 - **Scope**:
   - Estructura conceptual `src/domain`, `src/application`, `src/infrastructure`, `src/interfaces`, `tests/`; `knowledge-base/` como fuente y `docs/discovery/` en solo lectura; sin `openspec/`.
   - Plantilla de entorno con los nombres propuestos en la KB (`APP_BASE_URL`, `DATABASE_URL`, `TIMEZONE`, `CANCELLATION_WINDOW_HOURS`, `WHATSAPP_*`, `MERCADOPAGO_*`, `EXPORT_RETENTION_YEARS`, `BACKUP_CRON`, `IA_HANDOFF_ENABLED`); valores sensibles como marcadores `(TBD)`, sin secretos reales; gestor de secretos `(TBD)`.
