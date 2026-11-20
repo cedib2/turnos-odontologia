@@ -274,7 +274,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 
 ## FASE 2 — Agenda operativa
 
-> C-07 crea los catálogos referenciados por C-08; C-08 es el join de C-04, C-05 y C-07.
+> C-07 crea los catálogos referenciados por C-08 (duración, feriados y zona horaria); C-08 se apoya en C-03 y C-07. C-04 se difiere mediante `CurrentActorProvider` (actor fijo solo dev/test, sin autenticación ni RBAC) y C-05 mediante `AuditEventPublisher` (emisión en memoria/no-op, sin log append-only). C-08 NO se despliega a producción ni se marca como cumplimiento hasta que C-04 y C-05 estén implementados y aprobados.
 
 ### [C-07] `scheduling-catalogs`
 - **Estado**: `[ ]` pendiente
@@ -301,7 +301,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
   - Sobreturno como excepción auditada o turno en otro recurso `(TBD, IN-04)`; ante conflicto prevalece RN-AG-01 salvo override con motivo y actor (RN-GL-01); `write-back` real interno (RN-AG-06).
   - Endpoints indicativos `/agenda`, `/turnos`, `/bloqueos`, `/sobreturnos`; vista día/semana por profesional y sillón (US-001); capa de presentación `(TBD — visual-design diferido)`.
   - Tests: dos escrituras concurrentes sobre el mismo hueco, bloqueo respetado, sobreturno según regla resuelta, reprogramación atómica, emisión de eventos de auditoría.
-- **Dependencias**: C-04, C-05, C-07
+- **Dependencias**: C-03, C-07 (C-04 y C-05 diferidos; ver nota de fase y puertos `CurrentActorProvider` / `AuditEventPublisher`)
 - **Governance**: MEDIO — lógica de negocio central; implementar con checkpoints
 - **Leer antes**:
   - `knowledge-base/04_modelo_de_datos.md` §Entidades (Turno, Bloqueo y Feriado)
