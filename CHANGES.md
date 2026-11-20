@@ -202,7 +202,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-03] `core-models-and-migrations`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` completado
 - **Scope**:
   - Migración 001: entidades base `Paciente` (documento y campos opcionales `(TBD)`), `Profesional` (matrícula), `Sillón`, `Consultorio` (único vs multisede `(TBD)`), `Usuario`, `Rol`, `Permiso`; nombres físicos `(TBD)`.
   - Mixins de auditoría (creación/actualización, activo/soft delete `(TBD)`), repositorio genérico y unidad de trabajo; patrón de implementación `(TBD)`.

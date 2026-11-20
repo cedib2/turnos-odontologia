@@ -1,0 +1,12 @@
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\application\CoreServicesTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\application\PacienteServiceTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\domain\agenda\ProfesionalTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\domain\identidad\PacienteConsentimientoTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\domain\identidad\PacienteCreationTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\infrastructure\persistence\ConsultorioSillonPersistenceTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\infrastructure\persistence\Migration001Test.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\infrastructure\persistence\PacientePersistenceTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\infrastructure\persistence\ProfesionalPersistenceTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\infrastructure\persistence\SeedDataTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\infrastructure\persistence\UsuarioRolPermisoTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\TestJpaConfig.java
