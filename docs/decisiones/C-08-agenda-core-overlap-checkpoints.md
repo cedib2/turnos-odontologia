@@ -65,3 +65,20 @@
 - `CHANGES.md` conserva `### [C-08] agenda-core-and-overlap-prevention` con `- **Estado**: [ ] pendiente`.
 - No se agregó autenticación, RBAC, lectura de identidad, persistencia de auditoría, UI, secretos ni dependencias de seguridad.
 - No se afirma despliegue a producción, implementación de C-04/C-05 ni cumplimiento regulatorio; la auditoría sigue siendo emisión en memoria/no-op.
+
+## Archive
+
+- **Fecha**: 2026-11-21
+- **Decisor**: Orquestador, dentro del alcance delegado por el PO ("sigamos"); no es una decisión CRITICO.
+- **Decisión registrada**: sincronizar los deltas antes de archivear (opción A, recomendada). Fundamento: el usuario pidió el ciclo OPSX completo para cada change y `archive` incluye sincronizar specs; sincronizar crea la línea base de `agenda` y `audit-event-emission` que C-04/C-05/C-07 podrán modificar con deltas `MODIFIED` al reemplazar los puertos simulados. No sincronizar haría desaparecer ese contrato del árbol de specs principal. El modo `SIMULADO` y la nota "C-05 sigue pendiente / sin valor de cumplimiento" ya están explícitos en el delta, así que no se acredita auditoría ni despliegue. Si el PO revierte la decisión, se ajusta en el delta del siguiente change.
+
+**Evidencia**
+- `mvn test`: `BUILD SUCCESS`; `Tests run: 82, Failures: 0, Errors: 0, Skipped: 0`; PostgreSQL 17.12 vía Testcontainers/Docker Desktop disponible durante toda la corrida (incluidos `OcupacionExclusionTest` y las migraciones V005/V006). No se sustituyó PostgreSQL por H2 en tests de concurrencia.
+- `openspec validate --strict` sin argumento indicó "Nothing to validate"; `openspec validate agenda-core-overlap --strict`: `Change 'agenda-core-overlap' is valid`.
+- `openspec status --change "agenda-core-overlap" --json`: cuatro artefactos `done`, `isComplete: true`; `openspec list --json`: `23/23` tareas completas.
+- `openspec instructions specs --change "agenda-core-overlap" --json`: ejecutado una vez antes de escribir las specs principales; sin reglas adicionales que aplicar.
+- Sync inline: creadas `openspec/specs/agenda/spec.md` (11 requisitos) y `openspec/specs/audit-event-emission/spec.md` (5 requisitos), con los `## Purpose` copiados verbatim y sin encabezados delta. `openspec validate --specs`: 2 passed, 0 failed.
+- Verificación del contrato sincronizado: `SIMULADO` aparece en el requisito "Actor con modo simulado explícito", en el escenario de sobreturno y en "Sin identidad verificada"; "C-05 sigue pendiente" y la prohibición de presentar los eventos como evidencia de cumplimiento permanecen en "Emisión sin persistencia ni valor de cumplimiento". Consecuencia para C-04/C-05: sus deltas `MODIFIED` deberán reemplazar esos contratos simulados; C-05 sigue pendiente y sigue sin acreditar auditoría ni despliegue.
+- Archive: `openspec/changes/agenda-core-overlap/` movido a `openspec/changes/archive/2026-11-21-agenda-core-overlap/`; se conservaron `proposal.md`, ambos deltas, `design.md`, `tasks.md` y `.openspec.yaml`.
+- Verificación posterior: `openspec list --json` → `"changes": []`; `openspec list --specs` → `agenda` 11 requisitos y `audit-event-emission` 5 requisitos; `openspec validate --all --strict` → 2 passed, 0 failed.
+- `CHANGES.md:297` permanece `- **Estado**: [ ] pendiente`. Sin commits, sin push, sin secretos y sin cambios en C-04, C-05, C-06, C-07 ni changes de compañeros.

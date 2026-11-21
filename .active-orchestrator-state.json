@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 12,
   "step": "complete",
   "owner": "active-orchestrator",
   "discovery": {
@@ -210,6 +210,54 @@
       "after": "discovery",
       "status": "cleared",
       "reason": "User confirmed continuation on 2026-11-19; all approved foundation phases completed."
+    }
+  },
+  "opsx": {
+    "updated_at": "2026-11-21",
+    "owner": "PO",
+    "parte_asignada": 1,
+    "parte_nombre": "Tronco Base",
+    "changes_a_cargo": ["C-04", "C-05", "C-06", "C-07", "C-08"],
+    "restricciones": [
+      "Un change a la vez; pausar y pedir confirmación antes del siguiente.",
+      "Cada change: explore, propose, apply, verify, archive con escenarios dado/cuando/entonces y un test por escenario.",
+      "Sin pasar al siguiente change con tests en rojo.",
+      "Docker Desktop obligatorio para tests de concurrencia; si no arranca, detenerse y avisar; prohibido H2 como reemplazo.",
+      "C-04/C-05/C-06 son CRITICO: solo análisis y aprobación humana explícita antes de escribir código.",
+      "Sin commits, sin push, sin secretos en el repo.",
+      "No tocar changes de los compañeros (Parte 2, 3 y 4)."
+    ],
+    "completos_previamente": ["C-01", "C-02", "C-03"],
+    "changes": {
+      "C-08": {
+        "change_name": "agenda-core-overlap",
+        "estado": "archivado",
+        "archivo": "openspec/changes/archive/2026-11-21-agenda-core-overlap/",
+        "specs_sincronizadas": ["openspec/specs/agenda/spec.md", "openspec/specs/audit-event-emission/spec.md"],
+        "evidencia": "docs/decisiones/C-08-agenda-core-overlap-checkpoints.md",
+        "verificacion": "mvn test 82/82 con PostgreSQL 17.12/Testcontainers; openspec validate --strict válido; 23/23 tareas",
+        "decision_archive": "Sincronizar deltas a specs principales; decisor: Orquestador por delegación del PO ('sigamos'), 2026-11-21",
+        "estado_en_CHANGES": "[ ] pendiente a la espera de que el PO decida marcarlo [x]",
+        "nota": "C-04 y C-05 siguen diferidos mediante CurrentActorProvider y AuditEventPublisher simulados; no hay despliegue ni cumplimiento."
+      }
+    },
+    "proximo_change": "C-07 scheduling-catalogs",
+    "numeracion_migraciones_propuesta": {
+      "estado": "propuesta pendiente de aprobación del PO",
+      "C-04": "V002__auth_rbac.sql",
+      "C-05": "V003__audit_append_only_log.sql",
+      "C-06": "V004__public_access_tokens.sql",
+      "C-07": "reutilizar V005__scheduling_catalogs.sql (propiedad de C-08; no regenerar)",
+      "ya_existentes": ["V001 (C-03)", "V005 (C-08)", "V006 (C-08)"],
+      "reservadas": {
+        "V007": "C-10",
+        "V008": "C-11",
+        "V009": "C-14",
+        "V010": "C-15",
+        "V011": "C-16",
+        "V012": "C-17",
+        "V013": "C-19"
+      }
     }
   }
 }
