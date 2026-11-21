@@ -3,6 +3,7 @@ C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\application\AuditEventPublisherTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\application\BloqueoIntegrationTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\application\BloqueoServiceTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\application\CatalogoLecturaC08Test.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\application\ConfiguracionSchedulingServiceTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\application\CoreServicesTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\application\CreacionTurnoIntegrationTest.java
@@ -34,6 +35,10 @@ C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\infrastructure\persistence\UsuarioRolPermisoTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\interfaces\web\AgendaControllerTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\interfaces\web\AgendaSurfaceTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\interfaces\web\CatalogoMvc.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\interfaces\web\FeriadoCatalogoTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\interfaces\web\HorarioCatalogoTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\interfaces\web\TratamientoCatalogoTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\support\PostgresFixture.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\support\PostgresFlywayTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\TestJpaConfig.java

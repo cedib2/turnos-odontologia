@@ -1,5 +1,5 @@
 {
-  "version": 12,
+  "version": 14,
   "step": "complete",
   "owner": "active-orchestrator",
   "discovery": {
@@ -237,27 +237,38 @@
         "evidencia": "docs/decisiones/C-08-agenda-core-overlap-checkpoints.md",
         "verificacion": "mvn test 82/82 con PostgreSQL 17.12/Testcontainers; openspec validate --strict válido; 23/23 tareas",
         "decision_archive": "Sincronizar deltas a specs principales; decisor: Orquestador por delegación del PO ('sigamos'), 2026-11-21",
-        "estado_en_CHANGES": "[ ] pendiente a la espera de que el PO decida marcarlo [x]",
+        "estado_en_CHANGES": "[ ] pendiente — implementado y archivado con puertos simulados; se marca [x] cuando C-04 y C-05 los reemplacen",
         "nota": "C-04 y C-05 siguen diferidos mediante CurrentActorProvider y AuditEventPublisher simulados; no hay despliegue ni cumplimiento."
+      },
+      "C-07": {
+        "change_name": "scheduling-catalogs",
+        "estado": "archivado",
+        "archivo": "openspec/changes/archive/2026-11-21-scheduling-catalogs/",
+        "evidencia": "docs/decisiones/C-07-scheduling-catalogs-checkpoints.md",
+        "verificacion": "mvn test 93/93 con PostgreSQL 17.12/Testcontainers; 7/7 escenarios cubiertos; openspec validate --strict válido; 10/10 tareas",
+        "estado_en_CHANGES": "[x] completado — CRUD administrativo sobre V005; sin migración nueva ni seeds; verificado 2026-11-21",
+        "nota": "Sin V007, sin seeds, sin cambios en ConfiguracionSchedulingService, sin auth/RBAC/auditoría persistente, sin UI."
       }
     },
-    "proximo_change": "C-07 scheduling-catalogs",
-    "numeracion_migraciones_propuesta": {
-      "estado": "propuesta pendiente de aprobación del PO",
-      "C-04": "V002__auth_rbac.sql",
-      "C-05": "V003__audit_append_only_log.sql",
-      "C-06": "V004__public_access_tokens.sql",
-      "C-07": "reutilizar V005__scheduling_catalogs.sql (propiedad de C-08; no regenerar)",
-      "ya_existentes": ["V001 (C-03)", "V005 (C-08)", "V006 (C-08)"],
-      "reservadas": {
-        "V007": "C-10",
-        "V008": "C-11",
-        "V009": "C-14",
-        "V010": "C-15",
-        "V011": "C-16",
-        "V012": "C-17",
-        "V013": "C-19"
-      }
+    "change_en_curso": null,
+    "proximo_change": "C-05 audit-append-only-log",
+    "deuda": "openspec validate --all --strict reporta 2 warnings por descripciones >500 caracteres heredadas del delta de C-07; pendiente de redacción en un change futuro.",
+    "decisiones_PO_2026-11-21": {
+      "C-08_en_CHANGES": "Dejar [ ] con la nota acordada; marcar [x] recién cuando C-04 y C-05 reemplacen los puertos simulados.",
+      "migraciones_aprobadas": {
+        "C-04": "V002__auth_rbac.sql",
+        "C-05": "V003__audit_append_only_log.sql",
+        "C-06": "V004__public_access_tokens.sql",
+        "C-07": "No editar V005. Solo CRUD sobre tablas existentes => sin migración. Si requiere esquema o seeds => número nuevo dentro de V001-V009 (V007 en adelante)."
+      },
+      "rangos_reservados": {
+        "Parte 1": "V001-V009",
+        "Parte 2": "desde V010",
+        "Parte 3": "desde V020",
+        "Parte 4": "desde V030"
+      },
+      "outOfOrder": "V002-V004 quedan por debajo de V005/V006 ya aplicadas: en bases donde V006 está registrada se requiere spring.flyway.out-of-order=true (o flyway.outOfOrder=true). En bases nuevas se aplican en orden. Habilitar en dev/test antes de C-04/C-05/C-06; sin base de producción con V006.",
+      "registro": "CHANGES.md § 'Reservas de numeración de migraciones Flyway'"
     }
   }
 }

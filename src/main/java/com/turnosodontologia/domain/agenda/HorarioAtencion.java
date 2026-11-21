@@ -39,15 +39,30 @@ public class HorarioAtencion extends AuditableEntity {
     }
 
     public HorarioAtencion(Integer profesionalId, int diaSemana, LocalTime desde, LocalTime hasta) {
-        if (diaSemana < 1 || diaSemana > 7) {
-            throw new IllegalArgumentException("El día de la semana debe estar entre 1 y 7");
-        }
-        if (!hasta.isAfter(desde)) {
-            throw new IllegalArgumentException("El horario debe terminar después de empezar");
-        }
+        validar(diaSemana, desde, hasta);
         this.profesionalId = profesionalId == null ? null : profesionalId.longValue();
         this.diaSemana = diaSemana;
         this.desde = desde;
         this.hasta = hasta;
+    }
+
+    public void actualizar(Integer profesionalId, int diaSemana, LocalTime desde, LocalTime hasta) {
+        validar(diaSemana, desde, hasta);
+        this.profesionalId = profesionalId == null ? null : profesionalId.longValue();
+        this.diaSemana = diaSemana;
+        this.desde = desde;
+        this.hasta = hasta;
+    }
+
+    private static void validar(int diaSemana, LocalTime desde, LocalTime hasta) {
+        if (diaSemana < 1 || diaSemana > 7) {
+            throw new IllegalArgumentException("El día de la semana debe estar entre 1 y 7");
+        }
+        if (desde == null || hasta == null) {
+            throw new IllegalArgumentException("Los horarios desde y hasta son obligatorios");
+        }
+        if (!hasta.isAfter(desde)) {
+            throw new IllegalArgumentException("El horario debe terminar después de empezar");
+        }
     }
 }

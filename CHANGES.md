@@ -32,6 +32,21 @@ Los IDs se conservan al editar o reordenar. No se reciclan IDs retirados. El pro
 | **MEDIO** | Lógica de negocio, adaptadores de dominio y pipelines. **Implementar con checkpoints**. |
 | **BAJO** | CRUD simples, catálogos, definiciones de tipos y utilidades de solo lectura. **Autonomía completa si pasan los tests**. |
 
+### Reservas de numeración de migraciones Flyway
+
+> Aprobado por el PO el 2026-11-21. Esta tabla **prevalece** sobre cualquier número de migración mencionado en el scope de un change. Ninguna migración ya aplicada se edita.
+
+| Parte | Responsable | Rango reservado | Asignación |
+|---|---|---|---|
+| Parte 1 — Tronco Base | PO de esta rama | V001–V009 | V001 = C-03; V002 = C-04; V003 = C-05; V004 = C-06; V005 y V006 = C-08 (ya aplicadas). C-07 **reutiliza V005**: no crea migración si es solo CRUD sobre tablas existentes; si necesita esquema o seeds, usa un número nuevo dentro del rango (V007 en adelante). V008–V009 quedan como holgura de la Parte 1. |
+| Parte 2 | compañero | desde V010 | a asignar por su dueño |
+| Parte 3 | compañero | desde V020 | a asignar por su dueño |
+| Parte 4 | compañero | desde V030 | a asignar por su dueño |
+
+Los números históricos citados en los scopes (`C-10 = 007`, `C-11 = 008`, `C-14 = 009`, `C-15 = 010`, `C-16 = 011`, `C-17 = 012`, `C-19 = 013`) quedan **supersedidos** por esta tabla: cada dueño elige dentro de su rango y lo coordina antes de crear la migración.
+
+**Nota `outOfOrder`**: V002–V004 se incorporan por debajo de V005/V006, que ya están aplicadas en entornos locales y de test. En una base donde V006 ya quedó registrada, Flyway clasifica V002–V004 como `IGNORED` salvo `outOfOrder=true` (`flyway.outOfOrder=true` o `spring.flyway.out-of-order=true` en Spring Boot). En una base nueva se aplican en orden, sin esa opción. Habilitar `spring.flyway.out-of-order=true` en dev/test antes de C-04/C-05/C-06; no existe base de producción con V006 porque C-08 no es desplegable.
+
 ---
 
 ## Árbol de dependencias
@@ -277,7 +292,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 > C-07 crea los catálogos referenciados por C-08 (duración, feriados y zona horaria); C-08 se apoya en C-03 y C-07. C-04 se difiere mediante `CurrentActorProvider` (actor fijo solo dev/test, sin autenticación ni RBAC) y C-05 mediante `AuditEventPublisher` (emisión en memoria/no-op, sin log append-only). C-08 NO se despliega a producción ni se marca como cumplimiento hasta que C-04 y C-05 estén implementados y aprobados.
 
 ### [C-07] `scheduling-catalogs`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` completado — CRUD administrativo sobre V005; sin migración nueva ni seeds; verificado 2026-11-21
 - **Scope**:
   - Migración 005: `Tratamiento` con duración variable (valores `(TBD)`), horarios laborales, feriados, zona horaria `(TBD)`, calendario `(TBD)`, anticipación mínima/máxima de reserva `(TBD)`.
   - CRUD administrativo indicativo `/tratamientos`, `/horarios`, `/feriados` (paths `(TBD)`) y servicio de consulta de configuración para disponibilidad; cambios reflejados en link/QR sin recargar (mecanismo `(TBD)`).
@@ -294,7 +309,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-08] `agenda-core-and-overlap-prevention`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[ ]` pendiente — implementado y archivado con puertos simulados; se marca [x] cuando C-04 y C-05 los reemplacen.
 - **Scope**:
   - Migración 006: `Turno` (`paciente_id`, `profesional_id`, `sillon_id`, `inicio`, `fin`, `duracion_minutos`, `tipo_tratamiento_id`, `estado` `(TBD)`, `es_sobreturno`, `origen` `(TBD)`, `token_publico`), `Bloqueo`, relación con feriados; índices `(profesional_id, inicio, fin)`, `(sillon_id, inicio, fin)`, `estado`, `token_publico`.
   - Restricción en base de datos que impide solapamiento para el mismo profesional **y** el mismo sillón ante escrituras concurrentes (RN-AG-01); mecanismo concreto `(TBD)`; bloqueos ocupan agenda y se respetan en disponibilidad.

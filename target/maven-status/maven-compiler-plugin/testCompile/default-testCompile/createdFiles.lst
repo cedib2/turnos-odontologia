@@ -1,12 +1,17 @@
+com\turnosodontologia\interfaces\web\FeriadoCatalogoTest.class
 com\turnosodontologia\infrastructure\persistence\PacientePersistenceTest.class
 com\turnosodontologia\application\PacienteServiceTest.class
 com\turnosodontologia\infrastructure\persistence\Migration001Test.class
 com\turnosodontologia\infrastructure\persistence\ProfesionalPersistenceTest.class
+com\turnosodontologia\interfaces\web\CatalogoMvc.class
 com\turnosodontologia\application\CoreServicesTest.class
+com\turnosodontologia\interfaces\web\HorarioCatalogoTest.class
 com\turnosodontologia\infrastructure\persistence\SeedDataTest.class
 com\turnosodontologia\domain\agenda\ProfesionalTest.class
+com\turnosodontologia\application\CatalogoLecturaC08Test.class
 com\turnosodontologia\domain\identidad\PacienteCreationTest.class
 com\turnosodontologia\infrastructure\persistence\ConsultorioSillonPersistenceTest.class
 com\turnosodontologia\infrastructure\persistence\UsuarioRolPermisoTest.class
+com\turnosodontologia\interfaces\web\TratamientoCatalogoTest.class
 com\turnosodontologia\domain\identidad\PacienteConsentimientoTest.class
 com\turnosodontologia\TestJpaConfig.class

@@ -20,7 +20,8 @@ class AgendaSurfaceTest {
     @Test
     void losControladoresEstanRestringidosAProfileDevTest() {
         for (Class<?> controller : List.of(AgendaController.class, TurnoController.class,
-                BloqueoController.class, SobreturnoController.class)) {
+                BloqueoController.class, SobreturnoController.class,
+                TratamientoController.class, HorarioController.class, FeriadoController.class)) {
             assertNotNull(controller.getAnnotation(RestController.class));
             Profile profile = controller.getAnnotation(Profile.class);
             assertNotNull(profile, controller.getSimpleName() + " sin @Profile");
@@ -47,7 +48,7 @@ class AgendaSurfaceTest {
         }
         for (String prohibido : List.of("SecurityContext", "@RequestHeader", "@CookieValue",
                 "HttpServletRequest", "getHeader(", "Authorization", "Bearer ",
-                "@AuthenticationPrincipal", "UserDetails", "JwtDecoder")) {
+                "@AuthenticationPrincipal", "UserDetails", "JwtDecoder", "\"/auth")) {
             assertFalse(codigo.contains(prohibido), "Token prohibido en superficie: " + prohibido);
         }
         String pom = Files.readString(Path.of("pom.xml").toAbsolutePath());

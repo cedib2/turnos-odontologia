@@ -36,7 +36,29 @@ public class Feriado extends AuditableEntity {
     }
 
     public Feriado(LocalDate fecha, String descripcion) {
+        this(fecha, descripcion, null);
+    }
+
+    public Feriado(LocalDate fecha, String descripcion, Boolean aplicaATodos) {
+        validar(fecha, descripcion);
         this.fecha = fecha;
         this.descripcion = descripcion;
+        this.aplicaATodos = aplicaATodos;
+    }
+
+    public void actualizar(LocalDate fecha, String descripcion, Boolean aplicaATodos) {
+        validar(fecha, descripcion);
+        this.fecha = fecha;
+        this.descripcion = descripcion;
+        this.aplicaATodos = aplicaATodos;
+    }
+
+    private static void validar(LocalDate fecha, String descripcion) {
+        if (fecha == null) {
+            throw new IllegalArgumentException("La fecha del feriado es obligatoria");
+        }
+        if (descripcion == null || descripcion.isBlank()) {
+            throw new IllegalArgumentException("La descripción del feriado es obligatoria");
+        }
     }
 }

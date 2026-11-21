@@ -41,4 +41,13 @@ public class Tratamiento extends AuditableEntity {
         this.nombre = nombre;
         this.duracionMinutos = duracionMinutos;
     }
+
+    public void actualizar(String codigo, String nombre, int duracionMinutos) {
+        if (duracionMinutos <= 0) {
+            throw new IllegalArgumentException("La duración del tratamiento debe ser positiva");
+        }
+        this.codigo = codigo;
+        this.nombre = nombre;
+        this.duracionMinutos = duracionMinutos;
+    }
 }
