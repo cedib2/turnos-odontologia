@@ -1,5 +1,5 @@
 {
-  "version": 14,
+  "version": 16,
   "step": "complete",
   "owner": "active-orchestrator",
   "discovery": {
@@ -250,8 +250,17 @@
         "nota": "Sin V007, sin seeds, sin cambios en ConfiguracionSchedulingService, sin auth/RBAC/auditoría persistente, sin UI."
       }
     },
-    "change_en_curso": null,
+    "change_en_curso": "C-05 audit-append-only-log",
+    "modo_actual": "explore completado — esperando decisiones del PO; sin código ni artefactos OpenSpec",
     "proximo_change": "C-05 audit-append-only-log",
+    "explore_C-05": {
+      "estado": "completado",
+      "fecha": "2026-11-21",
+      "engram": "opsx/C-05/explore",
+      "hallazgo_clave": "C-05 debe revertir la spec audit-event-emission de SIMULADO a real; ~7 decisiones (RN-GL-03) bloquean el propose. Secuencia recomendada C-04 -> C-05 -> C-06 (revisar orden previo del PO).",
+      "guardia_a_invertir": "AuditEventPublisherTest.noPersisteAuditoriaNiExponeApiDeConsulta()",
+      "migracion": "V003__audit_append_only_log.sql (borrador conceptual, aún no escrita)"
+    },
     "deuda": "openspec validate --all --strict reporta 2 warnings por descripciones >500 caracteres heredadas del delta de C-07; pendiente de redacción en un change futuro.",
     "decisiones_PO_2026-11-21": {
       "C-08_en_CHANGES": "Dejar [ ] con la nota acordada; marcar [x] recién cuando C-04 y C-05 reemplacen los puertos simulados.",
