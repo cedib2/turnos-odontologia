@@ -350,7 +350,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 > C-09 depende del token público (C-06) y de la agenda (C-08). C-10 y C-11 arrancan en paralelo.
 
 ### [C-09] `public-booking-and-reschedule`
-- **Estado**: `[ ]` pendiente
+- **Estado**: [x] completado — implementado y verificado el 2026-11-22; 219 tests verdes, `openspec validate public-booking-and-reschedule --strict` válido; sin migraciones nuevas y sin commits
 - **Scope**:
   - Endpoints públicos indicativos sobre `/turnos`: consultar disponibilidad, crear, confirmar, cancelar y reprogramar con token (paths, verbos y versionado `(TBD)`).
   - *Write-back* real y liberación atómica del hueco; si el hueco se tomó entre consulta y confirmación, rechazo y alternativas `(TBD)`; token vencido → solicitar nuevo enlace `(TBD)`.

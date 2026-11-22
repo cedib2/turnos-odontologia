@@ -106,6 +106,13 @@
 - Protección RBAC de la agenda y adaptador `AuthenticatedActor` → `CurrentActorProvider` (deuda de C-05, change posterior).
 - Webhooks de WhatsApp y Mercado Pago (C-10/C-15) y lista de espera (C-19, v0.2).
 
+## Checkpoints D12 — aprobación registrada
+
+- **Checkpoint 1 — contrato HTTP, wiring, scopes e idempotencia**: aprobado el 2026-11-22 por el usuario/PO durante la implementación («Aprobar ambos ahora», opción recomendada). Cubre `/publico/v1/turnos`, token en query, scopes `RESERVAR`/`GESTIONAR`, verificación de `turnoId`, `idempotency_key` en cuerpo con operaciones `turno.crear|confirmar|cancelar|reprogramar`, beans de C-06 en `com.turnosodontologia.publicbooking` y headers `no-referrer`/`no-store`. Sin objeciones ni cambios al contrato aprobado.
+- **Checkpoint 2 — write-back, cancelación, ventana y eventos**: aprobado el 2026-11-22 por el usuario/PO en la misma decisión. Cubre creación y liberación atómicas vía `Ocupacion`, rechazo `409` por hueco tomado con alternativas, ventana de 2 días hábiles completos en `America/Argentina/Buenos_Aires`, transiciones `reservado`/`confirmado`/`cancelado`, auditoría con actor `PACIENTE` y metadata sanitizada, y notificación simulada sin entrega real. Sin objeciones ni cambios al diseño aprobado.
+
+Evidencia de cierre: `mvn test` en verde (219 tests, 0 fallos, 0 errores) y `openspec validate public-booking-and-reschedule --strict` válido. Ninguna aprobación autoriza commits, push ni archivado del change sin pedido explícito.
+
 ## Regla de aplicación
 
 Ninguna de estas decisiones autoriza escritura en `src/`, commits ni push. La implementación queda para el ciclo OPSX `apply` de C-09, con los dos checkpoints de D12 y verificación técnica antes de marcar `[x]` en `CHANGES.md`.

@@ -12,3 +12,9 @@ spring:
     clean-disabled: false
     out-of-order: true
     locations: classpath:db/migration
+
+public:
+  token:
+    issuer: turnos-odontologia-public
+  surface:
+    prefixes: /publico/v1

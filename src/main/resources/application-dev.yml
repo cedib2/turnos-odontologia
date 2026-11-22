@@ -1,3 +1,9 @@
 spring:
   flyway:
     out-of-order: true
+
+public:
+  token:
+    issuer: turnos-odontologia-public
+  surface:
+    prefixes: /publico/v1

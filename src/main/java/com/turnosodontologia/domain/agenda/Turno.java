@@ -84,6 +84,27 @@ public class Turno extends AuditableEntity {
         this.tokenPublico = tokenPublico;
     }
 
+    public void asignarTokenPublico(String jti, String autor) {
+        if (jti == null || jti.isBlank()) {
+            throw new IllegalArgumentException("El jti del token público es obligatorio");
+        }
+        this.tokenPublico = jti;
+        registrarActualizacion(autor);
+    }
+
+    public void confirmar(String autor) {
+        if ("cancelado".equals(this.estado)) {
+            throw new IllegalArgumentException("Un turno cancelado no puede confirmarse");
+        }
+        this.estado = "confirmado";
+        registrarActualizacion(autor);
+    }
+
+    public void cancelar(String autor) {
+        this.estado = "cancelado";
+        desactivar(autor);
+    }
+
     public void reprogramar(Instant nuevoInicio, Instant nuevoFin, String autor) {
         if (nuevoInicio == null || nuevoFin == null || !nuevoFin.isAfter(nuevoInicio)) {
             throw new IllegalArgumentException("El rango reprogramado debe ser válido");

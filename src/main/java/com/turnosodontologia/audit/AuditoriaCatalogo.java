@@ -6,6 +6,8 @@ public final class AuditoriaCatalogo {
 
     public static final Set<String> TIPOS = Set.of(
             "turno.creado",
+            "turno.confirmado",
+            "turno.cancelado",
             "turno.reprogramado",
             "turno.sobreturno",
             "bloqueo.creado",
