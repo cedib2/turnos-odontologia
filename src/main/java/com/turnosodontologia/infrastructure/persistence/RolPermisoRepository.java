@@ -13,4 +13,6 @@ public interface RolPermisoRepository extends JpaRepository<RolPermiso, RolPermi
     List<RolPermiso> findByRol(Rol rol);
 
     boolean existsByRol_CodigoAndPermiso_Ambito(String codigoRol, Ambito ambito);
+
+    boolean existsByRol_CodigoAndPermiso_RecursoAndPermiso_Accion(String codigoRol, String recurso, String accion);
 }

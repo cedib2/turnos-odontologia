@@ -180,7 +180,7 @@ El sistema SHALL mantener `/agenda`, `/turnos`, `/bloqueos`, `/sobreturnos` y ca
 #### Scenario: Protección de agenda diferida
 - **GIVEN** el alcance declarado de C-04 en este delta y en el documento de decisiones
 - **WHEN** se inspecciona la declaración de alcance
-- **THEN** declara que C-04 entrega infraestructura RBAC pero aún no protege `/agenda`, `/turnos`, `/bloqueos`, `/sobreturnos` ni catálogos, cuya protección queda para un change posterior
+- **THEN** declara que C-04 entrega infraestructura RBAC pero aún no protege `/agenda`, `/turnos`, `/bloqueos`, `/sobreturnos` ni catálogos, cuya protección queda para un change posterior (resuelto en el cierre de C-08: ver `openspec/specs/agenda-rbac/spec.md`)
 
 #### Scenario: Delta puramente aditivo
 - **GIVEN** los 11 requisitos y todos los escenarios actuales de `agenda`

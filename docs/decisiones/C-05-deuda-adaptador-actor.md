@@ -20,3 +20,7 @@ C-08 `agenda-core-overlap` permanece `[ ]` en `CHANGES.md`. Su condición de mar
 ## Registro
 
 Esta deuda se registra solo en documentación; no modifica código, specs principales ni `CHANGES.md`. Decisión relacionada: `docs/decisiones/C-05-ajustes-pre-apply-PO.md`, sección «Corrección 4».
+
+## Resolución (2026-11-22)
+
+Deuda resuelta en el cierre de C-08: ver [`C-08-cierre-adaptador-actor-rbac.md`](C-08-cierre-adaptador-actor-rbac.md). El adaptador y la protección RBAC viven en el paquete `auth`; las guardias `AgendaSurfaceTest` y `CurrentActorProviderTest` no se modificaron y los cuatro modos conservan su semántica.

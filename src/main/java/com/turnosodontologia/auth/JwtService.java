@@ -56,7 +56,13 @@ public class JwtService {
             throw new InvalidAccessTokenException();
         }
         String unsigned = partes[0] + "." + partes[1];
-        if (!MessageDigest.isEqual(sign(unsigned), decode(partes[2]))) {
+        byte[] firma;
+        try {
+            firma = decode(partes[2]);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidAccessTokenException();
+        }
+        if (!MessageDigest.isEqual(sign(unsigned), firma)) {
             throw new InvalidAccessTokenException();
         }
         try {

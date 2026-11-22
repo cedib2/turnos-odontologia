@@ -55,7 +55,7 @@ Los números históricos citados en los scopes (`C-10 = 007`, `C-11 = 008`, `C-1
 |---|---|---|
 | 1 | **C-04 `auth-rbac`** | Aporta el actor real; necesario para C-06 y después para C-05. |
 | 2 | **C-06 `public-access-tokens`** | **Dependencia verificada**: según el scope de C-06 (línea «Dependencias»), depende **solo de C-04**; no figura C-05. |
-| 3 | **C-05 `audit-append-only-log`** | Se integra después sobre `AuditEventPublisher` (hoy simulado en C-08). C-08 sigue `[ ]` hasta que C-04 y C-05 estén verificados. |
+| 3 | **C-05 `audit-append-only-log`** | Se integra después sobre `AuditEventPublisher` (hoy simulado en C-08). C-08 se marcó `[x]` el 2026-11-22, tras verificar C-04 y C-05 y resolver la deuda del adaptador de actor. |
 
 ---
 
@@ -327,7 +327,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-08] `agenda-core-and-overlap-prevention`
-- **Estado**: `[ ]` pendiente — implementado y archivado con puertos simulados; C-05 archivado; falta el adaptador de actor real y la protección de la agenda. Se marca [x] cuando C-04 y C-05 reemplacen efectivamente esos puertos.
+- **Estado**: `[x]` completado — puertos reemplazados: auditoría por C-05 y actor por `AuthenticatedCurrentActorProvider` (adaptador de `AuthenticatedActor`) con protección RBAC de la agenda fuera de dev/test; verificado 2026-11-22 (226/226). Ver [`docs/decisiones/C-08-cierre-adaptador-actor-rbac.md`](docs/decisiones/C-08-cierre-adaptador-actor-rbac.md).
 - **Scope**:
   - Migración 006: `Turno` (`paciente_id`, `profesional_id`, `sillon_id`, `inicio`, `fin`, `duracion_minutos`, `tipo_tratamiento_id`, `estado` `(TBD)`, `es_sobreturno`, `origen` `(TBD)`, `token_publico`), `Bloqueo`, relación con feriados; índices `(profesional_id, inicio, fin)`, `(sillon_id, inicio, fin)`, `estado`, `token_publico`.
   - Restricción en base de datos que impide solapamiento para el mismo profesional **y** el mismo sillón ante escrituras concurrentes (RN-AG-01); mecanismo concreto `(TBD)`; bloqueos ocupan agenda y se respetan en disponibilidad.
