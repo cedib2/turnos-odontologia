@@ -39,7 +39,7 @@ Los IDs se conservan al editar o reordenar. No se reciclan IDs retirados. El pro
 | Parte | Responsable | Rango reservado | Asignación |
 |---|---|---|---|
 | Parte 1 — Tronco Base | PO de esta rama | V001–V009 | V001 = C-03; V002 = C-04; V003 = C-05; V004 = C-06; V005 y V006 = C-08 (ya aplicadas). C-07 **reutiliza V005**: no crea migración si es solo CRUD sobre tablas existentes; si necesita esquema o seeds, usa un número nuevo dentro del rango (V007 en adelante). V008–V009 quedan como holgura de la Parte 1. |
-| Parte 2 | compañero | desde V010 | a asignar por su dueño |
+| Parte 2 | compañero | desde V010 | V010 = C-10; siguientes a asignar por su dueño |
 | Parte 3 | compañero | desde V020 | a asignar por su dueño |
 | Parte 4 | compañero | desde V030 | a asignar por su dueño |
 
@@ -369,7 +369,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-10] `whatsapp-notifications-outbox`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` completado — V010 + outbox, intentos, webhook firmado e idempotente; adaptador real y ruta HTTP del webhook `(TBD)`; verificado 2026-11-22. Ver [`docs/decisiones/C-10-whatsapp-notifications-outbox.md`](docs/decisiones/C-10-whatsapp-notifications-outbox.md).
 - **Scope**:
   - Migración 007: plantillas de WhatsApp, mensajes y tabla *outbox*; implementación del outbox `(TBD)`.
   - Adaptador de **WhatsApp Business API obligatoria** con plantillas aprobadas (códigos `(TBD)`) para confirmación y recordatorio (RN-NT-01); programación del recordatorio (anticipación `(TBD)`).

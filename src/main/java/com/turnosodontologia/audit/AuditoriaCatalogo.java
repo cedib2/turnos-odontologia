@@ -9,7 +9,13 @@ public final class AuditoriaCatalogo {
             "turno.reprogramado",
             "turno.sobreturno",
             "bloqueo.creado",
-            "publictoken.historia.denegado");
+            "publictoken.historia.denegado",
+            "notificacion.programada",
+            "notificacion.enviada",
+            "notificacion.bloqueada",
+            "notificacion.fallida",
+            "notificacion.confirmada",
+            "whatsapp.webhook.rechazado");
 
     public void validar(String tipo) {
         if (tipo == null || !TIPOS.contains(tipo)) {
