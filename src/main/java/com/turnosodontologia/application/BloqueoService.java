@@ -8,8 +8,6 @@ import com.turnosodontologia.infrastructure.persistence.BloqueoRepository;
 import com.turnosodontologia.infrastructure.persistence.OcupacionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -58,21 +56,8 @@ public class BloqueoService {
         Map<String, Object> metadata = new HashMap<>();
         metadata.put("profesionalId", profesionalId);
         metadata.put("sillonId", sillonId);
-        publicarDespuesDeConfirmar(AuditEvent.de("bloqueo.creado", "bloqueo", guardado.getId(),
+        publisher.publish(AuditEvent.de("bloqueo.creado", "bloqueo", guardado.getId(),
                 actor, motivo, metadata, UUID.randomUUID().toString()));
         return guardado;
-    }
-
-    private void publicarDespuesDeConfirmar(AuditEvent evento) {
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCommit() {
-                    publisher.publish(evento);
-                }
-            });
-        } else {
-            publisher.publish(evento);
-        }
     }
 }

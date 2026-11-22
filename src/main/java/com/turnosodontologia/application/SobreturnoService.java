@@ -8,8 +8,6 @@ import com.turnosodontologia.infrastructure.persistence.OcupacionRepository;
 import com.turnosodontologia.infrastructure.persistence.TurnoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -96,21 +94,8 @@ public class SobreturnoService {
         metadata.put("actorAutorizo", actor);
         metadata.put("nuevoInicio", nuevoInicio.toString());
         metadata.put("nuevoFin", nuevoFin.toString());
-        publicarDespuesDeConfirmar(AuditEvent.de("turno.sobreturno", "turno", guardado.getId(),
+        publisher.publish(AuditEvent.de("turno.sobreturno", "turno", guardado.getId(),
                 autor, motivo, metadata, UUID.randomUUID().toString()));
         return guardado;
-    }
-
-    private void publicarDespuesDeConfirmar(AuditEvent evento) {
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCommit() {
-                    publisher.publish(evento);
-                }
-            });
-        } else {
-            publisher.publish(evento);
-        }
     }
 }

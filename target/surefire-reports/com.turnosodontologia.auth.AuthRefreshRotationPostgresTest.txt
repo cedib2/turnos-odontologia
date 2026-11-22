@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.turnosodontologia.auth.AuthRefreshRotationPostgresTest
 -------------------------------------------------------------------------------
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.92 s -- in com.turnosodontologia.auth.AuthRefreshRotationPostgresTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.37 s -- in com.turnosodontologia.auth.AuthRefreshRotationPostgresTest

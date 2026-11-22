@@ -16,6 +16,15 @@ C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\application\ReprogramacionServiceTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\application\SobreturnoIntegrationTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\application\SobreturnoServiceTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\audit\AuditEventPublisherPerfilDevTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\audit\AuditoriaActorSnapshotTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\audit\AuditoriaCatalogoTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\audit\AuditoriaHashChainTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\audit\AuditoriaLogAppendOnlyTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\audit\AuditoriaMetadataTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\audit\AuditoriaTransaccionTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\audit\AuditoriaTrazabilidadTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\audit\RealAuditPublisherConfig.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\auth\AuthenticatedActorTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\auth\AuthLogSanitizerTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\auth\AuthMigrationV002Test.java

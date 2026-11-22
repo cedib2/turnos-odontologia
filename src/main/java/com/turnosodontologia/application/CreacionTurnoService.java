@@ -16,8 +16,6 @@ import com.turnosodontologia.infrastructure.persistence.TratamientoRepository;
 import com.turnosodontologia.infrastructure.persistence.TurnoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -88,7 +86,7 @@ public class CreacionTurnoService {
         ocupaciones.saveAndFlush(Ocupacion.paraTurno(guardado.getId(),
                 profesional.getId(), sillon.getId(), inicio, fin));
 
-        publicarDespuesDeConfirmar(AuditEvent.creacionTurno(guardado.getId(), actor, "",
+        publisher.publish(AuditEvent.creacionTurno(guardado.getId(), actor, "",
                 Map.of("estado", estado, "origen", origen,
                         "codigoTratamiento", codigoTratamiento, "duracionMinutos", duracion)));
         return guardado;
@@ -97,19 +95,6 @@ public class CreacionTurnoService {
     private void validarNoVacio(String valor, String nombre) {
         if (valor == null || valor.isBlank()) {
             throw new IllegalArgumentException(nombre + " no puede estar vacío");
-        }
-    }
-
-    private void publicarDespuesDeConfirmar(AuditEvent evento) {
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCommit() {
-                    publisher.publish(evento);
-                }
-            });
-        } else {
-            publisher.publish(evento);
         }
     }
 }

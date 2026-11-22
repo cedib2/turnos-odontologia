@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
-@Profile({"dev", "test"})
+@Profile("test")
 public class InMemoryAuditEventRecorder implements AuditEventPublisher {
 
     private final List<AuditEvent> eventos = new CopyOnWriteArrayList<>();

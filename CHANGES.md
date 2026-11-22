@@ -265,7 +265,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-05] `audit-append-only-log`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` completado — verificado y archivado el 2026-11-22; specs sincronizadas
 - **Scope**:
   - Migración 003: registro append-only con actor, fecha, entidad, entidad_id, IP, dispositivo `(TBD)` y hash encadenado `(TBD)`; inmutabilidad garantizada en capa de datos.
   - Eventos obligatorios: creación/cancelación/reprogramación de turno, firma clínica, cobro/conciliación, exportación/respaldo/restore, cambios de roles y configuración; catálogo de nombres de eventos `(TBD)`.
@@ -327,7 +327,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-08] `agenda-core-and-overlap-prevention`
-- **Estado**: `[ ]` pendiente — implementado y archivado con puertos simulados; se marca [x] cuando C-04 y C-05 los reemplacen.
+- **Estado**: `[ ]` pendiente — implementado y archivado con puertos simulados; C-05 archivado; falta el adaptador de actor real y la protección de la agenda. Se marca [x] cuando C-04 y C-05 reemplacen efectivamente esos puertos.
 - **Scope**:
   - Migración 006: `Turno` (`paciente_id`, `profesional_id`, `sillon_id`, `inicio`, `fin`, `duracion_minutos`, `tipo_tratamiento_id`, `estado` `(TBD)`, `es_sobreturno`, `origen` `(TBD)`, `token_publico`), `Bloqueo`, relación con feriados; índices `(profesional_id, inicio, fin)`, `(sillon_id, inicio, fin)`, `estado`, `token_publico`.
   - Restricción en base de datos que impide solapamiento para el mismo profesional **y** el mismo sillón ante escrituras concurrentes (RN-AG-01); mecanismo concreto `(TBD)`; bloqueos ocupan agenda y se respetan en disponibilidad.

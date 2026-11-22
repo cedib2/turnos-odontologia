@@ -19,6 +19,11 @@ C:\Users\Cedib\Downloads\turnos-odontologia\src\main\java\com\turnosodontologia\
 C:\Users\Cedib\Downloads\turnos-odontologia\src\main\java\com\turnosodontologia\application\SimulatedCurrentActorProvider.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\main\java\com\turnosodontologia\application\SobreturnoService.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\main\java\com\turnosodontologia\application\UsuarioService.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\main\java\com\turnosodontologia\audit\AuditoriaCanonicalizer.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\main\java\com\turnosodontologia\audit\AuditoriaCatalogo.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\main\java\com\turnosodontologia\audit\AuditoriaIntegridadService.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\main\java\com\turnosodontologia\audit\AuditoriaMetadataValidator.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\main\java\com\turnosodontologia\audit\JdbcAuditEventPublisher.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\main\java\com\turnosodontologia\auth\AccesoDenegadoException.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\main\java\com\turnosodontologia\auth\AccessAuthenticator.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\main\java\com\turnosodontologia\auth\AuthController.java
@@ -74,6 +79,7 @@ C:\Users\Cedib\Downloads\turnos-odontologia\src\main\java\com\turnosodontologia\
 C:\Users\Cedib\Downloads\turnos-odontologia\src\main\java\com\turnosodontologia\domain\identidad\RolPermisoId.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\main\java\com\turnosodontologia\domain\identidad\Usuario.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\main\java\com\turnosodontologia\domain\notificaciones\NotificacionReference.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\main\java\com\turnosodontologia\infrastructure\audit\AuditPersistenceConfig.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\main\java\com\turnosodontologia\infrastructure\audit\InMemoryAuditEventRecorder.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\main\java\com\turnosodontologia\infrastructure\persistence\BloqueoRepository.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\main\java\com\turnosodontologia\infrastructure\persistence\ConsultorioRepository.java

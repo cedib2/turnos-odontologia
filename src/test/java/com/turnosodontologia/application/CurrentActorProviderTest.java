@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class CurrentActorProviderTest {
 
@@ -30,7 +31,8 @@ class CurrentActorProviderTest {
         ActorSimulado actor = provider.system();
 
         assertEquals("system", actor.nombre());
-        assertEquals("SIMULADO", actor.modo());
+        assertEquals("SYSTEM", actor.modo());
+        assertNull(actor.usuarioId());
     }
 
     @Test

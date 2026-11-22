@@ -33,14 +33,27 @@ class PublicDeltaInvariantsTest {
         assertTrue(guardiaActor.contains("spring-security"));
         assertTrue(guardiaActor.contains("/auth"));
 
-        String guardiaAuditoria = Files.readString(Path.of("src", "test", "java", "com",
-                "turnosodontologia", "application", "AuditEventPublisherTest.java"));
-        assertTrue(guardiaAuditoria.contains("CREATE TABLE AUDIT"));
+        Path rutaGuardiaAuditoria = Path.of("src", "test", "java", "com",
+                "turnosodontologia", "application", "AuditEventPublisherTest.java");
+        String guardiaAuditoria = Files.readString(rutaGuardiaAuditoria);
+        assertFalse(guardiaAuditoria.contains("CREATE TABLE AUDIT"));
+        assertTrue(guardiaAuditoria.contains("persisteAuditoriaYSinApiDeConsulta"));
+        assertTrue(guardiaAuditoria.contains("V003__audit_append_only_log.sql"));
         assertTrue(guardiaAuditoria.contains("/audit"));
+        assertTrue(guardiaAuditoria.contains("assertEquals(1, recorder.eventos().size())"));
+        assertTrue(guardiaAuditoria.contains("assertEquals(3, recorder.eventos().size())"));
+        String directorioActivo = "openspec" + "/" + "changes" + "/";
+        assertFalse(guardiaAuditoria.contains(directorioActivo));
+        assertFalse(Files.readString(Path.of("src", "test", "java", "com",
+                "turnosodontologia", "publictoken", "PublicDeltaInvariantsTest.java"))
+                .contains(directorioActivo));
 
         String auditoria = Files.readString(Path.of("openspec", "specs", "audit-event-emission", "spec.md"));
+        assertTrue(auditoria.contains("# audit-event-emission Specification"));
+        assertTrue(auditoria.contains("## Requirements"));
         assertTrue(auditoria.contains("SIMULADO"));
-        assertTrue(auditoria.contains("MUST NOT crear tabla append-only"));
+        assertTrue(auditoria.contains("consulta de auditoría"));
+        assertTrue(auditoria.contains("MUST NOT"));
 
         Path consumo = Path.of("src", "main", "java", "com", "turnosodontologia",
                 "publictoken", "PublicAgendaConsumption.java");

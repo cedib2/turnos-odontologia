@@ -1,6 +1,6 @@
 {
-  "version": 28,
-  "step": "complete",
+  "version": 32,
+  "step": "archive_complete",
   "owner": "active-orchestrator",
   "discovery": {
     "created_by": "discovery-research",
@@ -229,6 +229,209 @@
     ],
     "completos_previamente": ["C-01", "C-02", "C-03"],
     "changes": {
+      "C-05": {
+        "change_name": "audit-append-only-log",
+        "governance": "CRITICO",
+        "propose": {
+          "estado": "COMPLETADO",
+          "fecha": "2026-11-22",
+          "decisor": "Lautaro Ellerbach, PO",
+          "path": "openspec/changes/audit-append-only-log/",
+          "artefactos": [
+            "proposal.md",
+            "specs/audit-append-only-log/spec.md (6 ADDED, 26 escenarios)",
+            "specs/audit-event-emission/spec.md (3 MODIFIED, 9 escenarios; incluye MODIFIED de AuditEventPublisherTest.noPersisteAuditoriaNiExponeApiDeConsulta())",
+            "design.md",
+            "tasks.md (8 grupos, 23 tareas, mapa de 35 escenarios a tests)"
+          ],
+          "validacion": "openspec validate audit-append-only-log --strict -> válido; openspec validate --specs -> 4 passed, 0 failed; openspec validate --all --strict -> 4 passed, 1 failed (deuda preexistente spec/agenda, warnings requirements[8]/[9] >500 chars); openspec status --change audit-append-only-log -> 4/4 artefactos",
+          "main_specs_intactas": true,
+          "CHANGES.md_sin_marcar": true,
+          "sin_codigo_ni_tests": true,
+          "apply": "Histórico del propose: NO autorizado entonces. Actualizado el 2026-11-22 a autorizado condicionalmente tras los ajustes pre-apply y la verificación de cobertura; EJECUTADO y verificado sin archive."
+        },
+        "ajustes_pre_apply_2026_11_22": {
+          "estado": "COMPLETADOS",
+          "fecha": "2026-11-22",
+          "decisor": "Lautaro Ellerbach, PO",
+          "governance": "CRITICO",
+          "registro": "docs/decisiones/C-05-ajustes-pre-apply-PO.md",
+          "apply": "AUTORIZADO CONDICIONALMENTE por el PO: requiere mostrar el delta y verificar cobertura 39/39 antes de iniciar; NO ejecutado; detenido antes del archive",
+          "decisiones": [
+            "Evento nuevo: proponerlo en docs/decisiones/, actualizar spec/design/tasks con openspec-update-change y agregar su test antes de implementar; prohibido inventar eventos durante el apply; catálogo C-05 cerrado en 5 eventos salvo decisión PO posterior",
+            "login y logout de C-04 quedan fuera del catálogo de C-05; no se auditan en este change ni se modifica la spec de C-04; de requerirse, change posterior",
+            "Transacción compartida: evento y negocio en la misma transacción (@Transactional/conexión local), sin REQUIRES_NEW, async ni outbox en C-05",
+            "Cadena válida por predecesora inmediata en orden de id, sin ids consecutivos exigidos (saltos de secuencia PostgreSQL), sin huecos lógicos; pg_advisory_xact_lock de clave fija en la misma transacción antes de leer la cabeza y hacer el INSERT, liberado en commit/rollback",
+            "Normalización de metadata a minúsculas sin acentos ignorando también _ y -; lista de 22 claves sin ampliar; jti, scope y pacienteId permitidos"
+          ],
+          "confirmaciones_design": [
+            "V003 usa trigger BEFORE TRUNCATE de nivel de sentencia (FOR EACH STATEMENT); PostgreSQL no tiene TRUNCATE row-level; se conservan BEFORE UPDATE/DELETE",
+            "REVOKE aplica al rol de aplicación; superusuario, dueño de tabla/DDL y flyway repair pueden sortearlo; límite de evidencia, no inmutabilidad absoluta",
+            "Verificación de cadena como servicio interno (AuditoriaIntegridadService o equivalente), sin endpoint HTTP, sin /audit ni /auditoria y sin permisos de lectura nuevos",
+            "ip INET es dato personal (Ley 25.326): nullable, solo cuando corresponda, no copiada a metadata, no expuesta por API (REST diferida) y no logueada",
+            "Tests H2 existentes con InMemoryAuditEventRecorder en el límite del puerto; publicador real con PostgreSQL/Testcontainers en Auditoria*Test; sin reemplazo global del bean"
+          ],
+          "delta": {
+            "specs": {
+              "audit-append-only-log": "7 ADDED requirements / 30 escenarios (antes 6/26): nuevo requirement de transacción compartida con 2 escenarios; hash modificado con cadena válida por id, saltos permitidos y lock; metadata modificado con normalización sin _ ni -; escenarios agregados: cadena con saltos de id, rechazo de accessToken/Password-Hash, fallo de INSERT y rollback de negocio; escenario de publicaciones concurrentes reforzado con sin bifurcación de la cadena",
+              "audit-event-emission": "3 MODIFIED requirements / 9 escenarios (sin cambios)"
+            },
+            "totales": "10 requirements / 39 escenarios; 9 grupos / 26 tareas; mapa 39/39 escenarios a tests; sin escenarios sin test",
+            "tests_planificados": [
+              "AuditoriaTransaccionTest.insertAuditoriaFallaYRevierteLaOperacionDeNegocio",
+              "AuditoriaTransaccionTest.rollbackDeNegocioTrasPublicarEventoNoDejaFilaDeAuditoria",
+              "AuditoriaHashChainTest.cadenaValidaConSaltosDeIdYSinHuecosLogicos",
+              "AuditoriaMetadataTest.rechazaVariantesSinGuionBajoNiGuionDeClavesProhibidas"
+            ],
+            "artefactos": [
+              "openspec/changes/audit-append-only-log/proposal.md",
+              "openspec/changes/audit-append-only-log/specs/audit-append-only-log/spec.md",
+              "openspec/changes/audit-append-only-log/specs/audit-event-emission/spec.md (sin cambios)",
+              "openspec/changes/audit-append-only-log/design.md",
+              "openspec/changes/audit-append-only-log/tasks.md",
+              "docs/decisiones/C-05-ajustes-pre-apply-PO.md"
+            ]
+          },
+          "invariantes": "Sin apply, sin código de producción ni tests, sin specs principales modificadas, sin CHANGES.md marcado, sin commits ni push"
+        },
+        "decision_alcance_2026_11_22": {
+          "decisor": "Lautaro Ellerbach, PO",
+          "fecha": "2026-11-22",
+          "conservar": [
+            "V003__audit_append_only_log.sql con tabla append-only, trigger BEFORE UPDATE/DELETE, REVOKE de UPDATE/DELETE/TRUNCATE y límites documentados (superuser, DDL, flyway repair)",
+            "Hash encadenado SHA-256 sin HMAC ni gestor de secretos; orden canónico por id, génesis, hash_anterior/hash_actual, verificación y concurrencia; límite del hash sin clave documentado",
+            "Catálogo mínimo cerrado en cinco eventos: turno.creado, turno.reprogramado, turno.sobreturno, bloqueo.creado y publictoken.historia.denegado; una fila por operación de dominio; entidad_id nullable solo para este último",
+            "Snapshot inmutable del actor más modo REAL/SIMULADO/SYSTEM/PACIENTE con proveedor real de C-04; sin reabrir C-04 ni reintroducir Authorization, Bearer, SecurityContext, @RequestHeader o /auth en agenda",
+            "Publicador real que persiste en auditoria_log; AuditEventPublisherTest.noPersisteAuditoriaNiExponeApiDeConsulta() como MODIFIED",
+            "Lista cerrada de campos prohibidos en metadata con test de rechazo; jti, scope y pacienteId del evento de C-06 quedan permitidos sin ampliar la lista de 22 claves",
+            "spring.flyway.out-of-order=true verificado en dev/test sin duplicar configuración"
+          ],
+          "diferidos": [
+            "Consulta REST de solo lectura para auditoría: sin endpoint ni permisos de lectura nuevos; (TBD) para change posterior",
+            "HMAC con gestor de secretos: (TBD) para change posterior",
+            "Archivado y retención de 10 años: sin job ni borrado; (TBD) para change posterior"
+          ],
+          "catalogo_eventos": ["turno.creado", "turno.reprogramado", "turno.sobreturno", "bloqueo.creado", "publictoken.historia.denegado"],
+          "metadata_permitida_c06": ["jti", "scope", "pacienteId"],
+          "campos_prohibidos_metadata": ["password", "password_hash", "hash_password", "secret", "api_key", "access_token", "refresh_token", "token", "authorization", "jwt", "credentials", "dni", "documento_numero", "telefono", "email", "direccion", "fecha_nacimiento", "firma", "signature", "diagnostico", "historia_clinica", "ficha_clinica"],
+          "registro": "proposal.md, design.md, deltas y este estado; sin documento nuevo",
+          "decision_visual": "Decision: no (no UI)"
+        },
+        "correccion_catalogo_2026_11_22": {
+          "decisor": "Lautaro Ellerbach, PO",
+          "fecha": "2026-11-22",
+          "motivo": "C-06 ya archivado emite publictoken.historia.denegado por el mismo AuditEventPublisher; excluirlo de la persistencia rompería la denegación de HISTORIA",
+          "cambio": "Catálogo de 4 a 5 eventos; entidad_id nullable para el quinto evento; jti, scope y pacienteId permitidos en metadata sin tocar la lista de 22 claves prohibidas",
+          "impacto": "specs 6/26 y 3/9; mapa 35/35; sin código, sin CHANGES.md y sin specs principales modificados"
+        },
+        "apply": {
+          "estado": "COMPLETADO_VERIFICADO_SIN_ARCHIVE",
+          "fecha": "2026-11-22",
+          "decisor": "Lautaro Ellerbach, PO",
+          "governance": "CRITICO",
+          "progreso": "26/26 tareas [x]; 9 grupos completados; detenido antes del archive",
+          "acciones_realizadas": [
+            "V003__audit_append_only_log.sql con tabla append-only, triggers BEFORE UPDATE/DELETE/TRUNCATE, REVOKE al rol turnos_app y grants idempotentes",
+            "AuditoriaCanonicalizer, JdbcAuditEventPublisher, AuditoriaIntegridadService, AuditoriaCatalogo, AuditoriaMetadataValidator y AuditPersistenceConfig",
+            "Publicación real en la misma transacción en los cuatro servicios de agenda y persistencia del evento publictoken.historia.denegado de C-06",
+            "Snapshot extendido de ActorSimulado y trazabilidad ip/dispositivo/correlation_id en AuditEvent",
+            "Guardias invertidas en AuditEventPublisherTest y PublicDeltaInvariantsTest leyendo solo openspec/specs/**"
+          ],
+          "tests_nuevos": [
+            "AuditoriaLogAppendOnlyTest (4)",
+            "AuditoriaHashChainTest (6)",
+            "AuditoriaTransaccionTest (2)",
+            "AuditoriaCatalogoTest (6)",
+            "AuditoriaMetadataTest (7)",
+            "AuditoriaActorSnapshotTest (3)",
+            "AuditoriaTrazabilidadTest (2)",
+            "AuditEventPublisherTest (9, antes 3)"
+          ],
+          "verificacion": "mvn test -> 193 tests, 0 failures, 0 errors; openspec validate audit-append-only-log --strict -> válido; openspec validate --specs -> 4 passed, 0 failed (2 warnings preexistentes en spec/agenda); openspec status --change audit-append-only-log --json -> isComplete=true, 4/4 artefactos; mapa 39/39 escenarios; 0 tests leyendo openspec/changes/",
+          "ajuste_colateral": "AuthMigrationV002Test actualizado a la lista de versiones [1,2,3,4,5,6] por la incorporación de V003",
+          "invariantes": "Sin archive; specs principales sin sincronizar; C-05 y C-08 siguen [ ] en CHANGES.md; sin commits, push ni secretos; C-04 no reabierto"
+        },
+        "incidencia": "Resuelta el 2026-11-22: publictoken.historia.denegado pasa a ser el quinto evento autorizado del catálogo de C-05. Las guardias de PublicDeltaInvariantsTest se ajustaron en el apply leyendo solo openspec/specs/**.",
+        "pre_archive_correcciones": {
+          "estado": "COMPLETADAS",
+          "fecha": "2026-11-22",
+          "decisor": "Lautaro Ellerbach, PO",
+          "governance": "CRITICO",
+          "autorizacion": "Correcciones acotadas autorizadas explícitamente por el PO; NO autorizan archive, sync de specs principales, marcado de CHANGES.md, commits ni push",
+          "version": 31,
+          "motivo": "Cuatro gaps del pre-check de archive documentados en Engram #72 (opsx/audit-append-only-log/archive-precheck)",
+          "registros": [
+            "docs/decisiones/C-05-ajustes-pre-apply-PO.md",
+            "docs/decisiones/C-05-deuda-adaptador-actor.md"
+          ],
+          "correcciones": [
+            {
+              "id": 1,
+              "resumen": "Actor SYSTEM con usuarioId null y nueva fabrica pacienteSinUsuario; AuditoriaActorSnapshotTest cubre SIMULADO/SYSTEM/PACIENTE con assertNull(actor_id) en los tres",
+              "artefactos": [
+                "src/main/java/com/turnosodontologia/domain/auditoria/ActorSimulado.java",
+                "src/test/java/com/turnosodontologia/audit/AuditoriaActorSnapshotTest.java",
+                "src/test/java/com/turnosodontologia/auth/AuthenticatedActorTest.java",
+                "src/test/java/com/turnosodontologia/application/CurrentActorProviderTest.java",
+                "openspec/changes/audit-append-only-log/specs/audit-append-only-log/spec.md"
+              ],
+              "mapa": "10 requirements / 39 escenarios sin cambios; mapa 39/39"
+            },
+            {
+              "id": 2,
+              "resumen": "Guardias restauradas: 8 asserts de campos obligatorios, conteos 1 y 3, rechazo real via BloqueoService, invariantes estables consulta de auditoria y MUST NOT, comentario sobre el escaneo solo en src/main/java",
+              "artefactos": [
+                "src/test/java/com/turnosodontologia/application/AuditEventPublisherTest.java",
+                "src/test/java/com/turnosodontologia/publictoken/PublicDeltaInvariantsTest.java"
+              ],
+              "conteos_agenda": "13 requirements / 31 escenarios intactos"
+            },
+            {
+              "id": 3,
+              "resumen": "Exclusividad de perfiles: JdbcAuditEventPublisher en !test (dev y produccion) e InMemoryAuditEventRecorder solo en test; sin ConditionalOnMissingBean; nuevo test de contexto dev con un unico bean JDBC",
+              "artefactos": [
+                "src/main/java/com/turnosodontologia/infrastructure/audit/AuditPersistenceConfig.java",
+                "src/main/java/com/turnosodontologia/infrastructure/audit/InMemoryAuditEventRecorder.java",
+                "src/test/java/com/turnosodontologia/audit/AuditEventPublisherPerfilDevTest.java"
+              ],
+              "reemplaza": "Convivencia dev+test acordada antes; motivo: evitar dos beans y garantizar persistencia real en dev"
+            },
+            {
+              "id": 4,
+              "resumen": "Deuda documentada: adaptador de AuthenticatedActor a CurrentActorProvider condicionado a proteger la agenda; change posterior; no bloquea C-08",
+              "artefactos": [
+                "docs/decisiones/C-05-deuda-adaptador-actor.md"
+              ]
+            }
+          ],
+          "verificacion": "mvn test -> 194 tests, 0 failures, 0 errors, 0 skipped (baseline 193); openspec validate audit-append-only-log --strict -> valido; openspec status --change audit-append-only-log --json -> isComplete=true, 4/4 artefactos; openspec validate --specs -> 4 passed, 0 failed (2 warnings preexistentes en spec/agenda); delta 10 requirements / 39 escenarios; mapa 39/39; 0 tests leyendo openspec/changes/; JSON validado con ConvertFrom-Json",
+          "invariantes": "Sin archive; specs principales sin sincronizar; C-05 y C-08 siguen [ ] en CHANGES.md; sin commits ni push; version v31 intacta"
+        },
+        "archive": {
+          "estado": "COMPLETADO",
+          "fecha": "2026-11-22",
+          "decisor": "Lautaro Ellerbach, PO",
+          "governance": "CRITICO",
+          "schema": "spec-driven",
+          "path": "openspec/changes/archive/2026-11-22-audit-append-only-log/",
+          "artefactos_movidos": [
+            "proposal.md",
+            "design.md",
+            "tasks.md",
+            ".openspec.yaml",
+            "specs/audit-append-only-log/spec.md",
+            "specs/audit-event-emission/spec.md"
+          ],
+          "specs_sincronizadas": [
+            "openspec/specs/audit-append-only-log/spec.md (creada; 7 requirements/30 escenarios)",
+            "openspec/specs/audit-event-emission/spec.md (3 requirements MODIFIED aplicados; 5 requirements/11 escenarios en total)"
+          ],
+          "verificacion": "mvn test -> Tests run: 194, Failures: 0, Errors: 0, Skipped: 0 (BUILD SUCCESS); openspec validate --specs -> 5 passed, 0 failed (5 items), 2 warnings preexistentes en spec/agenda; openspec validate --all --strict -> 4 passed, 1 failed (5 items), unico fallo spec/agenda por warnings requirements[8]/[9] con texto >500 caracteres; PublicDeltaInvariantsTest verde leyendo solo openspec/specs/**; 0 tests leyendo openspec/changes/; openspec list --json -> 0 changes activos",
+          "estado_en_CHANGES": "[x] completado — verificado y archivado el 2026-11-22; specs sincronizadas",
+          "deuda_adaptador": "docs/decisiones/C-05-deuda-adaptador-actor.md",
+          "invariantes": "Sin commits, push, PR ni ClickUp; C-08 sigue [ ] con nota actualizada; sin decisiones de C-08; ninguna otra spec principal modificada; detenido al terminar por pedido del PO"
+        }
+      },
       "C-08": {
         "change_name": "agenda-core-overlap",
         "estado": "archivado",
@@ -237,8 +440,8 @@
         "evidencia": "docs/decisiones/C-08-agenda-core-overlap-checkpoints.md",
         "verificacion": "mvn test 82/82 con PostgreSQL 17.12/Testcontainers; openspec validate --strict válido; 23/23 tareas",
         "decision_archive": "Sincronizar deltas a specs principales; decisor: Orquestador por delegación del PO ('sigamos'), 2026-11-21",
-        "estado_en_CHANGES": "[ ] pendiente — implementado y archivado con puertos simulados; se marca [x] cuando C-04 y C-05 los reemplacen",
-        "nota": "C-04 y C-05 siguen diferidos mediante CurrentActorProvider y AuditEventPublisher simulados; no hay despliegue ni cumplimiento."
+        "estado_en_CHANGES": "[ ] pendiente — implementado y archivado con puertos simulados; C-05 archivado; falta el adaptador de actor real y la protección de la agenda. Se marca [x] cuando C-04 y C-05 reemplacen efectivamente esos puertos.",
+        "nota": "C-05 archivado; falta el adaptador de actor real y la protección de la agenda. Deuda registrada en docs/decisiones/C-05-deuda-adaptador-actor.md; C-08 permanece [ ] y no se decide ni se marca en este cierre."
       },
       "C-07": {
         "change_name": "scheduling-catalogs",
@@ -342,9 +545,10 @@
         }
       }
     },
-    "change_en_curso": null,
-    "modo_actual": "C-06 public-access-tokens archivado y verificado; detenido; siguiente C-05 solo tras nueva aprobación",
-    "proximo_change": "C-05 audit-append-only-log",
+    "change_en_curso": "ninguno — C-05 audit-append-only-log archivado el 2026-11-22",
+    "modo_actual": "C-05 audit-append-only-log: archive completado (v32) con specs sincronizadas, suite 194/0/0/0 y deuda del adaptador de actor documentada; detenido aquí por pedido del PO",
+    "proximo_change": "ninguno hasta nueva decisión PO; próximo paso dependiente: deuda del adaptador de actor y protección de la agenda",
+    "proximo_accion": "retomar docs/decisiones/C-05-deuda-adaptador-actor.md en el change que proteja la agenda; C-08 sigue [ ] y no se decide ni se marca en este cierre; sin commits ni push",
     "explore_C-05": {
       "estado": "completado",
       "fecha": "2026-11-21",
