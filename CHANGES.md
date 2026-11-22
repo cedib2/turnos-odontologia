@@ -288,7 +288,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-06] `public-access-tokens`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` completado
 - **Scope**:
   - Migración 004: token público por turno/enlace con expiración `(TBD)` para reserva, confirmación, gestión y acceso a historia.
   - Servicio de emisión/validación con firma y vencimiento (algoritmo y plazo `(TBD)`); verificación de identidad del paciente para historia `(TBD)`; protección contra reenvíos de operaciones críticas (RN-GL-02, mecanismo `(TBD)`).

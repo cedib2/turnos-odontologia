@@ -1,5 +1,5 @@
 {
-  "version": 24,
+  "version": 28,
   "step": "complete",
   "owner": "active-orchestrator",
   "discovery": {
@@ -213,7 +213,7 @@
     }
   },
   "opsx": {
-    "updated_at": "2026-11-21",
+    "updated_at": "2026-11-22",
     "owner": "PO",
     "parte_asignada": 1,
     "parte_nombre": "Tronco Base",
@@ -262,11 +262,89 @@
         "nota": "audit-event-emission sin cambios; sigue en modo SIMULADO hasta C-05",
         "estado_en_CHANGES": "[x] completado — implementado, verificado y archivado el 2026-11-21; 147 tests verdes (93 previos + 54 nuevos), `openspec validate auth-rbac --strict` válido; specs sincronizadas",
         "nota_C_08": "C-08 sigue [ ] pendiente porque C-05 aún no reemplaza AuditEventPublisher"
+      },
+      "C-06": {
+        "change_name": "public-access-tokens",
+        "governance": "CRITICO",
+        "propose": {
+          "estado": "completado",
+          "fecha": "2026-11-21",
+          "aprobado_por": "Lautaro Ellerbach, PO",
+          "path": "openspec/changes/public-access-tokens/",
+          "artefactos": [
+            "proposal.md",
+            "specs/public-access-tokens/spec.md (8 escenarios + contrato de scopes/claims/flag)",
+            "specs/agenda/spec.md (1 ADDED acotado, 2 escenarios)",
+            "design.md (incluye diagrama Mermaid editable)",
+            "tasks.md (11 grupos, 26 tareas, completadas y verificadas; archive completado)",
+            "docs/decisiones/C-06-decisiones-public-access-tokens.md"
+          ],
+          "validacion": "openspec validate public-access-tokens --strict -> válido; openspec status -> 4/4 artefactos; openspec list --json -> 1 change activo; openspec validate --specs -> 3/3",
+          "main_specs_intactas": true,
+          "CHANGES.md_sin_marcar": true
+        },
+        "decisiones_PO": {
+          "decisor": "Lautaro Ellerbach, PO",
+          "fecha": "2026-11-21",
+          "nota": "valores = metas iniciales no normativas",
+          "valores": {
+            "firma": "HMAC-SHA256 con PUBLIC_TOKEN_SECRET propio, distinto de AUTH_JWT_SECRET; solo el nombre en .env.example durante el apply, sin valor",
+            "vigencia": { "RESERVAR": "60 min", "GESTIONAR": "7 dias", "HISTORIA": "24 h" },
+            "identidad": "identidadVerificada=false por defecto; C-06 nunca emite HISTORIA con true; verificacion real en C-13",
+            "idempotencia": "idempotency_key persistida con unicidad por operacion y probada en PostgreSQL; cuerpo o path, nunca request header",
+            "transporte": "token en path/query sin request headers; response headers Referrer-Policy: no-referrer y Cache-Control: no-store; token nunca en logs",
+            "jti": "jti con used_at/revoked_at; rotacion solo para GESTIONAR"
+          },
+          "restricciones": [
+            "V004__public_access_tokens.sql solo metadatos: sin Turno.token_publico duplicado (ya en V006) y sin token en texto plano; solo jti o hash",
+            "No ajustar guardias de C-04 (AgendaSurfaceTest, CurrentActorProviderTest); codigo publico sin Authorization, Bearer , @RequestHeader, SecurityContext ni /auth; setear response headers permitido, leer request headers no",
+            "Contrato de scopes, claims e identidadVerificada en el spec delta y en docs/decisiones/C-06-decisiones-public-access-tokens.md para consumo de C-09 y C-13",
+            "Sin commits, sin push y sin secretos con valor real",
+            "Sin codear: el propose no ejecuta apply, tests de implementacion ni cambios en openspec/specs/** ni CHANGES.md",
+            "Considerar escenario de test con V006 previa y spring.flyway.out-of-order=true (ya en application-dev.yml)"
+          ],
+          "registro": "docs/decisiones/C-06-decisiones-public-access-tokens.md"
+        },
+        "apply": {
+          "estado": "COMPLETADO_VERIFICADO_SIN_ARCHIVE",
+          "fecha": "2026-11-21",
+          "decisor": "Lautaro Ellerbach, PO",
+          "progreso": "26/26 tareas; suite completa 157 tests, 0 failures, 0 errors",
+          "bloqueo_resuelto": "mvn test inicial -> 147 tests, 0 failures, 1 error preexistente: LoginRateLimiterTest.disenoYDecisionesDeclaranQueElLimiteNoEsDistribuido leia openspec/changes/auth-rbac/design.md, ruta eliminada por el archive de C-04; PO autorizo corregirla a docs/decisiones/C-04-decisiones-auth-rbac.md, fuente estable verificada con las cinco frases",
+          "acciones_realizadas": [
+            "docs/decisiones/C-06-decisiones-public-access-tokens.md actualizado con contrato, decisiones, resolucion y verificacion",
+            ".env.example con solo PUBLIC_TOKEN_SECRET sin valor",
+            "V004__public_access_tokens.sql, servicio de tokens, idempotencia, headers, sanitizacion y punto de consumo publico",
+            "10 tests nuevos; 147 previos + 10 = 157",
+            "docs/decisiones/C-04-fix-ruta-estable-documentacion.md"
+          ],
+          "verificacion": "mvn test -> 157 tests, 0 failures, 0 errors; openspec validate public-access-tokens --strict -> valido; openspec validate --specs -> 3/3; openspec list --json -> 1 change activo; grep openspec/changes/ en src/test -> 0 coincidencias",
+          "decision_visual": "Decision: no (no UI)",
+          "invariantes": "guardias C-04 intactas; CHANGES.md sin marcar C-06; openspec/specs/** y audit-event-emission sin cambios; sin commits ni push; sin secretos con valor real",
+          "no_realizado": "Histórico en apply: sin archive, sin sincronización de deltas a specs principales y sin marcar C-06 en CHANGES.md; resuelto después con el archive completado el 2026-11-21.",
+          "decision_pendiente_PO": "Resuelta: Lautaro Ellerbach, PO aprobó el archive y la sincronización de deltas el 2026-11-21; ver opsx.changes.C-06.archive.",
+          "nota_archive_posterior": "El apply conserva su estado histórico COMPLETADO_VERIFICADO_SIN_ARCHIVE; el archive se registró por separado el 2026-11-21."
+        },
+        "archive": {
+          "estado": "COMPLETADO",
+          "fecha": "2026-11-21",
+          "decisor": "Lautaro Ellerbach, PO",
+          "path": "openspec/changes/archive/2026-11-21-public-access-tokens/",
+          "specs_sincronizadas": [
+            "openspec/specs/public-access-tokens/spec.md (creada; 8 requirements/8 scenarios)",
+            "openspec/specs/agenda/spec.md (1 requirement ADDED y 2 scenarios; 13 requirements/31 scenarios)"
+          ],
+          "auditoria_pre_archive": "10 escenarios de deltas (8 public-access-tokens + 2 agenda), 10 tests, 0 escenarios sin test",
+          "verificacion": "mvn test -> Tests run: 157, Failures: 0, Errors: 0, Skipped: 0; openspec validate --all --strict -> 3 passed, 1 failed (4 items); fallo de spec/agenda por warnings requirements[8]/[9] >500 chars, deuda preexistente de C-07/C-08, sin nueva falla",
+          "ajuste_post_sync": "PublicDeltaInvariantsTest.java líneas 18-19 ajustadas a 13 requirements y 31 scenarios para reflejar el sync del delta agenda; sin cambio de comportamiento ni de guardias",
+          "estado_en_CHANGES": "[x] completado",
+          "nota": "audit-event-emission sin cambios; C-08 sigue [ ] pendiente"
+        }
       }
     },
-    "change_en_curso": "C-06 public-access-tokens",
-    "modo_actual": "C-04 auth-rbac archivado; siguiente C-06 (CRITICO, requiere aprobación de propose y apply)",
-    "proximo_change": "C-06 public-access-tokens",
+    "change_en_curso": null,
+    "modo_actual": "C-06 public-access-tokens archivado y verificado; detenido; siguiente C-05 solo tras nueva aprobación",
+    "proximo_change": "C-05 audit-append-only-log",
     "explore_C-05": {
       "estado": "completado",
       "fecha": "2026-11-21",
@@ -275,7 +353,7 @@
       "guardia_a_invertir": "AuditEventPublisherTest.noPersisteAuditoriaNiExponeApiDeConsulta()",
       "migracion": "V003__audit_append_only_log.sql (borrador conceptual, aún no escrita)"
     },
-    "deuda": "openspec validate --all --strict reporta 2 warnings por descripciones >500 caracteres heredadas del delta de C-07; pendiente de redacción en un change futuro.",
+    "deuda": "openspec validate --all --strict reporta 1 failed (spec/agenda) por 2 warnings requirements[8]/[9] con texto >500 caracteres, heredados del delta de C-07 y presentes antes del archive de C-06; deuda preexistente de C-07/C-08, no corregida en este cierre.",
     "explore_C-04": {
       "estado": "completado",
       "fecha": "2026-11-21",

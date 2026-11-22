@@ -34,6 +34,7 @@ C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\infrastructure\persistence\Migration001Test.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\infrastructure\persistence\Migration005Test.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\infrastructure\persistence\Migration006Test.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\infrastructure\persistence\MigrationV004Test.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\infrastructure\persistence\OcupacionExclusionTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\infrastructure\persistence\PacientePersistenceTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\infrastructure\persistence\ProfesionalPersistenceTest.java
@@ -47,6 +48,16 @@ C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\interfaces\web\FeriadoCatalogoTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\interfaces\web\HorarioCatalogoTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\interfaces\web\TratamientoCatalogoTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\publictoken\PublicAgendaConsumptionTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\publictoken\PublicDeltaInvariantsTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\publictoken\PublicIdempotenciaPostgresTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\publictoken\PublicResponseHeadersTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\publictoken\PublicTokenForjadoTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\publictoken\PublicTokenHistoriaDenegacionTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\publictoken\PublicTokenLogSanitizerTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\publictoken\PublicTokenRotacionTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\publictoken\PublicTokenTestSupport.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\publictoken\PublicTokenVencidoTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\support\PostgresFixture.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\support\PostgresFlywayTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\TestJpaConfig.java

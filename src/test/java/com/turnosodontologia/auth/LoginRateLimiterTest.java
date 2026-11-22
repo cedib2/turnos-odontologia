@@ -99,8 +99,7 @@ class LoginRateLimiterTest {
 
     @Test
     void disenoYDecisionesDeclaranQueElLimiteNoEsDistribuido() throws IOException {
-        String documentacion = Files.readString(Path.of("openspec", "changes", "auth-rbac", "design.md"))
-                + Files.readString(Path.of("docs", "decisiones", "C-04-decisiones-auth-rbac.md"));
+        String documentacion = Files.readString(Path.of("docs", "decisiones", "C-04-decisiones-auth-rbac.md"));
 
         for (String frase : List.of("en memoria", "no distribuido", "se esquiva rotando de IP",
                 "no se comparte entre réplicas", "se pierde al reiniciar el proceso")) {

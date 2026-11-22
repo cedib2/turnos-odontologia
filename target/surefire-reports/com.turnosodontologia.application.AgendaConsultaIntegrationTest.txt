@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.turnosodontologia.application.AgendaConsultaIntegrationTest
 -------------------------------------------------------------------------------
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 70.24 s -- in com.turnosodontologia.application.AgendaConsultaIntegrationTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 66.13 s -- in com.turnosodontologia.application.AgendaConsultaIntegrationTest
