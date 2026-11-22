@@ -568,7 +568,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-20] `ia-conversacional-handoff`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` cerrado como **diferido sin código** por C-01 A3 (`IA_HANDOFF_ENABLED=false`), según la regla del propio scope; guardia `IaHandoffDiferidoTest`; verificado 2026-11-22. Ver [`docs/decisiones/C-20-ia-conversacional-handoff-diferido.md`](docs/decisiones/C-20-ia-conversacional-handoff-diferido.md).
 - **Scope**:
   - Si DD-11 habilita IA: adaptador conversacional sobre WhatsApp (proveedor/API `(TBD)`) con reglas explícitas de derivación humana ante dolor, sangrado o postoperatorio (RN-CL-06).
   - Cada handoff queda registrado en la historia clínica (C-11/C-12) con override humano auditable (C-05); sin diagnósticos automatizados ni sustitución del criterio clínico.
