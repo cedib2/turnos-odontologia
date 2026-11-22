@@ -1,0 +1,4 @@
+schema: spec-driven
+created: 2026-11-22
+goal: Exponer endpoints publicos sobre /publico/v1/turnos con write-back real,
+  idempotencia y ventana de 48 hs habiles usando C-06 y C-08
