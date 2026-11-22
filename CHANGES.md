@@ -39,7 +39,7 @@ Los IDs se conservan al editar o reordenar. No se reciclan IDs retirados. El pro
 | Parte | Responsable | Rango reservado | Asignación |
 |---|---|---|---|
 | Parte 1 — Tronco Base | PO de esta rama | V001–V009 | V001 = C-03; V002 = C-04; V003 = C-05; V004 = C-06; V005 y V006 = C-08 (ya aplicadas). C-07 **reutiliza V005**: no crea migración si es solo CRUD sobre tablas existentes; si necesita esquema o seeds, usa un número nuevo dentro del rango (V007 en adelante). V008–V009 quedan como holgura de la Parte 1. |
-| Parte 2 | compañero | desde V010 | V010 = C-10; siguientes a asignar por su dueño |
+| Parte 2 | compañero | desde V010 | V010 = C-10; V011 = C-11; siguientes a asignar por su dueño |
 | Parte 3 | compañero | desde V020 | a asignar por su dueño |
 | Parte 4 | compañero | desde V030 | a asignar por su dueño |
 
@@ -392,7 +392,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 > C-11 precede a C-12 (firma) y a C-13 (acceso del paciente). La historia no se sobrescribe: se versiona.
 
 ### [C-11] `clinical-record-odontogram`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` completado — V011 + seed FDI (32 permanentes + 20 temporales), historia versionada append-only, permisos por rol y auditoría; verificado 2026-11-22. Ver [`docs/decisiones/C-11-clinical-record-odontogram.md`](docs/decisiones/C-11-clinical-record-odontogram.md).
 - **Scope**:
   - Migración 008: `FichaClínica`, `Anamnesis` (estructura `(TBD)`), `Odontograma` (`pieza_fdi`, `temporal`, `cara` `(TBD)`, `estado`, `autor_id`, `version`), `Evolución`, `Consentimiento`.
   - Seed del catálogo FDI de piezas permanentes y **temporales**; nomenclatura FDI obligatoria (RN-CL-01); historia versionada sin sobrescritura (RN-CL-02); borrado físico `(TBD)`.

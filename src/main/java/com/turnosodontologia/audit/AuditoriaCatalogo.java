@@ -15,7 +15,13 @@ public final class AuditoriaCatalogo {
             "notificacion.bloqueada",
             "notificacion.fallida",
             "notificacion.confirmada",
-            "whatsapp.webhook.rechazado");
+            "whatsapp.webhook.rechazado",
+            "clinico.ficha.abierta",
+            "clinico.anamnesis.registrada",
+            "clinico.odontograma.registrado",
+            "clinico.evolucion.registrada",
+            "clinico.consentimiento.registrado",
+            "clinico.acceso.denegado");
 
     public void validar(String tipo) {
         if (tipo == null || !TIPOS.contains(tipo)) {
