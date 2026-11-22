@@ -39,7 +39,7 @@ Los IDs se conservan al editar o reordenar. No se reciclan IDs retirados. El pro
 | Parte | Responsable | Rango reservado | Asignación |
 |---|---|---|---|
 | Parte 1 — Tronco Base | PO de esta rama | V001–V009 | V001 = C-03; V002 = C-04; V003 = C-05; V004 = C-06; V005 y V006 = C-08 (ya aplicadas). C-07 **reutiliza V005**: no crea migración si es solo CRUD sobre tablas existentes; si necesita esquema o seeds, usa un número nuevo dentro del rango (V007 en adelante). V008–V009 quedan como holgura de la Parte 1. |
-| Parte 2 | compañero | desde V010 | V010 = C-10; V011 = C-11; V012 = C-12; siguientes a asignar por su dueño |
+| Parte 2 | compañero | desde V010 | V010 = C-10; V011 = C-11; V012 = C-12; V013 = C-13; siguientes a asignar por su dueño |
 | Parte 3 | compañero | desde V020 | a asignar por su dueño |
 | Parte 4 | compañero | desde V030 | a asignar por su dueño |
 
@@ -428,7 +428,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-13] `patient-clinical-record-access`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` completado — V013, token `HISTORIA` + verificación de identidad (mecanismo `(TBD)`, cerrado fuera de dev/test), copia con plazo y hash, auditoría de accesos y denegaciones; verificado 2026-11-22. Ver [`docs/decisiones/C-13-patient-clinical-record-access.md`](docs/decisiones/C-13-patient-clinical-record-access.md).
 - **Scope**:
   - Verificación de identidad del titular `(TBD)`; acceso y copia conforme Ley 26.529 art. 14 y plazo de 48 h `(TBD, parámetros operativos)`; alcance del acceso del paciente `(TBD)` (RN-CL-04).
   - Endpoint indicativo de consulta/descarga de la propia historia protegido por el token de C-06; registro en log append-only de cada acceso/exportación y de cada intento denegado.

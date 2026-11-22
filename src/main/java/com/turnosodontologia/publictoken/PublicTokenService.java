@@ -68,6 +68,36 @@ public class PublicTokenService {
         return new Validacion(true, "ok", claims, false);
     }
 
+    /**
+     * Validación del token {@code HISTORIA} para C-13: firma, emisor, vencimiento, {@code jti}
+     * disponible, scope y paciente. No otorga acceso por sí misma: la identidad del titular la
+     * verifica C-13 por separado, porque C-06 nunca emite {@code identidadVerificada=true}
+     * (un token que la traiga se rechaza). {@link #validar(String)} no cambia y sigue denegando
+     * {@code HISTORIA}.
+     */
+    public Validacion validarParaHistoria(String valor) {
+        if (valor == null || !firmador.firmaValida(valor)) {
+            return new Validacion(false, "token_no_valido", null, false);
+        }
+        PublicTokenClaims claims = firmador.verificar(valor);
+        if (!firmador.emisor().equals(claims.iss())) {
+            return new Validacion(false, "token_no_valido", null, false);
+        }
+        if (claims.exp() <= reloj.instant().getEpochSecond()) {
+            return new Validacion(false, "token_vencido", claims, true);
+        }
+        if (!metadatos.estaDisponible(claims.jti())) {
+            return new Validacion(false, "jti_reutilizado", claims, false);
+        }
+        if (claims.scope() != PublicTokenScope.HISTORIA) {
+            return new Validacion(false, "scope_no_permitido", claims, false);
+        }
+        if (claims.identidadVerificada() || claims.pacienteId() == null) {
+            return new Validacion(false, "token_no_valido", claims, false);
+        }
+        return new Validacion(true, "ok", claims, false);
+    }
+
     public Rotacion rotar(String valor) {
         if (!firmador.firmaValida(valor)) {
             return new Rotacion(false, "token_no_valido", null);

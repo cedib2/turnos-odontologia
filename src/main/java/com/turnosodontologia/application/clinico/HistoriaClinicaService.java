@@ -177,7 +177,16 @@ public class HistoriaClinicaService {
         return leer(fichaId);
     }
 
-    /** Lectura sin control de rol, para servicios que ya autorizaron por otra vía (p. ej. C-13). */
+    /**
+     * Historia vigente del titular, sin control de rol de staff. Solo para el acceso del paciente
+     * (C-13), que autoriza por token {@code HISTORIA} y verificación de identidad antes de llamar.
+     */
+    @Transactional(readOnly = true)
+    public java.util.Optional<HistoriaClinica> historiaDelTitular(long pacienteId) {
+        return jdbc.queryForList("SELECT id FROM fichas_clinicas WHERE paciente_id = ?", Long.class, pacienteId)
+                .stream().findFirst().map(this::leer);
+    }
+
     HistoriaClinica leer(long fichaId) {
         Map<String, Object> ficha = jdbc.queryForList(
                 "SELECT paciente_id, historia_version FROM fichas_clinicas WHERE id = ?", fichaId)

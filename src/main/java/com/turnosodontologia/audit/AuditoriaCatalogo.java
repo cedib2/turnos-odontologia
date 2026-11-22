@@ -25,7 +25,10 @@ public final class AuditoriaCatalogo {
             "clinico.evolucion.firmada",
             "clinico.evolucion.firma_rechazada",
             "clinico.consentimiento.firmado",
-            "clinico.consentimiento.firma_fallida");
+            "clinico.consentimiento.firma_fallida",
+            "historia.paciente.consultada",
+            "historia.paciente.exportada",
+            "historia.paciente.denegada");
 
     public void validar(String tipo) {
         if (tipo == null || !TIPOS.contains(tipo)) {
