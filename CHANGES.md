@@ -39,7 +39,7 @@ Los IDs se conservan al editar o reordenar. No se reciclan IDs retirados. El pro
 | Parte | Responsable | Rango reservado | Asignación |
 |---|---|---|---|
 | Parte 1 — Tronco Base | PO de esta rama | V001–V009 | V001 = C-03; V002 = C-04; V003 = C-05; V004 = C-06; V005 y V006 = C-08 (ya aplicadas). C-07 **reutiliza V005**: no crea migración si es solo CRUD sobre tablas existentes; si necesita esquema o seeds, usa un número nuevo dentro del rango (V007 en adelante). V008–V009 quedan como holgura de la Parte 1. |
-| Parte 2 | compañero | desde V010 | V010 = C-10; V011 = C-11; siguientes a asignar por su dueño |
+| Parte 2 | compañero | desde V010 | V010 = C-10; V011 = C-11; V012 = C-12; siguientes a asignar por su dueño |
 | Parte 3 | compañero | desde V020 | a asignar por su dueño |
 | Parte 4 | compañero | desde V030 | a asignar por su dueño |
 
@@ -410,7 +410,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-12] `clinical-signature-consent`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` completado — V012, firma de evolución con matrícula y hash, consentimiento por puerto de firma electrónica (proveedor y contingencia `(TBD)`), auditoría por firma; verificado 2026-11-22. Ver [`docs/decisiones/C-12-clinical-signature-consent.md`](docs/decisiones/C-12-clinical-signature-consent.md).
 - **Scope**:
   - Firma de evolución con **matrícula** obligatoria del profesional; impedir firma si falta matrícula (RN-CL-03).
   - Consentimientos con firma electrónica conforme Ley 25.506; proveedor e implementación `(TBD)`; política de contingencia si el proveedor no está disponible `(TBD)`.

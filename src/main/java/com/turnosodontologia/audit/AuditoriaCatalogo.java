@@ -21,7 +21,11 @@ public final class AuditoriaCatalogo {
             "clinico.odontograma.registrado",
             "clinico.evolucion.registrada",
             "clinico.consentimiento.registrado",
-            "clinico.acceso.denegado");
+            "clinico.acceso.denegado",
+            "clinico.evolucion.firmada",
+            "clinico.evolucion.firma_rechazada",
+            "clinico.consentimiento.firmado",
+            "clinico.consentimiento.firma_fallida");
 
     public void validar(String tipo) {
         if (tipo == null || !TIPOS.contains(tipo)) {
