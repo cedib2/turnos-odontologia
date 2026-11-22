@@ -47,6 +47,16 @@ Los números históricos citados en los scopes (`C-10 = 007`, `C-11 = 008`, `C-1
 
 **Nota `outOfOrder`**: V002–V004 se incorporan por debajo de V005/V006, que ya están aplicadas en entornos locales y de test. En una base donde V006 ya quedó registrada, Flyway clasifica V002–V004 como `IGNORED` salvo `outOfOrder=true` (`flyway.outOfOrder=true` o `spring.flyway.out-of-order=true` en Spring Boot). En una base nueva se aplican en orden, sin esa opción. Habilitar `spring.flyway.out-of-order=true` en dev/test antes de C-04/C-05/C-06; no existe base de producción con V006 porque C-08 no es desplegable.
 
+### Orden operativo de la Parte 1 (decisión del PO, 2026-11-21)
+
+> **Decisor**: Lautaro Ellerbach (PO). **Motivo**: C-06 desbloquea C-09 y C-13 de los compañeros, y C-05 puede reemplazarse después sobre el puerto `AuditEventPublisher`. Registro completo: [`docs/decisiones/C-05-secuencia-y-condiciones-PO.md`](docs/decisiones/C-05-secuencia-y-condiciones-PO.md). Esta secuencia **supersede** el orden previo `C-05 → C-04 → C-06`.
+
+| Orden | Change | Nota |
+|---|---|---|
+| 1 | **C-04 `auth-rbac`** | Aporta el actor real; necesario para C-06 y después para C-05. |
+| 2 | **C-06 `public-access-tokens`** | **Dependencia verificada**: según el scope de C-06 (línea «Dependencias»), depende **solo de C-04**; no figura C-05. |
+| 3 | **C-05 `audit-append-only-log`** | Se integra después sobre `AuditEventPublisher` (hoy simulado en C-08). C-08 sigue `[ ]` hasta que C-04 y C-05 estén verificados. |
+
 ---
 
 ## Árbol de dependencias
@@ -235,13 +245,14 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-04] `auth-rbac`
-- **Estado**: `[ ]` pendiente
+- **Estado**: [x] completado — implementado, verificado y archivado el 2026-11-21; 147 tests verdes (93 previos + 54 nuevos), `openspec validate auth-rbac --strict` válido; specs sincronizadas
 - **Scope**:
   - Endpoints indicativos `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`, `GET /auth/me` (paths, verbos y versionado `(TBD)`); mecanismo de sesión/token y cookie segura `(TBD)`; expiración y rotación `(TBD)`; rate limiting (umbrales `(TBD)`).
   - Middleware de autorización `require_role` / `require_admin` implementando la matriz de roles, con ámbitos propio/todos/config; herencia y permisos efectivos `(TBD)`.
   - Campos de sesión (`sub`, rol, `jti`, `iat`, `exp` — esquema `(TBD)`); secretos por entorno, nunca en repositorio; acceso del odontólogo a agenda ajena `(TBD)`.
   - Migración 002: tablas de sesiones/tokens de staff.
   - Tests: login, token expirado, rotación, deny por rol, rate limit, sin secretos en logs.
+- **Decisión PO (2026-11-21)**: ver [`docs/decisiones/C-04-decisiones-auth-rbac.md`](docs/decisiones/C-04-decisiones-auth-rbac.md). Access 15 min / refresh 7 días con rotación; logout revoca sesión y familia; `spring-boot-starter-security` aprobado con guardias acotadas al paquete `auth` (agenda/catálogos siguen sin autenticación en dev/test y sus 93 tests deben permanecer verdes); secretos por entorno con `.env` ignorado y `.env.example` sin valores; rate limit en memoria por IP y usuario (5 intentos fallidos / 15 min, 429 + `Retry-After`). Valores = metas iniciales, no normativas. Apply y archive aprobados por el PO el 2026-11-21; ver registros en `docs/decisiones/`.
 - **Dependencias**: C-03
 - **Governance**: CRITICO — auth; solo análisis y aprobación humana antes de codear
 - **Leer antes**:
@@ -260,6 +271,12 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
   - Eventos obligatorios: creación/cancelación/reprogramación de turno, firma clínica, cobro/conciliación, exportación/respaldo/restore, cambios de roles y configuración; catálogo de nombres de eventos `(TBD)`.
   - Adaptador de auditoría invocado por los casos de uso; API de consulta solo lectura para administrador/auditor `(TBD)`; retención del log `(TBD, propuesta 10 años)`; prueba de integridad `(TBD)`.
   - Tests: intento de UPDATE/DELETE rechazado, cobertura de eventos, verificación de cadena de hashes, control de permisos de lectura.
+- **Orden PO (2026-11-21)**: ejecutar **después de C-04 y C-06** (ver § «Orden operativo de la Parte 1»). Se integra sobre el puerto `AuditEventPublisher` de C-08.
+- **Pedidos del PO para cuando se retome (decisión 2026-11-21)**:
+  1. Lista **exacta** del catálogo de eventos (nombres y granularidad); no inventarla por convención.
+  2. Campos **prohibidos en `metadata`** con test explícito de rechazo (datos clínicos/PII).
+  3. Documentar el **límite del hash sin clave** (SHA-256 vs HMAC) en la evidencia/dossier.
+  4. Marcar la **consulta REST de auditoría como diferible**: no bloquea C-05 y queda `(TBD)` para un change posterior.
 - **Dependencias**: C-03
 - **Governance**: CRITICO — audit trail; aprobación humana antes de codear
 - **Leer antes**:
@@ -277,6 +294,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
   - Servicio de emisión/validación con firma y vencimiento (algoritmo y plazo `(TBD)`); verificación de identidad del paciente para historia `(TBD)`; protección contra reenvíos de operaciones críticas (RN-GL-02, mecanismo `(TBD)`).
   - Rutas públicas sin autenticación de staff listadas en la KB; webhooks de WhatsApp y Mercado Pago quedan en C-10 y C-15 con verificación de firma propia.
   - Tests: token vencido, token forjado, reutilización, identidad no verificada, reenvío duplicado.
+- **Orden PO (2026-11-21)**: ejecutar **después de C-04 y antes de C-05**; desbloquea C-09 y C-13 de los compañeros (ver § «Orden operativo de la Parte 1»).
 - **Dependencias**: C-04
 - **Governance**: CRITICO — seguridad de la superficie pública; aprobación humana antes de codear
 - **Leer antes**:

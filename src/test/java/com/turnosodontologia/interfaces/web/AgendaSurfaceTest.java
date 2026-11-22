@@ -37,6 +37,8 @@ class AgendaSurfaceTest {
         try (Stream<Path> archivos = Files.walk(raiz)) {
             codigo = archivos.filter(Files::isRegularFile)
                     .filter(ruta -> ruta.toString().endsWith(".java"))
+                    .filter(ruta -> !ruta.toString().replace('\\', '/')
+                            .contains("/com/turnosodontologia/auth/"))
                     .map(ruta -> {
                         try {
                             return Files.readString(ruta);
@@ -51,7 +53,5 @@ class AgendaSurfaceTest {
                 "@AuthenticationPrincipal", "UserDetails", "JwtDecoder", "\"/auth")) {
             assertFalse(codigo.contains(prohibido), "Token prohibido en superficie: " + prohibido);
         }
-        String pom = Files.readString(Path.of("pom.xml").toAbsolutePath());
-        assertFalse(pom.contains("spring-boot-starter-security"));
     }
 }

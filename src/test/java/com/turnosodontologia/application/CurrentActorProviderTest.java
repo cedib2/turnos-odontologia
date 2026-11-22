@@ -40,14 +40,17 @@ class CurrentActorProviderTest {
                 "spring-security", "/auth");
         List<String> hallazgos = new ArrayList<>();
         List<Path> raices = List.of(Path.of("src", "main", "java"),
-                Path.of("src", "main", "resources"), Path.of("pom.xml"));
+                Path.of("src", "main", "resources"));
+        Path paqueteAuth = Path.of("src", "main", "java", "com", "turnosodontologia", "auth")
+                .toAbsolutePath();
 
         for (Path raiz : raices) {
             if (!Files.exists(raiz)) {
                 continue;
             }
             try (var paths = Files.walk(raiz)) {
-                for (Path path : paths.filter(Files::isRegularFile).toList()) {
+                for (Path path : paths.filter(Files::isRegularFile)
+                        .filter(ruta -> !ruta.toAbsolutePath().startsWith(paqueteAuth)).toList()) {
                     String contenido = Files.readString(path);
                     for (String prohibido : prohibidos) {
                         if (contenido.contains(prohibido)) {

@@ -16,6 +16,14 @@ C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\application\ReprogramacionServiceTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\application\SobreturnoIntegrationTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\application\SobreturnoServiceTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\auth\AuthenticatedActorTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\auth\AuthLogSanitizerTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\auth\AuthMigrationV002Test.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\auth\AuthRefreshRotationPostgresTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\auth\AuthSecurityChainTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\auth\AuthWebTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\auth\LoginRateLimiterTest.java
+C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\auth\SecretsInventoryTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\domain\agenda\ProfesionalTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\domain\agenda\TratamientoTest.java
 C:\Users\Cedib\Downloads\turnos-odontologia\src\test\java\com\turnosodontologia\domain\identidad\PacienteConsentimientoTest.java

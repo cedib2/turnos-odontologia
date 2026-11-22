@@ -1,5 +1,6 @@
 package com.turnosodontologia.infrastructure.persistence;
 
+import com.turnosodontologia.domain.identidad.Ambito;
 import com.turnosodontologia.domain.identidad.Rol;
 import com.turnosodontologia.domain.identidad.RolPermiso;
 import com.turnosodontologia.domain.identidad.RolPermisoId;
@@ -10,4 +11,6 @@ import java.util.List;
 public interface RolPermisoRepository extends JpaRepository<RolPermiso, RolPermisoId> {
 
     List<RolPermiso> findByRol(Rol rol);
+
+    boolean existsByRol_CodigoAndPermiso_Ambito(String codigoRol, Ambito ambito);
 }

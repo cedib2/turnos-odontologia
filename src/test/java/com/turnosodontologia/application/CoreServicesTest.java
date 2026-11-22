@@ -1,5 +1,6 @@
 package com.turnosodontologia.application;
 
+import com.turnosodontologia.auth.AuthPasswordHasher;
 import com.turnosodontologia.domain.agenda.Consultorio;
 import com.turnosodontologia.domain.agenda.Profesional;
 import com.turnosodontologia.domain.agenda.Sillon;
@@ -24,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
         "spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect"
 })
 @Import({ConsultorioService.class, ProfesionalService.class, SillonService.class,
-        RolService.class, PermisoService.class, UsuarioService.class})
+        RolService.class, PermisoService.class, UsuarioService.class, AuthPasswordHasher.class})
 class CoreServicesTest {
 
     @Autowired

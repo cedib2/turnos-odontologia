@@ -1,5 +1,5 @@
 {
-  "version": 16,
+  "version": 24,
   "step": "complete",
   "owner": "active-orchestrator",
   "discovery": {
@@ -248,11 +248,25 @@
         "verificacion": "mvn test 93/93 con PostgreSQL 17.12/Testcontainers; 7/7 escenarios cubiertos; openspec validate --strict válido; 10/10 tareas",
         "estado_en_CHANGES": "[x] completado — CRUD administrativo sobre V005; sin migración nueva ni seeds; verificado 2026-11-21",
         "nota": "Sin V007, sin seeds, sin cambios en ConfiguracionSchedulingService, sin auth/RBAC/auditoría persistente, sin UI."
+      },
+      "archivo_C_04": {
+        "change_name": "auth-rbac",
+        "estado": "archivado",
+        "fecha": "2026-11-21",
+        "archivo": "openspec/changes/archive/2026-11-21-auth-rbac/",
+        "evidencia": "147 tests (93 previos + 54 nuevos), openspec validate auth-rbac --strict válido",
+        "specs_sincronizadas": [
+          "openspec/specs/auth-rbac/spec.md",
+          "openspec/specs/agenda/spec.md"
+        ],
+        "nota": "audit-event-emission sin cambios; sigue en modo SIMULADO hasta C-05",
+        "estado_en_CHANGES": "[x] completado — implementado, verificado y archivado el 2026-11-21; 147 tests verdes (93 previos + 54 nuevos), `openspec validate auth-rbac --strict` válido; specs sincronizadas",
+        "nota_C_08": "C-08 sigue [ ] pendiente porque C-05 aún no reemplaza AuditEventPublisher"
       }
     },
-    "change_en_curso": "C-05 audit-append-only-log",
-    "modo_actual": "explore completado — esperando decisiones del PO; sin código ni artefactos OpenSpec",
-    "proximo_change": "C-05 audit-append-only-log",
+    "change_en_curso": "C-06 public-access-tokens",
+    "modo_actual": "C-04 auth-rbac archivado; siguiente C-06 (CRITICO, requiere aprobación de propose y apply)",
+    "proximo_change": "C-06 public-access-tokens",
     "explore_C-05": {
       "estado": "completado",
       "fecha": "2026-11-21",
@@ -262,6 +276,85 @@
       "migracion": "V003__audit_append_only_log.sql (borrador conceptual, aún no escrita)"
     },
     "deuda": "openspec validate --all --strict reporta 2 warnings por descripciones >500 caracteres heredadas del delta de C-07; pendiente de redacción en un change futuro.",
+    "explore_C-04": {
+      "estado": "completado",
+      "fecha": "2026-11-21",
+      "engram": "opsx/C-04/explore",
+      "hallazgo_bloqueante": "AgendaSurfaceTest y CurrentActorProviderTest escanean todo src/main/java y prohíben '/auth', Authorization, Bearer, SecurityContext y spring-security; C-04 requiere decisión PO para ajustar esas guardias o prescindir de Spring Security.",
+      "hallazgo_clave": "C-03 D7/D8/D11 ya cerraron roles, ausencia de herencia y paciente sin Usuario; el contrato de actor debe conservar CurrentActorProvider simulado y agregar un proveedor real separado con modo REAL/SIMULADO/SYSTEM/PACIENTE.",
+      "migracion": "V002__auth_rbac.sql (borrador conceptual, aún no escrita)",
+      "propose": {
+        "estado": "completado",
+        "fecha": "2026-11-21",
+        "change_name": "auth-rbac",
+        "path": "openspec/changes/auth-rbac/",
+        "artefactos": ["proposal.md", "specs/auth-rbac/spec.md (14 ADDED, 30 escenarios)", "specs/agenda/spec.md (1 ADDED acotado)", "design.md", "tasks.md (11 grupos)"],
+        "validacion": "openspec validate auth-rbac --strict -> válido",
+        "apply": "APROBADO por Lautaro Ellerbach, PO el 2026-11-21 con el delta ajustado; ejecutar Strict TDD, detenerse antes del archive",
+        "ajuste_proceso": {
+          "decisor": "Lautaro Ellerbach, PO",
+          "fecha": "2026-11-21",
+          "motivo": "El ciclo completo de Strict TDD está tardando demasiado",
+          "puntos": [
+            "Un test por escenario del spec; sin casos de triangulación extra salvo para rate limiting y concurrencia del refresh",
+            "Un ciclo por grupo: escribir tests, implementar, correr una vez; sin fases REFACTOR separadas",
+            "Durante el desarrollo correr solo los tests del grupo con mvn test -Dtest=...; la suite completa al cerrar T10 y en T11",
+            "Revisar si cada clase de test levanta su propio contenedor PostgreSQL y, si es así, compartir un único contenedor entre las clases"
+          ],
+          "invariantes": [
+            "Cobertura de cada escenario del spec",
+            "93 tests previos en verde en T11",
+            "openspec validate auth-rbac --strict válido"
+          ],
+          "container_postgres": "Ya hay un único contenedor compartido en src/test/java/com/turnosodontologia/support/PostgresFixture.java (static final GenericContainer<?> iniciado en static {}); las clases Postgres lo reutilizan vía PostgresFlywayTest o llamadas directas. Sin acción correctiva pendiente.",
+          "nota": "Registrado después de completar el apply de T1..T11 (49/49, 147 tests, 0 failures/errors, detenido antes del archive). No hubo grupo en curso; el ajuste no es retroactivo ni reabre el apply.",
+          "registro": "docs/decisiones/C-04-ajuste-proceso-tiempos.md"
+        },
+        "ajustes_pre_apply_2026-11-21": {
+          "estado": "completados, delta mostrado al PO",
+          "cambios": [
+            "Nuevo requisito de hash adaptativo (BCrypt o Argon2), con (TBD) de algoritmo concreto",
+            "Operación protegida de referencia GET /auth/me y GET /auth/usuarios/{id}; definición de propio/todos/config; C-04 no protege agenda",
+            "401 indistinguible para usuario inexistente/contraseña incorrecta/inactivo; CSRF anónimo GET /auth/csrf + X-CSRF-Token en login",
+            "Rate limit por combinación IP+usuario con reset en login exitoso; 'no distribuido' convertido en verificación documental"
+          ],
+          "pendiente": "Confirmar BCrypt o Argon2 antes del apply"
+        }
+      },
+      "decisiones_PO": {
+        "fecha": "2026-11-21",
+        "decisor_texto_recibido": "[tu nombre], PO (requiere confirmación del nombre real)",
+        "registro": "docs/decisiones/C-04-decisiones-auth-rbac.md",
+        "valores": {
+          "access_minutos": 15,
+          "refresh_dias": 7,
+          "rotacion": true,
+          "logout": "revoca sesión y familia",
+          "spring_security": true,
+          "guardias": "acotadas al paquete auth; agenda/catálogos sin autenticación; 93 tests deben quedar verdes",
+          "secretos": "variables de entorno; .env ignorado; .env.example sin valores; ninguna clave en repo",
+          "rate_limit": "en memoria por IP y usuario; 5 intentos fallidos / 15 min; 429 + Retry-After",
+          "actor": "modo REAL/SIMULADO/SYSTEM/PACIENTE + snapshot; proveedor real separado",
+          "flyway": "revocación por sesión y jti; out-of-order=true en dev/test"
+        },
+        "apply": "NO aprobado; requiere aprobación explícita posterior al propose"
+      }
+    },
+    "decision_PO_2026-11-21_secuencia": {
+      "decisor": "Lautaro Ellerbach, PO",
+      "fecha": "2026-11-21",
+      "orden_aprobado": ["C-04", "C-06", "C-05"],
+      "orden_supersedido": ["C-05", "C-04", "C-06"],
+      "motivo": "C-06 desbloquea C-09 y C-13 de los compañeros; C-05 puede reemplazarse después sobre el puerto AuditEventPublisher.",
+      "verificacion_dependencia_C-06": "CHANGES.md scope de C-06 declara 'Dependencias: C-04'; no lista C-05.",
+      "registro": "docs/decisiones/C-05-secuencia-y-condiciones-PO.md",
+      "pedidos_C-05": [
+        "Lista exacta del catálogo de eventos (nombres y granularidad)",
+        "Campos prohibidos en metadata con test de rechazo",
+        "Documentar el límite del hash sin clave",
+        "Consulta REST de auditoría marcada como diferible"
+      ]
+    },
     "decisiones_PO_2026-11-21": {
       "C-08_en_CHANGES": "Dejar [ ] con la nota acordada; marcar [x] recién cuando C-04 y C-05 reemplacen los puertos simulados.",
       "migraciones_aprobadas": {
