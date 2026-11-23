@@ -557,7 +557,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 > Todos los items de esta fase dependen de decisiones `(TBD)` de C-01. Si no se habilitan, se cierran como diferidos sin código.
 
 ### [C-19] `waitlist-auto-refill-metrics`
-- **Estado**: `[ ]` pendiente
+- **Estado**: [x] completado — implementado y verificado el 2026-11-23; 354 tests verdes (320 base + 34 nuevos de C-19), `openspec validate waitlist-auto-refill-metrics --strict` válido, 4/4 artefactos; migración `V023__waitlist_and_metrics.sql` aplicada sin tocar V001–V022; checkpoints W-11 documentados en `docs/decisiones/C-19-decisiones.md`; sin commits
 - **Scope**:
   - Migración 013 (si se habilita): `ListaDeEspera` (preferencias, `deposito_requerido`, estado) y `Métrica` (`sillon_id`, `periodo`, `ocupacion`, `ausentismo`, `metodologia` obligatoria).
   - Relleno automático tras cancelación/liberación, con ofrecimiento por WhatsApp (C-10), depósito configurable y adjudicación atómica; pasar al siguiente candidato si no paga en plazo `(TBD)`; doble adjudicación impedida (RN-AG-07, US-015).

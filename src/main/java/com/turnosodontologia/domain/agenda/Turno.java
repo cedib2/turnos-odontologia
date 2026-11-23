@@ -105,6 +105,27 @@ public class Turno extends AuditableEntity {
         desactivar(autor);
     }
 
+    /**
+     * C-19 (W-4): reocupa un turno ya cancelado desde el motor de waitlist.
+     * No reabre C-09 y no altera {@link #confirmar(String)}, que sigue rechazando cancelados.
+     */
+    public void reasignar(String autor) {
+        if (!"cancelado".equals(this.estado)) {
+            throw new IllegalStateException("Solo un turno cancelado puede reasignarse desde la waitlist");
+        }
+        this.estado = "confirmado";
+        activar(autor);
+    }
+
+    /** C-19 (W-9): la inasistencia se registra explícitamente, nunca se infiere de una cancelación. */
+    public void registrarInasistencia(String autor) {
+        if ("cancelado".equals(this.estado)) {
+            throw new IllegalStateException("Un turno cancelado no puede registrarse como inasistencia");
+        }
+        this.estado = "inasistente";
+        registrarActualizacion(autor);
+    }
+
     public void reprogramar(Instant nuevoInicio, Instant nuevoFin, String autor) {
         if (nuevoInicio == null || nuevoFin == null || !nuevoFin.isAfter(nuevoInicio)) {
             throw new IllegalArgumentException("El rango reprogramado debe ser válido");

@@ -94,3 +94,26 @@
 ## Regla de aplicación
 
 Estas decisiones habilitan únicamente el `/opsx:propose` de C-19 con la migración **`V023__waitlist_and_metrics.sql`**. No autorizan escribir en `src/`, crear la migración durante el propose, commits ni push. Antes del apply se debe verificar que proposal, design, tasks y deltas reflejen W-1..W-13, los `(TBD) -> forma de obtención`, la exclusión de C-09/C-14/C-15/C-16 y los dos checkpoints de W-11.
+
+## Constancia de checkpoints durante el apply (W-11)
+
+> Se registran aquí los resultados de los dos checkpoints exigidos por gobernancia **MEDIO**. No modifica el acta aprobada: solo deja evidencia de verificación. Fecha: 2026-11-23. Sin commits ni push.
+
+### Checkpoint 1 — esquema V023 + waitlist + adjudicación atómica
+
+- **Estado**: **verificado ( Verde )**.
+- **Evidencia**: `mvn test -Dtest='Migration023Test,ListaEsperaIntegrationTest,RellenoWaitlistIntegrationTest,MetricaOcupacionIntegrationTest,WaitlistAuditPersistenceTest,WaitlistRollbackTest,WaitlistControllerTest,MetricaControllerTest'` → `Tests run: 34, Failures: 0, Errors: 0, Skipped: 0`, `BUILD SUCCESS`.
+- **Cobertura**: V023 aplica limpia y V001–V022 intactas (`Migration023Test`); alta duplicada rechazada sin turno/ocupación/seña ni evento extra; ofrecimiento simulado y expiración con `Clock` fijo que pasa al siguiente candidato; adjudicación sobre hueco liberado con idempotencia `waitlist.adjudicar`, ocupación creada, hueco ocupado rechazado sin efectos, reenvío sin segunda ocupación y reversión total ante fallo de auditoría.
+- **Límites respetados**: no se tocaron migraciones V001–V022 ni archivos de C-09/C-14/C-15/C-16; no se usó `auditoria_log` como bus; sin WhatsApp real, secretos ni dependencias nuevas.
+
+### Checkpoint 2 — depósito, conciliación, métricas y auditoría
+
+- **Estado**: **verificado ( Verde )**.
+- **Evidencia**: misma corrida del checkpoint 1 → 34 tests verdes, incluidos `RellenoWaitlistIntegrationTest` (depósito vía `SeniaService.solicitar` con clave estable, una sola seña `pendiente` en `ARS`, conciliación y reembolso total liberando el hueco, sin caja/asiento/arqueo), `MetricaOcupacionIntegrationTest` (70 % con bloqueos, 15 % y 5 % de ausentismo con cancelados excluidos, denominador cero sin cifra, metodología y período `YYYY-MM` con reloj inyectado), `WaitlistAuditPersistenceTest` (seis tipos del catálogo, metadata acotada y `correlationId` distinto) y `WaitlistRollbackTest`.
+- **Límites respetados**: sin reabrir C-10 (puerto NO-OP), sin reabrir C-15 (reutiliza `solicitar`/`conciliar`/`reembolsar`), sin caja/asiento/arqueo/liquidación, sin RBAC nuevo y sin tocar `/auth/**`. Los importes y plazos productivos siguen como `(TBD) -> forma de obtención`; en `test`/`dev` solo defaults deterministas no productivos.
+
+### Verificación final
+
+- **Suite completa verde**: `mvn test` → `Tests run: 354, Failures: 0, Errors: 0, Skipped: 0`, `BUILD SUCCESS` (320 tests de línea base + 34 nuevos de C-19), sin errores de conexiones ni dependencia del reloj/hora local. Registrado en `tasks.md` §8.1 y en `CHANGES.md` §C-19, conforme a 8.3.
+- **`openspec validate waitlist-auto-refill-metrics --strict`**: `Change 'waitlist-auto-refill-metrics' is valid`, `EXIT=0`; `openspec status --change waitlist-auto-refill-metrics`: 4/4 artefactos completos y seis deltas de specs.
+- **Hallazgos de wiring resueltos durante el apply** (sin cambios de decisión): (1) el adaptador NO-OP `NotificacionWaitlistSimulada` debe estar disponible también en el perfil `default`, porque los `@DataJpaTest` y otros contextos de `TestJpaConfig` no activan `test` y `ListaEsperaService` lo requiere; (2) `WaitlistTestConfig` debe excluirse del `@ComponentScan` de `TestJpaConfig` (igual que `FacturacionTestConfig`), porque si se escanea, su `Clock.fixed` se filtra a C-08 y los tokens públicos emitidos con `Instant.now()` se validan como vencidos (`410`). Con ambos ajustes, las clases afectadas vuelven a verde.

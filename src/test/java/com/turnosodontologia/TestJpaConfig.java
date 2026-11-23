@@ -6,6 +6,7 @@ import com.turnosodontologia.application.SimulatedCurrentActorProvider;
 import com.turnosodontologia.auth.AuthPasswordHasher;
 import com.turnosodontologia.infrastructure.audit.InMemoryAuditEventRecorder;
 import com.turnosodontologia.invoicing.FacturacionTestConfig;
+import com.turnosodontologia.waitlist.WaitlistTestConfig;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -23,9 +24,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         "com.turnosodontologia.infrastructure.audit",
         "com.turnosodontologia.publicbooking",
         "com.turnosodontologia.depositpayments",
-        "com.turnosodontologia.invoicing"},
+        "com.turnosodontologia.invoicing",
+        "com.turnosodontologia.waitlist"},
         excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
-                classes = FacturacionTestConfig.class))
+                classes = {FacturacionTestConfig.class, WaitlistTestConfig.class}))
 @Import(AuthPasswordHasher.class)
 @EnableJpaRepositories(basePackages = "com.turnosodontologia.infrastructure.persistence")
 public class TestJpaConfig {

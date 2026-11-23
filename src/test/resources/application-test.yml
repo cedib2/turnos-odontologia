@@ -34,3 +34,13 @@ arca:
   comprobante:
     letra: C
     punto-venta: "0001"
+
+# C-19: defaults no productivos y deterministas. Plazo y monto reales quedan
+# (TBD) -> forma de obtención (PO Parte 3 y medición del piloto).
+waitlist:
+  oferta:
+    minutos: 15
+  metricas:
+    periodo: YYYY-MM
+  deposito:
+    monto: 1.00

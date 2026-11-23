@@ -23,7 +23,14 @@ public final class AuditoriaCatalogo {
             "factura.rechazada",
             "factura.conciliada",
             "factura.anulada",
-            "nota_credito.emitida");
+            "nota_credito.emitida",
+            // C-19 (W-10): catálogo ampliado por acta PO del 2026-11-23.
+            "waitlist.creado",
+            "waitlist.ofrecido",
+            "waitlist.adjudicado",
+            "waitlist.expirado",
+            "turno.inasistencia",
+            "metrica.publicada");
 
     public void validar(String tipo) {
         if (tipo == null || !TIPOS.contains(tipo)) {

@@ -57,8 +57,8 @@ class Migration022Test extends PostgresFlywayTest {
         Set<String> versiones = Arrays.stream(flyway.info().applied())
                 .map(info -> info.getVersion().getVersion())
                 .collect(Collectors.toSet());
-        // El fixture de test aplica el subconjunto V001-V006, V020, V021 y V022.
-        assertEquals(Set.of("001", "002", "003", "004", "005", "006", "020", "021", "022"),
+        // El fixture de test aplica el subconjunto V001-V006, V020, V021, V022 y V023 (C-19).
+        assertEquals(Set.of("001", "002", "003", "004", "005", "006", "020", "021", "022", "023"),
                 versiones);
 
         for (String columna : List.of("id", "monto", "moneda", "estado", "conciliado")) {
