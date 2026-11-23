@@ -450,12 +450,12 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 > El alcance financiero de C-16 depende de IN-01. Mercado Pago es paridad, no diferenciador (DD-05).
 
 ### [C-14] `budgets-and-cash`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x] completado` (2026-11-23) — apply verificado: `mvn test` 241/241 en verde y `openspec validate budgets-and-cash --strict` sin errores. Archivo del change pendiente de aprobación del PO.
 - **Scope**:
-  - Migración 009: `Presupuesto`, `Ítem` (tratamiento, cantidad, precio, descripción); total y moneda `(TBD)`; asociación opcional al turno `(TBD, RN-FI-01)`.
-  - CRUD indicativo `/presupuestos` para recepción y administración; reutilización del catálogo de C-07; impresión/PDF `(TBD)`; lectura por paciente `(TBD)`.
-  - Asiento de caja y evento de auditoría por creación/modificación; arqueo detallado en C-15.
-  - Tests: cálculo de total, ítems, permisos, asociación al turno `(TBD)`.
+  - Migración `V020` (Parte 3): `Presupuesto`, `Ítem` (tratamiento, cantidad, precio snapshot, descripción); total `NUMERIC(12,2)` en `ARS`; asociación opcional al turno (RN-FI-01).
+  - CRUD indicativo `/presupuestos` en `dev`/`test` para recepción y administración; reutilización del catálogo de C-07; impresión/PDF y lectura por paciente diferidos (D13/D14).
+  - Sin asiento de caja ni cobro (D10/D15): eventos `presupuesto.creado` y `presupuesto.modificado`; arqueo y conciliación en C-15.
+  - Tests: cálculo de total con `HALF_UP`, ítems, superficie sin credenciales de staff, asociación al turno y auditoría.
 - **Dependencias**: C-05, C-07, C-08
 - **Governance**: BAJO — CRUD de catálogo/documento; autonomía si pasan los tests
 - **Leer antes**:

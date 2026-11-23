@@ -15,8 +15,8 @@ class PublicDeltaInvariantsTest {
     @Test
     void deltaAgendaEsAditivoYGuardiasDeC04NoSeDebilitan() throws IOException {
         String agenda = Files.readString(Path.of("openspec", "specs", "agenda", "spec.md"));
-        assertEquals(13, contar(agenda, "### Requirement:"));
-        assertEquals(31, contar(agenda, "#### Scenario:"));
+        assertEquals(14, contar(agenda, "### Requirement:"));
+        assertEquals(36, contar(agenda, "#### Scenario:"));
         assertTrue(agenda.contains("Delta puramente aditivo"));
         assertTrue(agenda.contains("Sin rutas de autenticación en la superficie de agenda"));
 

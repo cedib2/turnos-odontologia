@@ -11,7 +11,9 @@ public final class AuditoriaCatalogo {
             "turno.reprogramado",
             "turno.sobreturno",
             "bloqueo.creado",
-            "publictoken.historia.denegado");
+            "publictoken.historia.denegado",
+            "presupuesto.creado",
+            "presupuesto.modificado");
 
     public void validar(String tipo) {
         if (tipo == null || !TIPOS.contains(tipo)) {
