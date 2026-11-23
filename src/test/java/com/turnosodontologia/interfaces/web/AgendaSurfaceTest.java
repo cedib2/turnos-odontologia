@@ -40,6 +40,9 @@ class AgendaSurfaceTest {
                     .filter(ruta -> ruta.toString().endsWith(".java"))
                     .filter(ruta -> !ruta.toString().replace('\\', '/')
                             .contains("/com/turnosodontologia/auth/"))
+                    // C-16/AR-7: cabeceras salientes al proveedor ARCA, no identidad de request.
+                    .filter(ruta -> !ruta.toString().replace('\\', '/')
+                            .contains("/com/turnosodontologia/invoicing/FacturacionCredentialHeaders.java"))
                     .map(ruta -> {
                         try {
                             return Files.readString(ruta);

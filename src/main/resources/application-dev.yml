@@ -7,3 +7,12 @@ public:
     issuer: turnos-odontologia-public
   surface:
     prefixes: /publico/v1
+
+# Defaults no productivos para desarrollo; los valores reales se inyectan por entorno.
+ARCA_BASE_URL: http://localhost:9999/arca
+ARCA_ACCESS_TOKEN: arca-token-de-prueba-no-real
+
+arca:
+  comprobante:
+    letra: C
+    punto-venta: "0001"

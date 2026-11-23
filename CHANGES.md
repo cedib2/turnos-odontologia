@@ -489,11 +489,17 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-16] `arca-invoicing-reconciliation`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x] completado` (2026-11-23) — apply verificado: `mvn test` **320/320 en verde** (287 de la línea base de C-15 + 33 nuevos de C-16) y `openspec validate arca-invoicing-reconciliation --strict` sin errores; `openspec status --change arca-invoicing-reconciliation` 4/4 artefactos completos. Aprobación humana de governance CRITICO registrada en `docs/decisiones/C-16-decisiones.md` (AR-1..AR-14). Sin commits ni push.
 - **Scope**:
-  - **Decisión `(TBD, IN-01/DD-09)`**: si se resuelve "en MVP" → Migración 011 de comprobantes/liquidación, integración ARCA (REST/SDK `(TBD)`), emisión y conciliación contra presupuesto y seña, reintentos y auditoría; tests de idempotencia y conciliación.
-  - Si se resuelve "etapa posterior" → cerrar la ficha como diferida, sin código, y dejar el alcance financiero del MVP en presupuesto + seña (RN-FI-04).
-  - La separación propuesta entre "cumplimiento normativo general" y "facturación electrónica operativa" se registra en C-01; no se elige un valor por defecto.
+  - Migración `V022`: tabla `comprobantes` con `senia_id`, `presupuesto_id`/`turno_id` opcionales sin FK física, `tipo`, `estado`, `moneda` fija `ARS`, `monto NUMERIC(12,2)`, `concepto`, `cae`, `fecha_emision`, `intentos`, `ultimo_error`, `conciliado` y auditoría. Unicidad por `(senia_id, tipo)` para permitir factura y nota de crédito sobre la misma seña reembolsada (AR-1, AR-11). Sin caja, asiento ni arqueo; V001–V021 intactas.
+  - Emisión de una sola factura por seña `aprobado` sobre el importe cobrado (nunca el saldo del presupuesto), letra `C` y punto de venta configurables, consumidor final e IVA no discriminado. Datos del receptor reutilizados de `pacientes` sin campos fiscales nuevos; dato faltante queda `pendiente` con aviso NO-OP a recepción, sin exponer DNI ni dirección (AR-4, AR-5, AR-6).
+  - Integración REST con `RestTemplate` sin SDK ni dependencia nueva: `ARCA_BASE_URL`, `ARCA_ACCESS_TOKEN`, payload y cabeceras salientes acotadas; adaptador NO-OP/simulado en `dev`/`test` con CAE determinista de prueba (`CAE-TEST-`/`NC-TEST-`) y defaults no productivos para CI (AR-7, AR-8, AR-14).
+  - Estados cerrados `pendiente|emitido|rechazado|anulado` con transiciones acotadas, reintento manual y error saneado, sin reintento automático ni outbox. Idempotencia `factura.emitir`/`nota_credito.emitir` en `public_idempotencia` con hash SHA-256, en la misma transacción del cambio de estado y la auditoría, con reversión atómica verificada (AR-9).
+  - Conciliación solo con CAE, montos iguales y seña `aprobado`+`conciliado`: actualiza únicamente el flag del comprobante e informa seña no conciliada, montos divergentes o comprobante no emitido (AR-10).
+  - Nota de crédito manual de recepción sobre seña `reembolsado`: revierte el total, anula la factura y usa su propia clave de idempotencia; sin disparo automático al finalizar el reembolso (AR-11).
+  - Superficie `POST /comprobantes`, `POST /comprobantes/{id}/reintentar`, `POST /comprobantes/{id}/nota-credito` y `GET /comprobantes/{id}` bajo `@Profile({"dev","test"})`, sin credenciales de staff ni RBAC nuevo. Liquidación contable y cierre impositivo quedan diferidos (AR-3).
+  - Auditoría con los cinco tipos aprobados `factura.emitida`, `factura.rechazada`, `factura.conciliada`, `factura.anulada` y `nota_credito.emitida`, metadata cerrada, `correlationId` propio y actores `SIMULADO`/`SYSTEM`; sin CAE, DNI ni secretos en logs o metadata (AR-12, AR-14).
+  - Tests: migración y constraints V022, persistencia y unicidad, emisión con/sin presupuesto, seña no aprobada, receptor faltante, rechazo/reintento/error saneado, idempotencia y rollback, cuatro escenarios de conciliación, nota de crédito y reenvío, auditoría y metadata, MVC y wiring `dev`/`test`.
 - **Dependencias**: C-01, C-15
 - **Governance**: CRITICO — facturación; análisis y aprobación humana explícita antes de cualquier código
 - **Leer antes**:

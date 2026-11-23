@@ -18,7 +18,12 @@ public final class AuditoriaCatalogo {
             "pago.aprobado",
             "pago.rechazado",
             "pago.reembolsado",
-            "pago.conciliado");
+            "pago.conciliado",
+            "factura.emitida",
+            "factura.rechazada",
+            "factura.conciliada",
+            "factura.anulada",
+            "nota_credito.emitida");
 
     public void validar(String tipo) {
         if (tipo == null || !TIPOS.contains(tipo)) {

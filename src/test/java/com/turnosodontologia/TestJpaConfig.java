@@ -5,12 +5,14 @@ import com.turnosodontologia.application.CurrentActorProvider;
 import com.turnosodontologia.application.SimulatedCurrentActorProvider;
 import com.turnosodontologia.auth.AuthPasswordHasher;
 import com.turnosodontologia.infrastructure.audit.InMemoryAuditEventRecorder;
+import com.turnosodontologia.invoicing.FacturacionTestConfig;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
@@ -20,7 +22,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @ComponentScan(basePackages = {"com.turnosodontologia.application",
         "com.turnosodontologia.infrastructure.audit",
         "com.turnosodontologia.publicbooking",
-        "com.turnosodontologia.depositpayments"})
+        "com.turnosodontologia.depositpayments",
+        "com.turnosodontologia.invoicing"},
+        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+                classes = FacturacionTestConfig.class))
 @Import(AuthPasswordHasher.class)
 @EnableJpaRepositories(basePackages = "com.turnosodontologia.infrastructure.persistence")
 public class TestJpaConfig {

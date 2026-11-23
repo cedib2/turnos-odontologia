@@ -24,3 +24,10 @@ public:
 APP_BASE_URL: http://localhost:9999
 MERCADOPAGO_ACCESS_TOKEN: test-access-token
 MERCADOPAGO_WEBHOOK_SECRET: test-webhook-secret-c15
+ARCA_BASE_URL: http://localhost:9999/arca
+ARCA_ACCESS_TOKEN: arca-token-de-prueba-no-real
+
+arca:
+  comprobante:
+    letra: C
+    punto-venta: "0001"
