@@ -13,6 +13,9 @@ public final class PostgresFixture {
 
     private static final String IMAGE = "postgres:17";
     private static final GenericContainer<?> CONTAINER = new GenericContainer<>(IMAGE)
+            // Margen de conexiones para los contextos cacheados y las conexiones
+            // directas de Flyway/JdbcTemplate en la suite completa.
+            .withCommand("-c", "max_connections=300")
             .withEnv("POSTGRES_HOST_AUTH_METHOD", "trust")
             .withEnv("POSTGRES_DB", "turnos_test")
             .withCopyFileToContainer(MountableFile.forClasspathResource("sql/btree_gist.sql"),
