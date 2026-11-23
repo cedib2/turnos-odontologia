@@ -13,7 +13,12 @@ public final class AuditoriaCatalogo {
             "bloqueo.creado",
             "publictoken.historia.denegado",
             "presupuesto.creado",
-            "presupuesto.modificado");
+            "presupuesto.modificado",
+            "pago.solicitado",
+            "pago.aprobado",
+            "pago.rechazado",
+            "pago.reembolsado",
+            "pago.conciliado");
 
     public void validar(String tipo) {
         if (tipo == null || !TIPOS.contains(tipo)) {

@@ -19,7 +19,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EntityScan(basePackages = "com.turnosodontologia.domain")
 @ComponentScan(basePackages = {"com.turnosodontologia.application",
         "com.turnosodontologia.infrastructure.audit",
-        "com.turnosodontologia.publicbooking"})
+        "com.turnosodontologia.publicbooking",
+        "com.turnosodontologia.depositpayments"})
 @Import(AuthPasswordHasher.class)
 @EnableJpaRepositories(basePackages = "com.turnosodontologia.infrastructure.persistence")
 public class TestJpaConfig {

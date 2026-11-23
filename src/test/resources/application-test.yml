@@ -1,6 +1,8 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 2
   jpa:
     hibernate:
       ddl-auto: validate
@@ -18,3 +20,7 @@ public:
     issuer: turnos-odontologia-public
   surface:
     prefixes: /publico/v1
+
+APP_BASE_URL: http://localhost:9999
+MERCADOPAGO_ACCESS_TOKEN: test-access-token
+MERCADOPAGO_WEBHOOK_SECRET: test-webhook-secret-c15

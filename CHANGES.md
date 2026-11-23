@@ -40,7 +40,7 @@ Los IDs se conservan al editar o reordenar. No se reciclan IDs retirados. El pro
 |---|---|---|---|
 | Parte 1 — Tronco Base | PO de esta rama | V001–V009 | V001 = C-03; V002 = C-04; V003 = C-05; V004 = C-06; V005 y V006 = C-08 (ya aplicadas). C-07 **reutiliza V005**: no crea migración si es solo CRUD sobre tablas existentes; si necesita esquema o seeds, usa un número nuevo dentro del rango (V007 en adelante). V008–V009 quedan como holgura de la Parte 1. |
 | Parte 2 | compañero | desde V010 | a asignar por su dueño |
-| Parte 3 | compañero | desde V020 | a asignar por su dueño |
+| Parte 3 | compañero | desde V020 | V020 = C-14; V021 = C-15; V022 en adelante queda como holgura |
 | Parte 4 | compañero | desde V030 | a asignar por su dueño |
 
 Los números históricos citados en los scopes (`C-10 = 007`, `C-11 = 008`, `C-14 = 009`, `C-15 = 010`, `C-16 = 011`, `C-17 = 012`, `C-19 = 013`) quedan **supersedidos** por esta tabla: cada dueño elige dentro de su rango y lo coordina antes de crear la migración.
@@ -468,13 +468,15 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-15] `mercadopago-deposits-reconciliation`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x] completado` (2026-11-23) — apply verificado: `mvn test` 287/287 en verde (241 de la línea base de C-14 + 46 nuevos) y `openspec validate mercadopago-deposits-reconciliation --strict` sin errores. Decisiones MP-1..MP-12 aprobadas por el PO en `docs/decisiones/C-15-decisiones.md`.
 - **Scope**:
-  - Migración 010: `Seña/PagoMP` (`turno_id`, `presupuesto_id` `(TBD)`, `monto`, `moneda`, `estado`, `proveedor="mercadopago"`, `external_reference`, `idempotency_key`, `fecha_aprobacion`, `conciliado` `(TBD)`).
-  - Integración REST + webhook de Mercado Pago **por paridad competitiva, no como diferenciador** (RN-FI-02, DD-05); verificación de firma `(TBD)`; idempotencia ante webhook duplicado (RN-FI-03, RN-GL-02).
-  - Conciliación turno–pago y caja/arqueo `(TBD)`; política de **reembolso y retención del hueco** ante cancelación dentro/fuera de ventana y pago rechazado `(TBD, IN-02)`.
-  - Auditoría de cada evento de dinero; costos de API visibles por separado (modelo `(TBD)`); facturación ARCA queda en C-16.
-  - Tests: webhook duplicado, pago rechazado, conciliación, reembolso `(TBD)`, auditoría del evento.
+  - Migración `V021`: tabla `senias` con `turno_id` y `presupuesto_id` opcionales sin FK física, `monto NUMERIC(12,2)`, `moneda` fija `ARS`, `estado`, `proveedor`, `payment_id`, `external_reference`, `idempotency_key`, `fecha_aprobacion` y `conciliado`, con checks y unicidad. Sin tablas de caja, asiento ni arqueo; V001–V020 intactas.
+  - Integración REST sobre `RestTemplate` sin SDK ni dependencias nuevas: `POST /v1/preferences`, `X-Idempotency-Key`, `external_reference = "senia-" + UUID` y reembolso total. Superficie `POST /senias` y `POST /senias/{id}/reembolsar` en `dev`/`test`, sin credenciales de staff ni RBAC nuevo.
+  - Webhook público `POST /publico/v1/webhooks/mercadopago` autenticado por HMAC-SHA256 local (`ts`/`v1` y `x-request-id`), sin token de C-06; `400` sin estado, auditoría ni persistencia ante firma inválida. Deduplicación en `public_idempotencia` (`pago.webhook`) dentro de la misma transacción del cambio de estado.
+  - Estados cerrados con transiciones solo desde `pendiente` y descarte de eventos tardíos; conciliación cuando `turno_id` o `presupuesto_id` resuelve a una entidad existente, con evento `pago.conciliado`, sin crear entidades ni asientos.
+  - Reembolso total e inmediato según C-01 A4, con liberación del hueco por el flujo de cancelación existente, dentro y fuera de la ventana; aviso al paciente detrás de un puerto NO-OP/simulado, sin envío real ni eventos de entrega.
+  - Auditoría de dinero: cinco tipos `pago.solicitado`, `pago.aprobado`, `pago.rechazado`, `pago.reembolsado` y `pago.conciliado`, con metadata acotada, `correlationId` propio y actores `SYSTEM`/`SIMULADO`. Sin secretos en respuestas, logs ni metadata (MP-10). Costos de API no se desglosan (C-01 A5); Mercado Pago es paridad competitiva (DD-05) y ARCA queda en C-16.
+  - Tests: firma válida/ausente/inválida, secreto no expuesto, webhook duplicado, reversión atómica, pago rechazado, contracargo, conciliación con referencia válida e inexistente, reembolso total y rechazado, y una fila de auditoría por operación confirmada.
 - **Dependencias**: C-05, C-09, C-14
 - **Governance**: CRITICO — cobros y conciliación; solo análisis y aprobación humana antes de codear
 - **Leer antes**:
