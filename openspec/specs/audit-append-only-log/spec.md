@@ -196,3 +196,19 @@ Evento y operación de dominio SHALL compartir la **misma transacción de base d
 - **GIVEN** un evento de auditoría publicado dentro de la transacción de una operación de dominio
 - **WHEN** la operación de negocio hace rollback después de esa publicación
 - **THEN** no queda ninguna fila en `auditoria_log` correspondiente a ese evento
+
+### Requirement: Tipos de catálogo incorporados en C-19
+
+El catálogo aprobado incorpora `waitlist.creado`, `waitlist.ofrecido`, `waitlist.adjudicado`, `waitlist.expirado`, `turno.inasistencia` y `metrica.publicada`, con granularidad por operación confirmada. Cada operación SHALL generar exactamente una fila; rechazos y reenvíos MUST NOT generar otra.
+
+#### Scenario: Operaciones de waitlist confirmadas
+
+- **GIVEN** una entrada creada, ofrecida y adjudicada y una métrica publicada
+- **WHEN** se consulta el registro de auditoría
+- **THEN** existen exactamente una fila por operación con los tipos `waitlist.creado`, `waitlist.ofrecido`, `waitlist.adjudicado` y `metrica.publicada`
+
+#### Scenario: Oferta expirada o rechazada sin fila adicional
+
+- **GIVEN** una oferta expirada sin pago y un reenvío de la adjudicación
+- **WHEN** se consulta el registro de auditoría
+- **THEN** solo existe la fila de `waitlist.expirado` y no se agrega una segunda por el reenvío
