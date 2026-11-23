@@ -450,7 +450,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 > El alcance financiero de C-16 depende de IN-01. Mercado Pago es paridad, no diferenciador (DD-05).
 
 ### [C-14] `budgets-and-cash`
-- **Estado**: `[x] completado` (2026-11-23) — apply verificado: `mvn test` 241/241 en verde y `openspec validate budgets-and-cash --strict` sin errores. Archivo del change pendiente de aprobación del PO.
+- **Estado**: `[x] completado` (2026-11-23) — apply verificado: `mvn test` 241/241 en verde y `openspec validate budgets-and-cash --strict` sin errores. Change archivado el 2026-11-23 como `2026-11-23-budgets-and-cash`; specs principales sincronizados (9 requirements agregados).
 - **Scope**:
   - Migración `V020` (Parte 3): `Presupuesto`, `Ítem` (tratamiento, cantidad, precio snapshot, descripción); total `NUMERIC(12,2)` en `ARS`; asociación opcional al turno (RN-FI-01).
   - CRUD indicativo `/presupuestos` en `dev`/`test` para recepción y administración; reutilización del catálogo de C-07; impresión/PDF y lectura por paciente diferidos (D13/D14).
