@@ -468,7 +468,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-15] `mercadopago-deposits-reconciliation`
-- **Estado**: `[x] completado` (2026-11-23) — apply verificado: `mvn test` 287/287 en verde (241 de la línea base de C-14 + 46 nuevos) y `openspec validate mercadopago-deposits-reconciliation --strict` sin errores. Decisiones MP-1..MP-12 aprobadas por el PO en `docs/decisiones/C-15-decisiones.md`.
+- **Estado**: `[x] completado y archivado` (2026-11-23) — apply verificado: `mvn test` 287/287 en verde (241 de la línea base de C-14 + 46 nuevos) y `openspec validate mercadopago-deposits-reconciliation --strict` sin errores. Change archivado el 2026-11-23 como `2026-11-23-mercadopago-deposits-reconciliation`; specs principales sincronizados (9 requirements agregados y 2 modificados). Decisiones MP-1..MP-12 aprobadas por el PO en `docs/decisiones/C-15-decisiones.md`.
 - **Scope**:
   - Migración `V021`: tabla `senias` con `turno_id` y `presupuesto_id` opcionales sin FK física, `monto NUMERIC(12,2)`, `moneda` fija `ARS`, `estado`, `proveedor`, `payment_id`, `external_reference`, `idempotency_key`, `fecha_aprobacion` y `conciliado`, con checks y unicidad. Sin tablas de caja, asiento ni arqueo; V001–V020 intactas.
   - Integración REST sobre `RestTemplate` sin SDK ni dependencias nuevas: `POST /v1/preferences`, `X-Idempotency-Key`, `external_reference = "senia-" + UUID` y reembolso total. Superficie `POST /senias` y `POST /senias/{id}/reembolsar` en `dev`/`test`, sin credenciales de staff ni RBAC nuevo.
