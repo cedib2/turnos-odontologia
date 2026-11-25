@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.turnosodontologia.audit.AuditoriaHashChainTest
 -------------------------------------------------------------------------------
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.93 s -- in com.turnosodontologia.audit.AuditoriaHashChainTest
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.89 s -- in com.turnosodontologia.audit.AuditoriaHashChainTest

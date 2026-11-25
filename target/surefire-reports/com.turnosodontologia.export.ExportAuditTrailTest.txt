@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.turnosodontologia.export.ExportAuditTrailTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.426 s -- in com.turnosodontologia.export.ExportAuditTrailTest
