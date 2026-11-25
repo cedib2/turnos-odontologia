@@ -508,7 +508,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 > La declaración de Ley 25.326 ya no diferencia: hace falta evidencia descargable (RN-SE-04).
 
 ### [C-17] `export-backup-restore`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[ ]` pendiente — propuesta openspec `export-backup-restore` escrita el 2026-11-25 (Parte 4); espera revisión del PO (governance ALTO). Migración propuesta: V030.
 - **Scope**:
   - Migración 012: registro de exportaciones, respaldos y restauraciones (formato, plazos y destino `(TBD)`).
   - Exportación completa de datos y copia de historia en 48 h `(TBD, IN-05/IN-06)`; formatos `(TBD)`; cifrado en reposo y ubicación de datos/subprocesadores `(TBD, RN-SE-05)`.
@@ -527,7 +527,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-18] `compliance-evidence-dossier`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[ ]` pendiente — propuesta openspec `compliance-evidence-dossier` escrita el 2026-11-25 (Parte 4); espera revisión del PO y owner legal (governance ALTO). Migración propuesta: V031.
 - **Scope**:
   - Dossier descargable con DPA responsable/encargado, registro **AAIP/RNBD** del responsable, cláusulas **AAIP 198/2023** para subprocessores, roles, logs, exportación y retención; alcance exacto `(TBD, IN-05)`.
   - Responsable de datos y owner legal `(TBD)`; aplicabilidad confirmada de Ley 25.326, Ley 26.529, Decreto 1089/2012 y Ley 25.506 `(TBD)`; procedimiento INTIMA/CONSTA `(TBD)`.
@@ -587,7 +587,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-21] `precio-predecible-costos`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[ ]` pendiente — implementado y verificado el 2026-11-25 (223 tests verdes, 11 nuevos) según C-01 A5; sin archive. Monto, moneda y periodicidad `(TBD)` por `precio.plan.*`.
 - **Scope**:
   - Superficie de consulta del precio único, público y predecible, con los costos de API detallados por separado (Meta, Mercado Pago y ARCA si aplica); soporte de la superficie `(TBD — visual-design diferido)`.
   - Modelo comercial exacto `(TBD, US-016/RN-SE-06)`; sin packs sorpresa dentro del plan (RN-NT-04, confirmar modelo `(TBD)`); reutiliza la configuración de C-10 y C-15 sin exponer secretos.
@@ -604,7 +604,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-22] `adoption-metrics-dashboard`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[ ]` pendiente — implementado y verificado el 2026-11-25 (223 tests verdes, 18 nuevos); sin archive. Adopción online calculada; ventana, confirmaciones y evidencia `NO_DISPONIBLE` hasta que C-09/C-10/C-18 conecten su `FuenteMetrica`.
 - **Scope**:
   - Instrumentación y consulta de la métrica principal de riesgo: % de turnos creados por paciente vía link/QR sobre el total (adopción online), con metodología y período explícitos; objetivo `(TBD, SU-03)`.
   - Consulta del cumplimiento de la ventana de 48 hs hábiles y de confirmaciones; reutiliza C-19 si se habilita `(TBD)`; presentación `(TBD — visual-design diferido)`.
