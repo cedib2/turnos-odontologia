@@ -615,7 +615,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-22] `adoption-metrics-dashboard`
-- **Estado**: `[ ]` pendiente — implementado y verificado (9 tests) por contrato con C-09 (`token_publico`, `inicioAnterior`); se marca `[x]` cuando C-09 emita esos datos
+- **Estado**: `[x]` completado y archivado (2026-11-25) — con C-09, C-10 y C-19 integrados: la cancelación y la reprogramación por link informan `inicioAnterior`, las confirmaciones se calculan desde el outbox de C-10 y la ocupación y el ausentismo se muestran tal como los publica C-19 por sillón y mes (sin agregarlos). Metas `(TBD)` hasta el piloto. Tests: `MetricasAdopcionTest` (7), `CalculadoraHorasHabilesTest` (4) y aserciones en `PublicBookingIntegrationTest`.
 - **Scope**:
   - Instrumentación y consulta de la métrica principal de riesgo: % de turnos creados por paciente vía link/QR sobre el total (adopción online), con metodología y período explícitos; objetivo `(TBD, SU-03)`.
   - Consulta del cumplimiento de la ventana de 48 hs hábiles y de confirmaciones; reutiliza C-19 si se habilita `(TBD)`; presentación `(TBD — visual-design diferido)`.

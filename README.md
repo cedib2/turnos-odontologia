@@ -34,7 +34,7 @@ mvn -B -DskipTests compile
 mvn -B test
 ```
 
-La suite completa tiene 471 tests. No requiere variables de entorno: el perfil `test` usa valores no productivos.
+La suite completa tiene 473 tests. No requiere variables de entorno: el perfil `test` usa valores no productivos.
 
 ## Cómo ejecutar la aplicación
 
@@ -144,7 +144,7 @@ CHANGES.md                         Roadmap operativo: alcance, dependencias y es
 | C-19 | Relleno automático de waitlist y métricas | Completado |
 | C-20 | IA conversacional con handoff | Diferido sin código |
 | C-21 | Precio predecible y costos | Implementado, pendiente de revisión |
-| C-22 | Dashboard de métricas de adopción | Implementado, pendiente de revisión |
+| C-22 | Dashboard de métricas de adopción | Completado |
 
 El detalle y la evidencia de cada change están en [`CHANGES.md`](CHANGES.md).
 

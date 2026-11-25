@@ -14,6 +14,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.YearMonth;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,8 +25,9 @@ import java.util.UUID;
 
 /**
  * Tablero de adopción y cumplimiento (C-22). Cada métrica sale con metodología y período; cada consulta
- * queda en el log append-only. Ocupación y ausentismo dependen de C-19 (diferido a v0.2) y confirmaciones
- * de C-10: se informan como DIFERIDA / NO_DISPONIBLE en lugar de inventar cifras.
+ * queda en el log append-only. Las confirmaciones salen del outbox de WhatsApp (C-10); la ocupación y el
+ * ausentismo se toman de las métricas que C-19 publica por sillón y mes, con su propia metodología: C-22 no
+ * las recalcula ni las agrega, para no inventar una fórmula.
  */
 @Service
 public class MetricasService {
@@ -39,8 +41,7 @@ public class MetricasService {
 
     /**
      * Contrato con C-08/C-09: eventos que mueven un turno y llevan {@code inicioAnterior} (ISO-8601) en metadata.
-     * {@code turno.cancelado} todavía no está en {@code AuditoriaCatalogo.TIPOS}: C-09 debe darlo de alta al
-     * implementar la cancelación. Hasta entonces la métrica solo cuenta reprogramaciones.
+     * La reprogramación del staff (C-08) y la cancelación y reprogramación por link (C-09) lo informan.
      */
     static final List<String> EVENTOS_VENTANA = List.of("turno.reprogramado", "turno.cancelado");
     static final long HORAS_VENTANA = 48;
@@ -81,24 +82,11 @@ public class MetricasService {
         List<Metrica> metricas = new ArrayList<>();
         metricas.add(calcularAdopcion(desde, hasta));
         metricas.add(calcularVentana(desde, hasta));
-        metricas.add(new Metrica(CONFIRMACIONES,
-                "% de turnos confirmados por el paciente vía WhatsApp sobre los recordatorios enviados",
-                "100 × turnos confirmados / turnos con recordatorio enviado",
-                "Outbox y webhooks de WhatsApp (C-10)", desde, hasta, CalculadoraHorasHabiles.ZONA.getId(),
-                Metrica.NO_DISPONIBLE, null, null, null, null,
-                Map.of("motivo", "C-10 whatsapp-notifications-outbox no implementado")));
-        metricas.add(new Metrica(OCUPACION,
-                "% de agenda ocupada por sillón/profesional con metodología publicable",
-                "100 × minutos ocupados / minutos disponibles, por sillón y profesional",
-                "Agenda, turnos y bloqueos (C-08); motor de ocupación C-19", desde, hasta,
-                CalculadoraHorasHabiles.ZONA.getId(), Metrica.DIFERIDA, null, null, null, null,
-                Map.of("motivo", "C-19 diferido a v0.2 (C-01 Gap C-19); bloqueos como ocupación (TBD)")));
-        metricas.add(new Metrica(AUSENTISMO,
-                "% de no-shows sobre turnos confirmados",
-                "100 × turnos con evento de inasistencia / total de turnos confirmados",
-                "Eventos de asistencia del turno y auditoría append-only (C-10/C-19)", desde, hasta,
-                CalculadoraHorasHabiles.ZONA.getId(), Metrica.DIFERIDA, null, null, null, null,
-                Map.of("motivo", "Sin evento de inasistencia hasta C-10/C-19; definición del numerador (TBD)")));
+        metricas.add(calcularConfirmaciones(desde, hasta));
+        metricas.add(publicadaPorC19(OCUPACION, "ocupacion",
+                "% de agenda ocupada por sillón/profesional con metodología publicable", desde, hasta));
+        metricas.add(publicadaPorC19(AUSENTISMO, "ausentismo",
+                "% de no-shows sobre turnos confirmados", desde, hasta));
         metricas.add(calcularDossier(desde, hasta));
         auditar(metricas, desde, hasta, motivo);
         return metricas;
@@ -162,6 +150,72 @@ public class MetricasService {
                 desde, hasta, CalculadoraHorasHabiles.ZONA.getId(),
                 conteo[1] == 0 ? Metrica.SIN_DATOS : Metrica.CALCULADA,
                 conteo[0], conteo[1], Metrica.porcentaje(conteo[0], conteo[1]), null, detalle);
+    }
+
+    private Metrica calcularConfirmaciones(Instant desde, Instant hasta) {
+        validarPeriodo(desde, hasta);
+        // Solicitudes de confirmación aceptadas por el proveedor y programadas dentro del período.
+        String enviadas = """
+                FROM notificaciones
+                WHERE proposito = 'CONFIRMACION' AND proveedor_message_id IS NOT NULL
+                  AND programada_para >= ? AND programada_para < ?
+                """;
+        Map<String, Long> porEstado = new LinkedHashMap<>();
+        jdbc.query("SELECT estado, count(DISTINCT turno_id) AS turnos " + enviadas + " GROUP BY estado ORDER BY estado",
+                rs -> {
+                    porEstado.put(rs.getString("estado"), rs.getLong("turnos"));
+                }, Timestamp.from(desde), Timestamp.from(hasta));
+        long[] totales = jdbc.queryForObject("SELECT count(DISTINCT turno_id) FILTER (WHERE estado = 'CONFIRMADA'), "
+                        + "count(DISTINCT turno_id) " + enviadas,
+                (rs, fila) -> new long[]{rs.getLong(1), rs.getLong(2)}, Timestamp.from(desde), Timestamp.from(hasta));
+        Map<String, Object> detalle = new LinkedHashMap<>();
+        detalle.put("turnosPorEstado", porEstado);
+        detalle.put("criterioEnviada", "notificación de propósito CONFIRMACION aceptada por el proveedor "
+                + "(proveedor_message_id no nulo), programada dentro del período");
+        detalle.put("criterioConfirmada", "el paciente respondió con el botón de confirmación (estado CONFIRMADA)");
+        return new Metrica(CONFIRMACIONES,
+                "% de turnos confirmados por el paciente vía WhatsApp sobre las solicitudes de confirmación enviadas",
+                "100 × turnos con confirmación respondida / turnos con solicitud de confirmación enviada",
+                "Outbox y webhooks de WhatsApp (C-10): tabla notificaciones", desde, hasta,
+                CalculadoraHorasHabiles.ZONA.getId(), totales[1] == 0 ? Metrica.SIN_DATOS : Metrica.CALCULADA,
+                totales[0], totales[1], Metrica.porcentaje(totales[0], totales[1]), null, detalle);
+    }
+
+    /**
+     * Ocupación o ausentismo tal como los publica C-19: un valor por sillón y mes, cada uno con su metodología.
+     * Se incluyen los meses (zona AR) que se superponen con el período. No se agregan entre sillones: el valor
+     * del tablero queda nulo y las cifras van en el detalle.
+     */
+    private Metrica publicadaPorC19(String codigo, String columna, String definicion, Instant desde, Instant hasta) {
+        validarPeriodo(desde, hasta);
+        List<Map<String, Object>> porSillon = new ArrayList<>();
+        jdbc.query("""
+                SELECT sillon_id, periodo, %s AS valor, metodologia, calculada_en
+                FROM metricas_ocupacion
+                WHERE activo AND %s IS NOT NULL
+                ORDER BY periodo, sillon_id
+                """.formatted(columna, columna), rs -> {
+            YearMonth mes = YearMonth.parse(rs.getString("periodo"));
+            Instant inicioMes = mes.atDay(1).atStartOfDay(CalculadoraHorasHabiles.ZONA).toInstant();
+            Instant finMes = mes.plusMonths(1).atDay(1).atStartOfDay(CalculadoraHorasHabiles.ZONA).toInstant();
+            if (inicioMes.isBefore(hasta) && finMes.isAfter(desde)) {
+                Map<String, Object> fila = new LinkedHashMap<>();
+                fila.put("sillonId", rs.getLong("sillon_id"));
+                fila.put("periodo", mes.toString());
+                fila.put("valor", rs.getBigDecimal("valor"));
+                fila.put("metodologia", rs.getString("metodologia"));
+                fila.put("calculadaEn", rs.getTimestamp("calculada_en").toInstant().toString());
+                porSillon.add(fila);
+            }
+        });
+        Map<String, Object> detalle = new LinkedHashMap<>();
+        detalle.put("porSillonYMes", porSillon);
+        detalle.put("nota", "Valores publicados por C-19 con su metodología; C-22 no los agrega entre sillones");
+        return new Metrica(codigo, definicion,
+                "La publicada por C-19 para cada sillón y mes (ver metodologia en el detalle)",
+                "Métricas publicadas por C-19 (tabla metricas_ocupacion)", desde, hasta,
+                CalculadoraHorasHabiles.ZONA.getId(), porSillon.isEmpty() ? Metrica.SIN_DATOS : Metrica.CALCULADA,
+                null, null, null, null, detalle);
     }
 
     private Metrica calcularDossier(Instant desde, Instant hasta) {

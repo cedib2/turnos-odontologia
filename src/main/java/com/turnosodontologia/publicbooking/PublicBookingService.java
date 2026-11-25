@@ -182,10 +182,11 @@ public class PublicBookingService {
                 .orElseThrow(() -> new IllegalStateException("El turno no tiene ocupación activa"));
         ocupacion.desactivar();
         ocupaciones.saveAndFlush(ocupacion);
+        Instant inicioAnterior = turno.getInicio();
         turno.cancelar(AUTOR);
         Turno guardado = turnos.saveAndFlush(turno);
 
-        publicar("turno.cancelado", guardado.getId(), solicitud.idempotencyKey(), null);
+        publicar("turno.cancelado", guardado.getId(), solicitud.idempotencyKey(), null, inicioAnterior);
         notificaciones.solicitar(guardado.getId(), "turno.cancelar");
         return respuesta(guardado);
     }
@@ -211,12 +212,14 @@ public class PublicBookingService {
         original.desactivar();
         ocupaciones.saveAndFlush(original);
 
+        Instant inicioAnterior = turno.getInicio();
         turno.reprogramar(nuevoInicio, nuevoFin, AUTOR);
         Turno guardado = turnos.saveAndFlush(turno);
         ocupaciones.saveAndFlush(Ocupacion.paraTurno(guardado.getId(), profesionalId, sillonId,
                 nuevoInicio, nuevoFin));
 
-        publicar("turno.reprogramado", guardado.getId(), solicitud.idempotencyKey(), "reprogramación");
+        publicar("turno.reprogramado", guardado.getId(), solicitud.idempotencyKey(), "reprogramación",
+                inicioAnterior);
         notificaciones.solicitar(guardado.getId(), "turno.reprogramar");
         return respuesta(guardado);
     }
@@ -290,8 +293,13 @@ public class PublicBookingService {
     }
 
     private void publicar(String tipo, Long turnoId, String idempotencyKey, String motivo) {
+        publicar(tipo, turnoId, idempotencyKey, motivo, null);
+    }
+
+    private void publicar(String tipo, Long turnoId, String idempotencyKey, String motivo,
+                          Instant inicioAnterior) {
         eventos.publish(AuditEvent.de(tipo, "turno", turnoId, actor(), motivo,
-                PublicAuditMetadata.de(turnoId, idempotencyKey, motivo),
+                PublicAuditMetadata.de(turnoId, idempotencyKey, motivo, inicioAnterior),
                 UUID.randomUUID().toString()));
     }
 

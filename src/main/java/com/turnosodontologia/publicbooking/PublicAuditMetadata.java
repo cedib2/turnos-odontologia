@@ -2,6 +2,7 @@ package com.turnosodontologia.publicbooking;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -11,6 +12,15 @@ public final class PublicAuditMetadata {
     }
 
     public static Map<String, Object> de(Long turnoId, String idempotencyKey, String motivo) {
+        return de(turnoId, idempotencyKey, motivo, null);
+    }
+
+    /**
+     * Con {@code inicioAnterior} (ISO-8601): inicio del turno antes de cancelarlo o reprogramarlo. Es el
+     * contrato que usa C-22 para medir el cumplimiento de la ventana de 48 hs hábiles.
+     */
+    public static Map<String, Object> de(Long turnoId, String idempotencyKey, String motivo,
+                                         Instant inicioAnterior) {
         Map<String, Object> metadata = new LinkedHashMap<>();
         metadata.put("turnoId", turnoId);
         metadata.put("canal", "link");
@@ -18,6 +28,9 @@ public final class PublicAuditMetadata {
         metadata.put("idempotencyKeyHash", hash(idempotencyKey));
         if (motivo != null && !motivo.isBlank()) {
             metadata.put("motivo", motivo);
+        }
+        if (inicioAnterior != null) {
+            metadata.put("inicioAnterior", inicioAnterior.toString());
         }
         return metadata;
     }

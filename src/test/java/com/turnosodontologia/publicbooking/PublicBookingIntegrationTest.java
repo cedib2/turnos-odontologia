@@ -210,7 +210,9 @@ class PublicBookingIntegrationTest extends PostgresFlywayTest {
         assertTrue(turnos.findById(creado.turnoId()).orElseThrow().getFin() != null);
         assertTrue(servicio.disponibilidad(profesionalId, null, fecha, TRATAMIENTO).huecos()
                 .stream().anyMatch(hueco -> inicio.equals(hueco.inicio())));
-        assertTrue(recorder.eventos().stream().anyMatch(evento -> "turno.cancelado".equals(evento.tipo())));
+        assertTrue(recorder.eventos().stream().anyMatch(evento -> "turno.cancelado".equals(evento.tipo())
+                && inicio.toString().equals(evento.metadata().get("inicioAnterior"))),
+                "turno.cancelado debe informar inicioAnterior (contrato con C-22)");
     }
 
     @Test
@@ -290,7 +292,9 @@ class PublicBookingIntegrationTest extends PostgresFlywayTest {
         assertEquals("link", turnos.findById(creado.turnoId()).orElseThrow().getOrigen());
         assertEquals(nuevoInicio, reprogramado.inicio());
         assertEquals(1, ocupaciones.countByActivoTrue());
-        assertTrue(recorder.eventos().stream().anyMatch(evento -> "turno.reprogramado".equals(evento.tipo())));
+        assertTrue(recorder.eventos().stream().anyMatch(evento -> "turno.reprogramado".equals(evento.tipo())
+                && inicio.toString().equals(evento.metadata().get("inicioAnterior"))),
+                "turno.reprogramado debe informar el inicio original (contrato con C-22)");
     }
 
     @Test
