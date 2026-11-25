@@ -95,6 +95,8 @@ class ReprogramacionIntegrationTest extends PostgresFlywayTest {
         assertEquals(TRECE_MEDIA, turnos.findById(resultado.getId()).orElseThrow().getInicio());
         assertEquals(1, ocupaciones.countByActivoTrue());
         assertEquals("turno.reprogramado", recorder.eventos().get(0).tipo());
+        // Contrato con C-22: la ventana de 48 hs hábiles se mide contra el inicio original.
+        assertEquals(TRECE.toString(), recorder.eventos().get(0).metadata().get("inicioAnterior"));
     }
 
     @Test
