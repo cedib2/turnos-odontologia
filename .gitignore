@@ -4,3 +4,18 @@
 
 # Salida de compilación de Maven
 target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
