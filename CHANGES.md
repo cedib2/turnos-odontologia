@@ -44,6 +44,7 @@ Los IDs se conservan al editar o reordenar. No se reciclan IDs retirados. El pro
 | Parte 2 | compañero | desde V010 | a asignar por su dueño |
 | Parte 3 | compañero | desde V020 | V020 = C-14; V021 = C-15; V022 en adelante queda como holgura |
 | Parte 4 | compañero | desde V030 | a asignar por su dueño |
+| Parte 4 | Joaquín Adrián Velázquez Carrera | desde V030 | V030 = C-17 (`cumplimiento_operaciones`); V031 = C-18 (`dossier_items`, `subprocesadores`). |
 
 Los números históricos citados en los scopes (`C-10 = 007`, `C-11 = 008`, `C-14 = 009`, `C-15 = 010`, `C-16 = 011`, `C-17 = 012`, `C-19 = 013`) quedan **supersedidos** por esta tabla: cada dueño elige dentro de su rango y lo coordina antes de crear la migración.
 
@@ -518,7 +519,11 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 > La declaración de Ley 25.326 ya no diferencia: hace falta evidencia descargable (RN-SE-04).
 
 ### [C-17] `export-backup-restore`
+<<<<<<< HEAD
 - **Estado**: `[x]` completado
+=======
+- **Estado**: `[ ]` pendiente — implementado en `feat/Parte4-J-Velazquez` (V030, 12 tests); governance ALTO: **espera revisión humana** antes de archivar. Ver [`docs/decisiones/Parte4-C17-C18-C21-C22-checkpoints.md`](docs/decisiones/Parte4-C17-C18-C21-C22-checkpoints.md)
+>>>>>>> origin/feat/Parte4-J-Velazquez
 - **Scope**:
   - Migración 012: registro de exportaciones, respaldos y restauraciones (formato, plazos y destino `(TBD)`).
   - Exportación completa de datos y copia de historia en 48 h `(TBD, IN-05/IN-06)`; formatos `(TBD)`; cifrado en reposo y ubicación de datos/subprocesadores `(TBD, RN-SE-05)`.
@@ -537,7 +542,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-18] `compliance-evidence-dossier`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[ ]` pendiente — implementado en `feat/Parte4-J-Velazquez` (V031, 5 tests); governance ALTO: **espera revisión humana** y designación del owner legal (C-01 D)
 - **Scope**:
   - Dossier descargable con DPA responsable/encargado, registro **AAIP/RNBD** del responsable, cláusulas **AAIP 198/2023** para subprocessores, roles, logs, exportación y retención; alcance exacto `(TBD, IN-05)`.
   - Responsable de datos y owner legal `(TBD)`; aplicabilidad confirmada de Ley 25.326, Ley 26.529, Decreto 1089/2012 y Ley 25.506 `(TBD)`; procedimiento INTIMA/CONSTA `(TBD)`.
@@ -597,7 +602,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-21] `precio-predecible-costos`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[ ]` pendiente — implementado y verificado (4 tests) con C-01 A5=2; monto/moneda/periodicidad `(TBD)` hasta aprobación del PO
 - **Scope**:
   - Superficie de consulta del precio único, público y predecible, con los costos de API detallados por separado (Meta, Mercado Pago y ARCA si aplica); soporte de la superficie `(TBD — visual-design diferido)`.
   - Modelo comercial exacto `(TBD, US-016/RN-SE-06)`; sin packs sorpresa dentro del plan (RN-NT-04, confirmar modelo `(TBD)`); reutiliza la configuración de C-10 y C-15 sin exponer secretos.
@@ -614,7 +619,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-22] `adoption-metrics-dashboard`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[ ]` pendiente — implementado y verificado (9 tests) por contrato con C-09 (`token_publico`, `inicioAnterior`); se marca `[x]` cuando C-09 emita esos datos
 - **Scope**:
   - Instrumentación y consulta de la métrica principal de riesgo: % de turnos creados por paciente vía link/QR sobre el total (adopción online), con metodología y período explícitos; objetivo `(TBD, SU-03)`.
   - Consulta del cumplimiento de la ventana de 48 hs hábiles y de confirmaciones; reutiliza C-19 si se habilita `(TBD)`; presentación `(TBD — visual-design diferido)`.

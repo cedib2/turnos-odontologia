@@ -63,6 +63,9 @@ Nombres **propuestos**, no confirmados; valores de ejemplo son marcadores, nunca
 | `MERCADOPAGO_WEBHOOK_SECRET` | Firma de webhook de pagos | `(TBD)` | S |
 | `EXPORT_RETENTION_YEARS` | Retención de historia/datos | `10` `(TBD)` | N |
 | `BACKUP_CRON` | Programación de respaldos | `(TBD)` | N |
+| `BACKUP_ENCRYPTION_KEY` | Clave AES-256 (Base64, 32 bytes) del cifrado en reposo de respaldos y exportaciones (C-17) | `<base64-32-bytes>` | S |
+| `BACKUP_DIR` | Destino local mínimo de respaldos; destino cloud AR `(TBD)` (C-17) | `(TBD)` | N |
+| `RESTORE_SANDBOX_URL` / `_USER` / `_PASSWORD` | Base aislada donde se prueba cada restore; nunca la productiva (C-17) | `(TBD)` | S |
 | `IA_HANDOFF_ENABLED` | Activa asistente con derivación | `(TBD)` | N |
 
 ## Restricciones operativas de esta fase

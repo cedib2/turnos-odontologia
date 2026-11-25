@@ -20,6 +20,8 @@ public final class PostgresFixture {
             .withEnv("POSTGRES_DB", "turnos_test")
             .withCopyFileToContainer(MountableFile.forClasspathResource("sql/btree_gist.sql"),
                     "/docker-entrypoint-initdb.d/01-btree_gist.sql")
+            // Cada contexto de Spring cacheado conserva su pool; el default de 100 conexiones queda justo.
+            .withCommand("postgres", "-c", "max_connections=300")
             .withExposedPorts(5432)
             .waitingFor(Wait.forListeningPort());
 

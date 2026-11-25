@@ -54,7 +54,24 @@ public final class AuditoriaCatalogo {
                     "waitlist.adjudicado",
                     "waitlist.expirado",
                     "turno.inasistencia",
-                    "metrica.publicada"),
+                    "metrica.publicada",
+                    // C-17 export-backup-restore
+                    "exportacion.solicitada",
+                    "exportacion.completada",
+                    "exportacion.fallida",
+                    "exportacion.descargada",
+                    "respaldo.completado",
+                    "respaldo.fallido",
+                    "restore.verificado",
+                    "restore.fallido",
+                    // C-18 compliance-evidence-dossier
+                    "dossier.evidencia_registrada",
+                    "dossier.subprocesador_registrado",
+                    "dossier.descargado",
+                    "dossier.publicado",
+                    "dossier.publicacion_bloqueada",
+                    // C-22 adoption-metrics-dashboard
+                    "metricas.consultadas"),
             ExportAuditEvents.TIPOS.stream())
             .collect(Collectors.toUnmodifiableSet());
 

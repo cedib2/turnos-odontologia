@@ -73,6 +73,7 @@ public class ReprogramacionService {
 
         Ocupacion original = ocupaciones.findByTurnoIdAndActivoTrue(turnoId)
                 .orElseThrow(() -> new IllegalStateException("El turno no tiene ocupación activa"));
+        Instant inicioAnterior = turno.getInicio();
         original.desactivar();
         ocupaciones.saveAndFlush(original);
 
@@ -83,6 +84,7 @@ public class ReprogramacionService {
 
         Map<String, Object> metadata = new HashMap<>();
         metadata.put("actorAutorizo", actor);
+        metadata.put("inicioAnterior", inicioAnterior.toString());
         metadata.put("nuevoInicio", nuevoInicio.toString());
         metadata.put("nuevoFin", nuevoFin.toString());
         publisher.publish(AuditEvent.de("turno.reprogramado", "turno", guardado.getId(),
