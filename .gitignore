@@ -5,6 +5,10 @@
 # Salida de compilación de Maven
 target/
 
+# Frontend: dependencias y salida del build (npm run build en frontend/)
+frontend/node_modules/
+src/main/resources/static/
+
 # IDE
 .idea/
 *.iml

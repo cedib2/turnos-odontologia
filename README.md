@@ -13,7 +13,8 @@ Los diferenciadores del producto son el **precio predecible y todo incluido**, l
 | Base de datos | PostgreSQL |
 | Migraciones | Flyway (`src/main/resources/db/migration`, V001–V032) |
 | Tests | JUnit 5 + Testcontainers (PostgreSQL) |
-| Build | Maven |
+| Frontend | TypeScript vanilla (solo `tsc`), sin framework; servido por Spring Boot |
+| Build | Maven (backend) y npm (frontend) |
 | CI | GitHub Actions (`.github/workflows/ci.yml`): compilación y `mvn test` en cada push y PR |
 
 Integraciones del MVP: **WhatsApp Business API** (notificaciones con outbox y webhooks idempotentes), **Mercado Pago** (señas) y **ARCA** (facturación electrónica). En los perfiles `dev` y `test` se usan adaptadores simulados.
@@ -23,6 +24,7 @@ Integraciones del MVP: **WhatsApp Business API** (notificaciones con outbox y we
 - JDK 17
 - Maven 3.9 o superior
 - Docker en ejecución (los tests de integración levantan PostgreSQL con Testcontainers)
+- Node.js 20 o superior, para compilar el frontend
 
 ## Cómo compilar y probar
 
@@ -72,6 +74,29 @@ java -jar target/turnos-odontologia-0.0.1-SNAPSHOT.jar --spring.profiles.active=
 
 La aplicación queda en `http://localhost:8080`. `AUTH_JWT_SECRET` es obligatoria; el resto de las variables tiene valores por defecto no productivos en el perfil `dev`.
 
+## Frontend
+
+El frontend vive en [`frontend/`](frontend/): TypeScript vanilla compilado con `tsc`, sin framework ni bundler. Tiene seis pantallas:
+
+| Pantalla | Ruta | Para quién |
+|---|---|---|
+| Inicio | `/` | Todos |
+| Reserva por link/QR | `/reservar.html` | Paciente (link con token `RESERVAR`) |
+| Gestión del turno | `/turno.html` | Paciente (link con token `GESTIONAR`) |
+| Ingreso | `/ingresar.html` | Staff |
+| Agenda | `/agenda.html` | Recepción y odontólogos |
+| Cumplimiento | `/cumplimiento.html` | Administración y auditoría |
+
+Se compila a `src/main/resources/static`, desde donde lo sirve Spring Boot en el mismo origen que la API. Hay que compilarlo antes de `mvn package` o `mvn spring-boot:run`:
+
+```bash
+cd frontend && npm ci && npm run build
+```
+
+Para desarrollar, `npm run watch` recompila al guardar. El sistema de diseño (tokens, componentes y puntos de quiebre) está documentado en [`frontend/DISENO.md`](frontend/DISENO.md), y las decisiones en [`docs/decisiones/frontend-typescript-vanilla.md`](docs/decisiones/frontend-typescript-vanilla.md).
+
+Las pantallas de staff y las rutas que usan (agenda, directorio, cumplimiento) existen solo en los perfiles `dev`/`test`, como el resto de la superficie HTTP del proyecto. Para probar la reserva, generá un link desde **Agenda → Link de reserva**.
+
 ## Configuración
 
 Las variables de entorno están listadas, sin valores, en [`.env.example`](.env.example). Los valores reales nunca se versionan (`.env` está en `.gitignore`).
@@ -105,6 +130,7 @@ src/main/java/com/turnosodontologia/
   invoicing/         Facturación con ARCA
   waitlist/          Lista de espera y métricas de ocupación
 src/main/resources/db/migration/   Migraciones Flyway
+frontend/                          Frontend en TypeScript (src/, public/, DISENO.md)
 src/test/                          Tests unitarios y de integración
 knowledge-base/                    Base de conocimiento del dominio (fuente de verdad)
 docs/decisiones/                   Registro de decisiones por change

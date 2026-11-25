@@ -14,7 +14,7 @@ Numerador: turnos creados en el período con `turnos.token_publico IS NOT NULL`,
 ### 3. Ventana de 48 hs hábiles medida contra el inicio original
 `CalculadoraHorasHabiles` suma solo horas de lunes a viernes no feriados (calendario C-07) en `America/Argentina/Buenos_Aires` (C-01 C2). La anticipación se mide entre la fecha del evento en `auditoria_log` y `metadata.inicioAnterior`. Por eso `ReprogramacionService` (C-08) agrega ese campo. Los eventos sin `inicioAnterior` se excluyen del denominador y se informan en `excluidosSinInicioAnterior`.
 
-**Contrato con C-09** (cumplido): `turno.cancelado` está en `AuditoriaCatalogo.TIPOS`, y la cancelación y la reprogramación por link incluyen `inicioAnterior` (ISO-8601) en su metadata. Como el canal público rechaza cambios fuera de la ventana, sus eventos caen siempre dentro: la métrica es útil sobre todo para los cambios hechos por el staff.
+**Contrato con C-09** (cumplido): `turno.cancelado` está en `AuditoriaCatalogo.TIPOS`, y la cancelación y la reprogramación por link incluyen `inicioAnterior` (ISO-8601) en su metadata. **Inconsistencia abierta**: la spec `public-booking` solo acepta cambios por link cuando `now >= vencimiento` (dentro de los últimos 2 días hábiles), mientras esta métrica cuenta como cumplimiento los cambios con 48 hs hábiles o más de anticipación. Con ese comportamiento, los cambios por link nunca cumplen. Hay que confirmar con el PO qué sentido tiene la ventana (RN-AG-05, DD-07).
 
 ### 4. Lectura directa sobre tablas y log
 Las consultas son SQL de solo lectura sobre `turnos` y `auditoria_log`. No se materializa una tabla `Métrica`: la entidad de ocupación y ausentismo es de C-19 (`metricas_ocupacion`).

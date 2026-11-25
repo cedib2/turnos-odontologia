@@ -1,0 +1,15 @@
+{
+  "name": "turnos-odontologia-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Frontend en TypeScript vanilla, servido por Spring Boot desde src/main/resources/static.",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/limpiar.mjs && tsc -p tsconfig.json && node scripts/copiar-estaticos.mjs",
+    "watch": "node scripts/copiar-estaticos.mjs && tsc -p tsconfig.json --watch",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}

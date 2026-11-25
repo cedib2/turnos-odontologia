@@ -22,7 +22,7 @@ class AgendaSurfaceTest {
         for (Class<?> controller : List.of(AgendaController.class, TurnoController.class,
                 BloqueoController.class, SobreturnoController.class,
                 TratamientoController.class, HorarioController.class, FeriadoController.class,
-                PresupuestoController.class)) {
+                PresupuestoController.class, DirectorioController.class)) {
             assertNotNull(controller.getAnnotation(RestController.class));
             Profile profile = controller.getAnnotation(Profile.class);
             assertNotNull(profile, controller.getSimpleName() + " sin @Profile");
@@ -67,6 +67,9 @@ class AgendaSurfaceTest {
         try (Stream<Path> archivos = Files.walk(raiz)) {
             codigo = archivos.filter(Files::isRegularFile)
                     .filter(ruta -> ruta.toString().endsWith(".java"))
+                    // Excepción aprobada (docs/decisiones/frontend-typescript-vanilla.md): directorio de solo
+                    // lectura y emisión del link de reserva para el frontend, dev/test como el resto.
+                    .filter(ruta -> !ruta.getFileName().toString().equals("DirectorioController.java"))
                     .map(ruta -> {
                         try {
                             return Files.readString(ruta);
