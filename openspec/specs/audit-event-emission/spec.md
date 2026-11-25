@@ -33,7 +33,7 @@ El evento SHALL identificar al actor suministrado por el proveedor vigente de C-
 - **THEN** la instantánea registra identificador, nombre, rol y `jti` del usuario y su modo es `REAL`
 
 ### Requirement: Emisión para operaciones relevantes de agenda
-El sistema SHALL emitir y persistir un evento por la creación de turno, la reprogramación, el sobreturno con override y la creación de bloqueos, y también SHALL persistir `publictoken.historia.denegado` cuando C-06 lo emite, sin cambiar su semántica de identidad no verificada. En el sobreturno, el evento MUST incluir el `motivo` y el `actor` que autorizaron la excepción (RN-GL-01). Cada evento SHALL generar una sola fila en `auditoria_log`.
+El sistema SHALL emitir y persistir un evento por la creación de turno, la reprogramación, el sobreturno con override y la creación de bloqueos, y también SHALL persistir `publictoken.historia.denegado` cuando C-06 lo emite, sin cambiar su semántica de identidad no verificada. En el sobreturno, el evento MUST incluir el `motivo` y el `actor` que autorizaron la excepción (RN-GL-01). Cada evento SHALL generar una sola fila en `auditoria_log`. El catálogo SHALL añadir los nombres inmutables `EXPORT_REQUESTED`, `EXPORT_COMPLETED`, `EXPORT_FAILED`, `BACKUP_EXECUTED`, `BACKUP_FAILED`, `RESTORE_DRY_RUN_VERIFIED`, `RESTORE_EXECUTED`, con `correlationId`, actor, `occurredAt`, motivo y resultado.
 
 #### Scenario: Evento de sobreturno
 - **GIVEN** un sobreturno confirmado con motivo y actor
@@ -54,6 +54,31 @@ El sistema SHALL emitir y persistir un evento por la creación de turno, la repr
 - **GIVEN** una solicitud de HISTORIA rechazada por C-06 por identidad no verificada
 - **WHEN** se emite `publictoken.historia.denegado` a través del publicador real
 - **THEN** se persiste una sola fila con entidad `publictoken` y `entidad_id` nullable, sin tratar el actor como identidad verificada
+
+#### Scenario: Eventos inmutables de exportación
+- **GIVEN** una exportación solicitada y completada por un actor
+- **WHEN** se emiten sus eventos a través de `AuditEventPublisher`
+- **THEN** se persisten exactamente `EXPORT_REQUESTED` y `EXPORT_COMPLETED`, cada uno con `correlationId`, actor, `occurredAt`, motivo/metadata y resultado, sin endpoint REST ni permiso de lectura nuevo
+
+#### Scenario: Evento de fallo de exportación
+- **GIVEN** una exportación que termina en error
+- **WHEN** se emite el evento de resultado
+- **THEN** se persiste `EXPORT_FAILED` con el motivo del error, la correlación y el resultado fallido, sin fila de éxito
+
+#### Scenario: Eventos de respaldo ejecutado y fallido
+- **GIVEN** un respaldo ejecutado y un respaldo que falla por indisponibilidad del destino
+- **WHEN** se emiten sus eventos
+- **THEN** se persisten `BACKUP_EXECUTED` y `BACKUP_FAILED` como nombres exactos e inmutables, con motivo/metadata y resultado
+
+#### Scenario: Eventos de restore verificado y ejecutado
+- **GIVEN** un restore en entorno aislado con cadena y conteos verificados
+- **WHEN** se emiten los eventos de verificación y ejecución
+- **THEN** se persisten `RESTORE_DRY_RUN_VERIFIED` y `RESTORE_EXECUTED` con la misma correlación y `occurredAt`
+
+#### Scenario: Correlación distinta entre operaciones de exportación y respaldo
+- **GIVEN** una exportación y un respaldo independientes
+- **WHEN** se emiten sus eventos del catálogo ampliado
+- **THEN** cada operación conserva su propio `correlationId` y no se reutiliza entre eventos ni operaciones
 
 ### Requirement: Correlación de eventos
 Cada evento SHALL llevar un `correlationId` que permita agrupar los eventos generados por una misma operación de agenda. El `correlationId` MUST ser distinto entre operaciones independientes.

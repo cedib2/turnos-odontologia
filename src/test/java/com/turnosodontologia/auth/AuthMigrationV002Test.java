@@ -74,7 +74,8 @@ class AuthMigrationV002Test extends PostgresFlywayTest {
     void baseNuevaAplicaV002EnOrdenJuntoALasDemasMigraciones() {
         List<Integer> versiones = jdbcTemplate.queryForList(
                 "SELECT CAST(version AS INTEGER) FROM flyway_schema_history "
-                        + "WHERE success = true ORDER BY installed_rank", Integer.class);
+                        + "WHERE success = true AND CAST(version AS INTEGER) BETWEEN 1 AND 6 "
+                        + "ORDER BY installed_rank", Integer.class);
 
         // Rango de la Parte 1 (V001–V009) fijo; las Partes 2-4 agregan desde V010 (CHANGES.md,
         // «Reservas de numeración»), siempre después y en orden ascendente.
