@@ -47,3 +47,11 @@
 
 - C-17/C-18 (ALTO): revisar este documento, la V030/V031 y los specs en `openspec/changes/{export-backup-restore,compliance-evidence-dossier}` antes de archivar.
 - Designar owner legal (C-01 D) para poder publicar el dossier.
+
+## Observaciones de revisión (2026-11-25) y cómo se atendieron
+
+1. **`design.md` faltante** en C-18, C-21 y C-22: agregados; los cuatro changes quedan con planificación completa.
+2. **`turno.cancelado`**: no se da de alta desde la Parte 4. Es responsabilidad de C-09 agregarlo a `AuditoriaCatalogo.TIPOS` junto con `inicioAnterior` en la metadata. Queda documentado en `MetricasService.EVENTOS_VENTANA` y en el design de C-22.
+3. **Exportación por paciente / credenciales**: al integrar C-14/C-15, sumar las tablas del paciente a `ExportacionService.FILTROS_PACIENTE`. Al integrar C-10/C-15, sumar las tablas con secretos a `TABLAS_CREDENCIALES`. Queda documentado en el código.
+4. **`.env.example`**: se agregaron `BACKUP_ENCRYPTION_KEY`, `BACKUP_DIR`, `RESTORE_SANDBOX_URL`, `RESTORE_SANDBOX_USER` y `RESTORE_SANDBOX_PASSWORD`. Además, la retención ahora también se toma de `EXPORT_RETENTION_YEARS` (ya listada) si no se define `cumplimiento.respaldo.retencion-anios`.
+5. **Flakiness de conexiones en la suite completa**: con los contextos de Spring nuevos, Postgres llegaba al límite por defecto de 100 conexiones y algunos tests fallaban según el orden de ejecución. `PostgresFixture` ahora levanta el contenedor con `max_connections=300`. Verificado con dos corridas completas seguidas: 224/224.

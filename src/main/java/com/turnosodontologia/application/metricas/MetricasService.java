@@ -37,7 +37,11 @@ public class MetricasService {
     public static final String AUSENTISMO = "AUSENTISMO";
     public static final String DOSSIER = "EVIDENCIA_CUMPLIMIENTO";
 
-    /** Contrato con C-08/C-09: eventos que mueven un turno y llevan {@code inicioAnterior} en metadata. */
+    /**
+     * Contrato con C-08/C-09: eventos que mueven un turno y llevan {@code inicioAnterior} (ISO-8601) en metadata.
+     * {@code turno.cancelado} todavía no está en {@code AuditoriaCatalogo.TIPOS}: C-09 debe darlo de alta al
+     * implementar la cancelación. Hasta entonces la métrica solo cuenta reprogramaciones.
+     */
     static final List<String> EVENTOS_VENTANA = List.of("turno.reprogramado", "turno.cancelado");
     static final long HORAS_VENTANA = 48;
 

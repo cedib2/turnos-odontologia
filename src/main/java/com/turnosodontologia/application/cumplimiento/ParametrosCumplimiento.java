@@ -22,7 +22,7 @@ public class ParametrosCumplimiento {
 
     public ParametrosCumplimiento(
             @Value("${cumplimiento.exportacion.plazo-horas:#{null}}") Integer plazoCopiaHoras,
-            @Value("${cumplimiento.respaldo.retencion-anios:#{null}}") Integer retencionAnios) {
+            @Value("${cumplimiento.respaldo.retencion-anios:${EXPORT_RETENTION_YEARS:#{null}}}") Integer retencionAnios) {
         if (plazoCopiaHoras != null && plazoCopiaHoras <= 0) {
             throw new IllegalArgumentException("cumplimiento.exportacion.plazo-horas debe ser positivo");
         }

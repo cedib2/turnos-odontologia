@@ -26,11 +26,19 @@ import java.util.TreeSet;
 @Service
 public class ExportacionService {
 
-    /** Material de credenciales que nunca sale en una exportación (sí en el respaldo cifrado). */
+    /**
+     * Material de credenciales que nunca sale en una exportación (sí en el respaldo cifrado).
+     * Al integrar C-10/C-15: toda tabla nueva que guarde secretos (tokens, firmas de webhook) se agrega acá.
+     */
     static final Set<String> TABLAS_CREDENCIALES = Set.of(
             "auth_sesiones", "auth_tokens_refresh", "auth_jti_revocados",
             "public_token_jti", "public_idempotencia");
     static final Map<String, Set<String>> COLUMNAS_CREDENCIALES = Map.of("usuarios", Set.of("hash_password"));
+    /**
+     * Tablas incluidas en la copia de alcance PACIENTE (condición con un único parámetro: el id del paciente).
+     * Al integrar C-14/C-15: sumar acá las tablas del paciente (p. ej. presupuestos, señas). La historia clínica
+     * llega por {@link ProveedorHistoriaClinica} (C-11/C-13).
+     */
     static final Map<String, String> FILTROS_PACIENTE = Map.of(
             "pacientes", "t.id = ?",
             "turnos", "t.paciente_id = ?");
