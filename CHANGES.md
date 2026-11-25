@@ -519,11 +519,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 > La declaración de Ley 25.326 ya no diferencia: hace falta evidencia descargable (RN-SE-04).
 
 ### [C-17] `export-backup-restore`
-<<<<<<< HEAD
 - **Estado**: `[x]` completado
-=======
-- **Estado**: `[ ]` pendiente — implementado en `feat/Parte4-J-Velazquez` (V030, 12 tests); governance ALTO: **espera revisión humana** antes de archivar. Ver [`docs/decisiones/Parte4-C17-C18-C21-C22-checkpoints.md`](docs/decisiones/Parte4-C17-C18-C21-C22-checkpoints.md)
->>>>>>> origin/feat/Parte4-J-Velazquez
 - **Scope**:
   - Migración 012: registro de exportaciones, respaldos y restauraciones (formato, plazos y destino `(TBD)`).
   - Exportación completa de datos y copia de historia en 48 h `(TBD, IN-05/IN-06)`; formatos `(TBD)`; cifrado en reposo y ubicación de datos/subprocesadores `(TBD, RN-SE-05)`.

@@ -17,7 +17,7 @@ import javax.sql.DataSource;
 public class MercadoPagoConfig {
 
     @Bean
-    WebhookSignatureVerifier webhookSignatureVerifier(
+    WebhookSignatureVerifier mercadoPagoWebhookSignatureVerifier(
             @Value("${MERCADOPAGO_WEBHOOK_SECRET:secreto-de-prueba-no-real}") String secreto) {
         return new WebhookSignatureVerifier(secreto);
     }

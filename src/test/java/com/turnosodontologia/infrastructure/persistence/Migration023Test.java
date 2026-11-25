@@ -18,8 +18,8 @@ class Migration023Test extends PostgresFlywayTest {
         Set<String> versiones = Arrays.stream(flyway.info().applied())
                 .map(info -> info.getVersion().getVersion())
                 .collect(Collectors.toSet());
-        assertEquals(Set.of("001", "002", "003", "004", "005", "006",
-                "020", "021", "022", "023"), versiones);
+        assertEquals(Set.of("001", "002", "003", "004", "005", "006", "010", "011", "012", "013",
+                "020", "021", "022", "023", "030", "031"), versiones);
 
         for (String tabla : List.of("turnos", "ocupaciones", "senias", "public_idempotencia")) {
             assertEquals(1, countTabla(tabla), "V001-V022 quedó alterada: " + tabla);
@@ -72,11 +72,16 @@ class Migration023Test extends PostgresFlywayTest {
     }
 
     @Test
-    void noCreaCajaAsientoArqueoNotificacionNiMetas() {
+    void noCreaCajaAsientoArqueoNotificacionNiMetas() throws java.io.IOException {
         for (String tabla : List.of("caja", "asientos", "asiento", "arqueo", "arqueos",
-                "notificaciones", "notificacion", "metas", "objetivos")) {
+                "metas", "objetivos")) {
             assertEquals(0, countTabla(tabla), "no se debe crear la tabla " + tabla);
         }
+        // La tabla notificaciones la crea V010 (C-10); V023 no debe crearla.
+        String v023 = java.nio.file.Files.readString(java.nio.file.Path.of(
+                "src/main/resources/db/migration/V023__waitlist_and_metrics.sql")).toLowerCase();
+        assertEquals(false, v023.matches("(?s).*create\\s+table\\s+(if\\s+not\\s+exists\\s+)?notificacion.*"),
+                "V023 no debe crear la tabla notificaciones");
         for (String columna : List.of("asiento_id", "caja_id", "arqueo_id", "meta", "objetivo")) {
             assertEquals(0, countColumn("metricas_ocupacion", columna), columna);
         }

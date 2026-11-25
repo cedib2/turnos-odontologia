@@ -86,11 +86,27 @@ public final class VolcadoBaseDatos {
                 }
             }
             List<String> orden = ordenTopologico(destino, paquete.tablas().keySet());
+            // Las tablas cuyo contenido ya coincide con el respaldo (seeds de migración, como el
+            // catálogo FDI append-only) no se reescriben: borrarlas violaría sus triggers.
+            Set<String> identicas = new LinkedHashSet<>();
+            for (String tabla : orden) {
+                List<String> esperadas = new ArrayList<>(paquete.tablas().get(tabla));
+                List<String> actuales = filas(destino, tabla, Set.of(), null, null);
+                esperadas.sort(null);
+                actuales.sort(null);
+                if (esperadas.equals(actuales)) {
+                    identicas.add(tabla);
+                }
+            }
             for (int i = orden.size() - 1; i >= 0; i--) {
-                ejecutar(destino, "DELETE FROM " + identificador(orden.get(i)));
+                if (!identicas.contains(orden.get(i))) {
+                    ejecutar(destino, "DELETE FROM " + identificador(orden.get(i)));
+                }
             }
             for (String tabla : orden) {
-                insertar(destino, tabla, paquete.tablas().get(tabla));
+                if (!identicas.contains(tabla)) {
+                    insertar(destino, tabla, paquete.tablas().get(tabla));
+                }
             }
             for (Map.Entry<String, Long> secuencia : paquete.secuencias().entrySet()) {
                 if (secuencia.getValue() != null) {

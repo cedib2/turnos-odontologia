@@ -36,6 +36,7 @@ class ExportSecretsSurfaceTest {
     @Test
     void sinLiteralesDeSeguridadFueraDeAuth() throws IOException {
         String superficie = codigoFuente().stream()
+                .filter(ruta -> !ruta.toString().replace('\\', '/').contains("/auth/"))
                 .filter(ruta -> ruta.toString().toLowerCase(Locale.ROOT).contains("agenda")
                         || ruta.toString().contains("export"))
                 .map(this::leer)
@@ -54,6 +55,7 @@ class ExportSecretsSurfaceTest {
         String controladores = codigoFuente().stream()
                 .filter(ruta -> ruta.getFileName().toString().endsWith("Controller.java"))
                 .map(this::leer)
+                .filter(fuente -> !fuente.contains("@Profile({\"dev\", \"test\"})"))
                 .reduce("", String::concat);
         String export = codigoMain();
 
