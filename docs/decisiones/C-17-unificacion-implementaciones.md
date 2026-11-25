@@ -37,4 +37,4 @@ Conservar `export/`: habría roto C-18 y C-22, que dependen de `application/cump
 ## Consecuencias
 
 - La suite pasa de 502 a 471 tests, todos en verde.
-- Pendiente: ningún componente implementa `ProveedorHistoriaClinica`, así que la copia por paciente declara la historia clínica como pendiente aunque C-11 y C-13 ya estén implementados. Hay que conectar ese contrato con C-13.
+- Pendiente al momento de la unificación: ningún componente implementaba `ProveedorHistoriaClinica`. **Resuelto el mismo día**: `application/clinico/HistoriaClinicaParaExportacion` lo implementa con la vista vigente de C-11/C-13, y la copia por paciente se amplió a las tablas de C-10, C-11/C-12, C-14/C-15/C-16 y C-19.

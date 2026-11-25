@@ -35,13 +35,53 @@ public class ExportacionService {
             "public_token_jti", "public_idempotencia");
     static final Map<String, Set<String>> COLUMNAS_CREDENCIALES = Map.of("usuarios", Set.of("hash_password"));
     /**
-     * Tablas incluidas en la copia de alcance PACIENTE (condición con un único parámetro: el id del paciente).
-     * Al integrar C-14/C-15: sumar acá las tablas del paciente (p. ej. presupuestos, señas). La historia clínica
-     * llega por {@link ProveedorHistoriaClinica} (C-11/C-13).
+     * Tablas incluidas en la copia de alcance PACIENTE: condición sobre el alias {@code t} con un único parámetro,
+     * el id del paciente. Cada tabla se alcanza siguiendo sus claves hasta el paciente: por turno (agenda,
+     * notificaciones C-10, lista de espera C-19), por ficha (historia clínica C-11 y firmas C-12) o por
+     * presupuesto y seña (C-14/C-15/C-16). {@code lista_espera} entra solo por turno: {@code candidato_id} no
+     * tiene FK y no está confirmado que sea un id de paciente. La vista vigente de la historia llega además por
+     * {@link ProveedorHistoriaClinica} (C-11/C-13).
      */
-    static final Map<String, String> FILTROS_PACIENTE = Map.of(
-            "pacientes", "t.id = ?",
-            "turnos", "t.paciente_id = ?");
+    static final Map<String, String> FILTROS_PACIENTE = Map.ofEntries(
+            Map.entry("pacientes", "t.id = ?"),
+            Map.entry("turnos", "t.paciente_id = ?"),
+            Map.entry("ocupaciones", porTurno("t.turno_id")),
+            Map.entry("notificaciones", porTurno("t.turno_id")),
+            Map.entry("notificaciones_outbox", "t.notificacion_id IN (SELECT n.id FROM notificaciones n "
+                    + "JOIN turnos tu ON tu.id = n.turno_id WHERE tu.paciente_id = ?)"),
+            Map.entry("notificacion_intentos", "t.notificacion_id IN (SELECT n.id FROM notificaciones n "
+                    + "JOIN turnos tu ON tu.id = n.turno_id WHERE tu.paciente_id = ?)"),
+            Map.entry("lista_espera", porTurno("t.turno_id")),
+            Map.entry("fichas_clinicas", "t.paciente_id = ?"),
+            Map.entry("anamnesis", porFicha("t.ficha_id")),
+            Map.entry("odontograma_registros", porFicha("t.ficha_id")),
+            Map.entry("evoluciones", porFicha("t.ficha_id")),
+            Map.entry("consentimientos", porFicha("t.ficha_id")),
+            Map.entry("evolucion_firmas", "t.evolucion_id IN (SELECT e.id FROM evoluciones e "
+                    + "JOIN fichas_clinicas f ON f.id = e.ficha_id WHERE f.paciente_id = ?)"),
+            Map.entry("consentimiento_firmas", "t.consentimiento_id IN (SELECT c.id FROM consentimientos c "
+                    + "JOIN fichas_clinicas f ON f.id = c.ficha_id WHERE f.paciente_id = ?)"),
+            Map.entry("historia_copias", "t.paciente_id = ?"),
+            Map.entry("presupuestos", "t.paciente_id = ?"),
+            Map.entry("items_presupuesto", "t.presupuesto_id IN (SELECT id FROM presupuestos WHERE paciente_id = ?)"),
+            Map.entry("senias", "? IN (SELECT paciente_id FROM turnos WHERE id = t.turno_id "
+                    + "UNION ALL SELECT paciente_id FROM presupuestos WHERE id = t.presupuesto_id)"),
+            Map.entry("comprobantes", "? IN (SELECT paciente_id FROM turnos WHERE id = t.turno_id "
+                    + "UNION ALL SELECT paciente_id FROM presupuestos WHERE id = t.presupuesto_id "
+                    + "UNION ALL SELECT tu.paciente_id FROM senias s JOIN turnos tu ON tu.id = s.turno_id "
+                    + "WHERE s.id = t.senia_id "
+                    + "UNION ALL SELECT p.paciente_id FROM senias s JOIN presupuestos p ON p.id = s.presupuesto_id "
+                    + "WHERE s.id = t.senia_id)"));
+
+    /** Condición «la fila pertenece a un turno del paciente». */
+    private static String porTurno(String columna) {
+        return columna + " IN (SELECT id FROM turnos WHERE paciente_id = ?)";
+    }
+
+    /** Condición «la fila pertenece a la ficha clínica del paciente». */
+    private static String porFicha(String columna) {
+        return columna + " IN (SELECT id FROM fichas_clinicas WHERE paciente_id = ?)";
+    }
 
     private final DataSource dataSource;
     private final RegistroOperaciones registro;
@@ -160,7 +200,7 @@ public class ExportacionService {
         if (porPaciente) {
             ProveedorHistoriaClinica proveedor = historias.getIfAvailable();
             anexos.put("historiaClinica", proveedor == null
-                    ? "(pendiente: C-13 no implementado)"
+                    ? "(no disponible: sin proveedor de historia clínica)"
                     : proveedor.copiaHistoria(operacion.pacienteId()).map(Object.class::cast)
                     .orElse("(sin historia registrada)"));
         }

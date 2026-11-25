@@ -179,7 +179,8 @@ public class HistoriaClinicaService {
 
     /**
      * Historia vigente del titular, sin control de rol de staff. Solo para el acceso del paciente
-     * (C-13), que autoriza por token {@code HISTORIA} y verificación de identidad antes de llamar.
+     * (C-13), que autoriza por token {@code HISTORIA} y verificación de identidad antes de llamar, y para
+     * la copia por paciente de C-17, que la autoriza como operación de exportación.
      */
     @Transactional(readOnly = true)
     public java.util.Optional<HistoriaClinica> historiaDelTitular(long pacienteId) {

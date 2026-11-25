@@ -15,7 +15,7 @@ El sistema SHALL registrar cada exportación, respaldo y restore con tipo, alcan
 - **THEN** la base de datos rechaza la sentencia
 
 ### Requirement: Exportación completa y copia por paciente
-El sistema SHALL generar una exportación completa de los datos y una copia por paciente, cifradas en reposo, con plazo de entrega calculado solo si está configurado `(TBD, IN-05)`. La exportación MUST NOT incluir hashes de contraseña ni tablas de sesiones, refresh tokens o tokens públicos. Cada solicitud, resultado y descarga SHALL quedar en el log append-only.
+El sistema SHALL generar una exportación completa de los datos y una copia por paciente, cifradas en reposo. La copia por paciente SHALL incluir cada tabla alcanzable desde el paciente por sus claves (turno, ficha clínica, presupuesto o seña) y la historia clínica vigente que provee C-11/C-13; las filas sin un vínculo confirmado con el paciente MUST NOT incluirse. El plazo de entrega SHALL calcularse solo si está configurado `(TBD, IN-05)`. La exportación MUST NOT incluir hashes de contraseña ni tablas de sesiones, refresh tokens o tokens públicos. Cada solicitud, resultado y descarga SHALL quedar en el log append-only.
 
 #### Scenario: Exportación completa sin credenciales
 - **GIVEN** datos de pacientes, turnos y usuarios
@@ -23,9 +23,9 @@ El sistema SHALL generar una exportación completa de los datos y una copia por 
 - **THEN** el contenido incluye pacientes, turnos y auditoría, excluye `auth_*` y `hash_password`, y el artefacto en disco no contiene datos personales en claro
 
 #### Scenario: Copia de un paciente
-- **GIVEN** dos pacientes con turnos
+- **GIVEN** dos pacientes con turnos, historia clínica, presupuesto, seña y notificaciones
 - **WHEN** se exporta con alcance `PACIENTE` para uno de ellos
-- **THEN** la copia contiene solo sus datos y declara la historia clínica como pendiente de C-13
+- **THEN** la copia contiene solo sus datos: paciente, turnos, historia clínica con sus versiones y firmas (C-11/C-12), presupuestos, señas y comprobantes (C-14/C-15/C-16) y notificaciones (C-10), más la vista vigente de la historia como anexo (C-13); no incluye el log de auditoría ni datos de otros pacientes
 
 #### Scenario: Solicitud vencida
 - **GIVEN** un plazo configurado y una solicitud sin completar
