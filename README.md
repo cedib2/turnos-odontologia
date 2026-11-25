@@ -34,7 +34,7 @@ mvn -B -DskipTests compile
 mvn -B test
 ```
 
-La suite completa tiene 493 tests. No requiere variables de entorno: el perfil `test` usa valores no productivos.
+La suite completa tiene 502 tests. No requiere variables de entorno: el perfil `test` usa valores no productivos.
 
 ## Cómo ejecutar la aplicación
 
