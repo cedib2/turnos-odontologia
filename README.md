@@ -36,7 +36,39 @@ mvn -B test
 
 La suite completa tiene 493 tests. No requiere variables de entorno: el perfil `test` usa valores no productivos.
 
-> **Estado actual:** el proyecto todavía no tiene una clase `@SpringBootApplication` ni el `spring-boot-maven-plugin`, así que la aplicación se valida solo a través de los tests. Falta agregar el punto de entrada para poder ejecutarla con `mvn spring-boot:run`.
+## Cómo ejecutar la aplicación
+
+El punto de entrada es `com.turnosodontologia.TurnosOdontologiaApplication`. Para correrla en local hace falta un PostgreSQL; por ejemplo, con Docker:
+
+```bash
+docker run -d --name turnos-pg -e POSTGRES_DB=turnos -e POSTGRES_USER=turnos -e POSTGRES_PASSWORD=turnos -p 5432:5432 postgres:16-alpine
+```
+
+Con la base levantada, se ejecuta con el perfil `dev`. Flyway aplica las migraciones al arrancar.
+
+```bash
+export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/turnos
+export SPRING_DATASOURCE_USERNAME=turnos
+export SPRING_DATASOURCE_PASSWORD=turnos
+export AUTH_JWT_SECRET=un-secreto-de-desarrollo-de-al-menos-32-caracteres
+export PUBLIC_TOKEN_SECRET=otro-secreto-de-desarrollo
+```
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+También se puede empaquetar y correr el jar:
+
+```bash
+mvn -B -DskipTests package
+```
+
+```bash
+java -jar target/turnos-odontologia-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev
+```
+
+La aplicación queda en `http://localhost:8080`. `AUTH_JWT_SECRET` es obligatoria; el resto de las variables tiene valores por defecto no productivos en el perfil `dev`.
 
 ## Configuración
 

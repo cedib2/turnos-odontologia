@@ -2,6 +2,7 @@ package com.turnosodontologia.audit;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Component
 public final class AuditoriaCanonicalizer {
 
     public static final String GENESIS = "0000000000000000000000000000000000000000000000000000000000000000";
