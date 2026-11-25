@@ -44,7 +44,7 @@ Los IDs se conservan al editar o reordenar. No se reciclan IDs retirados. El pro
 | Parte 2 | compañero | desde V010 | a asignar por su dueño |
 | Parte 3 | compañero | desde V020 | V020 = C-14; V021 = C-15; V022 en adelante queda como holgura |
 | Parte 4 | compañero | desde V030 | a asignar por su dueño |
-| Parte 4 | Joaquín Adrián Velázquez Carrera | desde V030 | V030 = C-17 (`cumplimiento_operaciones`); V031 = C-18 (`dossier_items`, `subprocesadores`). |
+| Parte 4 | Joaquín Adrián Velázquez Carrera | desde V030 | V030 = C-17 (`cumplimiento_operaciones`); V031 = C-18 (`dossier_items`, `subprocesadores`); V032 = C-17, elimina `export_backup_restore_operacion` (unificación). |
 
 Los números históricos citados en los scopes (`C-10 = 007`, `C-11 = 008`, `C-14 = 009`, `C-15 = 010`, `C-16 = 011`, `C-17 = 012`, `C-19 = 013`) quedan **supersedidos** por esta tabla: cada dueño elige dentro de su rango y lo coordina antes de crear la migración.
 
@@ -519,7 +519,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 > La declaración de Ley 25.326 ya no diferencia: hace falta evidencia descargable (RN-SE-04).
 
 ### [C-17] `export-backup-restore`
-- **Estado**: `[x]` completado
+- **Estado**: `[x]` completado y archivado (2026-11-25) — unificado: se conserva la implementación de `feat/Parte4-J-Velazquez` (`application/cumplimiento`, tabla `cumplimiento_operaciones` de V030, cifrado AES-256-GCM y restore verificado en entorno aislado) y se retira el paquete `export/` de `feat/parte4-Joaquin`; V032 elimina su tabla `export_backup_restore_operacion` sin editar V030. `mvn test` 471/471 en verde. Decisión: [`docs/decisiones/C-17-unificacion-implementaciones.md`](docs/decisiones/C-17-unificacion-implementaciones.md). Pendiente: implementar `ProveedorHistoriaClinica` para que la copia por paciente incluya la historia de C-11/C-13.
 - **Scope**:
   - Migración 012: registro de exportaciones, respaldos y restauraciones (formato, plazos y destino `(TBD)`).
   - Exportación completa de datos y copia de historia en 48 h `(TBD, IN-05/IN-06)`; formatos `(TBD)`; cifrado en reposo y ubicación de datos/subprocesadores `(TBD, RN-SE-05)`.

@@ -11,7 +11,7 @@ Los diferenciadores del producto son el **precio predecible y todo incluido**, l
 | Lenguaje | Java 17 |
 | Framework | Spring Boot 3.5 (Web, Security, Data JPA) |
 | Base de datos | PostgreSQL |
-| Migraciones | Flyway (`src/main/resources/db/migration`, V001–V031) |
+| Migraciones | Flyway (`src/main/resources/db/migration`, V001–V032) |
 | Tests | JUnit 5 + Testcontainers (PostgreSQL) |
 | Build | Maven |
 | CI | GitHub Actions (`.github/workflows/ci.yml`): compilación y `mvn test` en cada push y PR |
@@ -34,7 +34,7 @@ mvn -B -DskipTests compile
 mvn -B test
 ```
 
-La suite completa tiene 502 tests. No requiere variables de entorno: el perfil `test` usa valores no productivos.
+La suite completa tiene 471 tests. No requiere variables de entorno: el perfil `test` usa valores no productivos.
 
 ## Cómo ejecutar la aplicación
 
@@ -93,7 +93,7 @@ Las variables de entorno están listadas, sin valores, en [`.env.example`](.env.
 ```
 src/main/java/com/turnosodontologia/
   domain/            Modelo de dominio (agenda, clínico, etc.)
-  application/       Casos de uso (notificaciones, cumplimiento, ...)
+  application/       Casos de uso; cumplimiento/ = exportación, respaldo y restore (C-17)
   infrastructure/    Persistencia y adaptadores
   interfaces/        Controladores HTTP
   auth/              Autenticación y RBAC
@@ -104,7 +104,6 @@ src/main/java/com/turnosodontologia/
   depositpayments/   Señas con Mercado Pago
   invoicing/         Facturación con ARCA
   waitlist/          Lista de espera y métricas de ocupación
-  export/            Exportación, respaldo y restore
 src/main/resources/db/migration/   Migraciones Flyway
 src/test/                          Tests unitarios y de integración
 knowledge-base/                    Base de conocimiento del dominio (fuente de verdad)
@@ -140,7 +139,7 @@ CHANGES.md                         Roadmap operativo: alcance, dependencias y es
 | C-14 | Presupuestos y caja | Completado |
 | C-15 | Señas con Mercado Pago y conciliación | Completado |
 | C-16 | Facturación ARCA y conciliación | Completado |
-| C-17 | Exportación, respaldo y restore | Completado |
+| C-17 | Exportación, respaldo y restore | Completado (unificado) |
 | C-18 | Dossier de evidencia de cumplimiento | Implementado, pendiente de revisión |
 | C-19 | Relleno automático de waitlist y métricas | Completado |
 | C-20 | IA conversacional con handoff | Diferido sin código |

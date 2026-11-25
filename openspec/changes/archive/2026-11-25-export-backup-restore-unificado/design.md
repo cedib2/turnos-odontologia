@@ -6,7 +6,7 @@
 ## Restore y verificación
 1. Se verifica que la base aislada **no** sea la productiva (`current_database()@host:puerto`). Recién después se ejecuta `flyway clean` sobre ella.
 2. Se verifica el checksum SHA-256 del artefacto descifrado contra el registrado (detecta alteración en el destino; AES-GCM también la detecta).
-3. `flyway migrate`, borrado de semillas, inserción en orden topológico de FKs con `jsonb_populate_record` (omitiendo columnas generadas), `setval` de secuencias.
+3. `flyway migrate` e inserción en orden topológico de FKs con `jsonb_populate_record` (omitiendo columnas generadas), y `setval` de secuencias. Las tablas cuyo contenido ya coincide con el respaldo (semillas de migración, como el catálogo FDI append-only de C-11) no se borran ni se reinsertan: borrarlas violaría sus triggers.
 4. Comparación fila a fila (`to_jsonb` en UTC) entre lo restaurado y el respaldo. Todo en una transacción.
 
 ## Alternativas descartadas

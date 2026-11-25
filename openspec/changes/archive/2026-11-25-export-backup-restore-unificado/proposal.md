@@ -1,6 +1,6 @@
 # Proposal — C-17 `export-backup-restore`
 
-> Parte 4 — autor: Joaquín Adrián Velázquez Carrera. Governance **ALTO**: implementado en la rama `feat/Parte4-J-Velazquez` y **pendiente de revisión** antes de archivar.
+> Parte 4 — autor: Joaquín Adrián Velázquez Carrera. Governance **ALTO**: implementado en la rama `feat/Parte4-J-Velazquez`. Revisado y archivado el 2026-11-25 al unificar C-17: esta es la implementación vigente; la del paquete `export/` (`archive/2026-11-25-export-backup-restore`) quedó retirada.
 
 ## Why
 

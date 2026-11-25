@@ -1,5 +1,7 @@
 # Proposal
 
+> **Reemplazado (2026-11-25).** Esta implementación (paquete `export/`, tabla `export_backup_restore_operacion`) se retiró al unificar C-17. La vigente es `application/cumplimiento`: ver `archive/2026-11-25-export-backup-restore-unificado` y `docs/decisiones/C-17-unificacion-implementaciones.md`.
+
 ## Why
 
 El sistema todavía no produce evidencia descargable de exportación, respaldo y recuperación: RN-SE-03/04/05 y US-014 exigen copia de la historia en un plazo, retención demostrable y un procedimiento de restore probado antes de escribir sobre datos de usuario. C-05 ya entrega un registro append-only real con cadena SHA-256, pero su catálogo estaba cerrado en cinco eventos; C-13 y C-15 aún no están en esta rama. El PO cerró el 2026-11-24/25 las siete decisiones que bloqueaban la planeación: migración, catálogo de eventos, plazo, formatos, storage, parámetros operativos y adaptadores por defecto. El PO pidió explícitamente **generar los artefactos de C-17 y frenar antes del apply** (governance ALTO): este documento solo planea, no autoriza implementación; sin apply hasta revisión del PO.

@@ -8,4 +8,4 @@
 - [x] 6. `RespaldoProgramadoConfig` activo solo con `BACKUP_CRON`.
 - [x] 7. Catálogo de auditoría ampliado y controlador dev/test.
 - [x] 8. Tests: `ExportacionRespaldoRestoreTest` (7), `CumplimientoFallosTest` (2), `CifradorArtefactosTest` (3).
-- [ ] 9. Revisión humana (governance ALTO) y archivo del change.
+- [x] 9. Revisión humana (governance ALTO) y archivo del change: aprobado al unificar C-17 (2026-11-25). Se conserva esta implementación y se retira el paquete `export/`; V032 elimina su tabla. Ver `docs/decisiones/C-17-unificacion-implementaciones.md`.
