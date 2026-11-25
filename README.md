@@ -38,11 +38,13 @@ La suite completa tiene 493 tests. No requiere variables de entorno: el perfil `
 
 ## Cómo ejecutar la aplicación
 
-El punto de entrada es `com.turnosodontologia.TurnosOdontologiaApplication`. Para correrla en local hace falta un PostgreSQL; por ejemplo, con Docker:
+El punto de entrada es `com.turnosodontologia.TurnosOdontologiaApplication`. Para correrla en local hace falta un PostgreSQL. El repo incluye un [`docker-compose.yml`](docker-compose.yml) con PostgreSQL 16 (base, usuario y contraseña `turnos`, puerto 5432 y datos persistidos en un volumen):
 
 ```bash
-docker run -d --name turnos-pg -e POSTGRES_DB=turnos -e POSTGRES_USER=turnos -e POSTGRES_PASSWORD=turnos -p 5432:5432 postgres:16-alpine
+docker compose up -d
 ```
+
+Para detenerla, `docker compose down`; para borrar también los datos, `docker compose down -v`.
 
 Con la base levantada, se ejecuta con el perfil `dev`. Flyway aplica las migraciones al arrancar.
 
