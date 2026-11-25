@@ -76,7 +76,9 @@ class AuthMigrationV002Test extends PostgresFlywayTest {
                 "SELECT CAST(version AS INTEGER) FROM flyway_schema_history "
                         + "WHERE success = true ORDER BY installed_rank", Integer.class);
 
-        assertEquals(List.of(1, 2, 3, 4, 5, 6), versiones);
+        // Rango V001–V009 de la Parte 1; las demás partes migran en sus rangos reservados (V010+, V020+, V030+).
+        assertEquals(List.of(1, 2, 3, 4, 5, 6), versiones.stream().filter(v -> v < 10).toList());
+        assertEquals(versiones.stream().sorted().toList(), versiones);
     }
 
     @Test

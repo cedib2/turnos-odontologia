@@ -1,6 +1,10 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
+    # Cada contexto de test cacheado conserva su pool: con pocos idle no se agota max_connections de Postgres.
+    hikari:
+      minimum-idle: 1
+      maximum-pool-size: 5
   jpa:
     hibernate:
       ddl-auto: validate
