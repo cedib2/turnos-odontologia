@@ -22,19 +22,20 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Autentica y autoriza la superficie de agenda y catálogos.
+ * Autentica y autoriza una superficie de staff según su {@link RbacPolicy}: agenda y catálogos
+ * ({@link AgendaRbacPolicy}) o cumplimiento y métricas ({@link CumplimientoRbacPolicy}).
  *
  * <ol>
  *   <li>Lee la cookie de sesión de C-04 y la verifica con {@link AccessAuthenticator}
  *       (firma, expiración, emisor, {@code jti} no revocado) → 401.</li>
  *   <li>Exige usuario existente y activo, con el mismo rol que el token → 401.</li>
  *   <li>En métodos que modifican estado exige CSRF de doble envío → 403.</li>
- *   <li>Evalúa {@link AgendaRbacPolicy} → 403.</li>
+ *   <li>Evalúa la {@link RbacPolicy} de la superficie → 403.</li>
  *   <li>Publica el {@link AuthenticatedActor} (modo {@code REAL}) en el contexto de seguridad
  *       para que {@link AuthenticatedCurrentActorProvider} lo adapte a los servicios.</li>
  * </ol>
  */
-public class AgendaAccessFilter extends OncePerRequestFilter {
+public class RbacAccessFilter extends OncePerRequestFilter {
 
     static final String CUERPO_TOKEN_INVALIDO = "token-invalido";
     static final String CUERPO_ACCESO_DENEGADO = "acceso-denegado";
@@ -45,14 +46,14 @@ public class AgendaAccessFilter extends OncePerRequestFilter {
 
     private final AccessAuthenticator acceso;
     private final UsuarioRepository usuarios;
-    private final AgendaRbacPolicy politica;
+    private final RbacPolicy politica;
     private final CsrfTokenStore csrf;
     private final String sessionCookie;
     private final String csrfCookie;
 
-    public AgendaAccessFilter(AccessAuthenticator acceso, UsuarioRepository usuarios,
-                              AgendaRbacPolicy politica, CsrfTokenStore csrf,
-                              String sessionCookie, String csrfCookie) {
+    public RbacAccessFilter(AccessAuthenticator acceso, UsuarioRepository usuarios,
+                            RbacPolicy politica, CsrfTokenStore csrf,
+                            String sessionCookie, String csrfCookie) {
         this.acceso = acceso;
         this.usuarios = usuarios;
         this.politica = politica;
@@ -63,7 +64,7 @@ public class AgendaAccessFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return !AgendaRbacPolicy.aplicaA(ruta(request));
+        return !politica.cubre(ruta(request));
     }
 
     @Override

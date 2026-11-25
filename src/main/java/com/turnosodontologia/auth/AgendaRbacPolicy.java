@@ -15,7 +15,7 @@ import java.util.Set;
  * de sus alternativas. El rol {@code paciente} nunca accede a la superficie de staff: el
  * paciente opera solo por las rutas públicas con token (C-06/C-09/C-13).
  */
-public class AgendaRbacPolicy {
+public class AgendaRbacPolicy implements RbacPolicy {
 
     static final List<String> PREFIJOS_AGENDA = List.of("/agenda", "/turnos", "/bloqueos", "/sobreturnos");
     static final List<String> PREFIJOS_CATALOGO = List.of("/tratamientos", "/horarios", "/feriados");
@@ -51,10 +51,21 @@ public class AgendaRbacPolicy {
         this.rolPermisos = rolPermisos;
     }
 
+    @Override
+    public String[] patrones() {
+        return PATRONES.clone();
+    }
+
+    @Override
+    public boolean cubre(String ruta) {
+        return aplicaA(ruta);
+    }
+
     public static boolean aplicaA(String ruta) {
         return prefijo(ruta, PREFIJOS_AGENDA).isPresent() || prefijo(ruta, PREFIJOS_CATALOGO).isPresent();
     }
 
+    @Override
     public boolean permite(String codigoRol, String metodo, String ruta) {
         if (codigoRol == null || codigoRol.isBlank() || ROL_PACIENTE.equalsIgnoreCase(codigoRol)) {
             return false;
