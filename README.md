@@ -36,7 +36,7 @@ mvn -B -DskipTests compile
 mvn -B test
 ```
 
-La suite completa tiene 485 tests. No requiere variables de entorno: el perfil `test` usa valores no productivos.
+La suite completa tiene 488 tests. No requiere variables de entorno: el perfil `test` usa valores no productivos.
 
 ## Cómo ejecutar la aplicación
 
@@ -71,6 +71,8 @@ mvn -B -DskipTests package
 ```bash
 java -jar target/turnos-odontologia-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev
 ```
+
+Con cualquier otro perfil (por ejemplo `--spring.profiles.active=prod`) se activan la seguridad de C-04 y los adaptadores no configurados: WhatsApp, firma electrónica y aviso de lista de espera fallan de forma explícita en lugar de simular envíos, hasta que se definan sus proveedores reales.
 
 La aplicación queda en `http://localhost:8080`. `AUTH_JWT_SECRET` es obligatoria; el resto de las variables tiene valores por defecto no productivos en el perfil `dev`.
 

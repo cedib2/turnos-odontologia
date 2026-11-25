@@ -163,7 +163,10 @@ public class PublicBookingService {
     public GestionarTurnoResponse confirmar(PublicTokenClaims claims, GestionarRequest solicitud) {
         registrarIdempotencia("turno.confirmar", solicitud.idempotencyKey());
         Turno turno = turnoGestionable(claims, solicitud.turnoId());
-        validarVentana(turno);
+        // Confirmar la asistencia no está sujeto a la ventana de 48 hs: basta con que el turno no haya empezado.
+        if (!ventana.antesDelInicio(turno.getInicio())) {
+            throw PublicApiException.fueraDeVentana();
+        }
 
         turno.confirmar(AUTOR);
         Turno guardado = turnos.saveAndFlush(turno);

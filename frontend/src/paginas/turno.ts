@@ -113,7 +113,7 @@ function pintarAcciones(): void {
       el('p', { class: 'campo__ayuda' }, 'Si el horario no está libre, te mostramos los más cercanos.'),
       formulario),
     cancelarBtn,
-    el('p', { class: 'campo__ayuda' }, 'Confirmar, reprogramar y cancelar por link están sujetos a la ventana de 48 horas hábiles; fuera de ella, comunicate con recepción.'));
+    el('p', { class: 'campo__ayuda' }, 'Podés confirmar tu asistencia hasta el inicio del turno. Cancelar o reprogramar por link se puede hasta 48 horas hábiles antes; después, comunicate con recepción.'));
 }
 
 if (!token || !turnoId) {

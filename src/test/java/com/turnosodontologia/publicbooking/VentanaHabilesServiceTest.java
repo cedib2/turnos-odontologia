@@ -4,6 +4,7 @@ import com.turnosodontologia.application.ConfiguracionSchedulingService;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -33,18 +34,32 @@ class VentanaHabilesServiceTest {
     }
 
     @Test
-    void limiteInclusiveDentroYUnSegundoAntesFuera() {
+    void limiteInclusiveDentroYUnSegundoDespuesFuera() {
         when(configuracion.zonaHoraria()).thenReturn(ZONA);
         when(configuracion.esFeriado(any())).thenReturn(false);
         Instant vencimiento = Instant.parse("2026-12-02T02:59:59Z");
 
-        VentanaHabilesService dentro = new VentanaHabilesService(configuracion,
+        VentanaHabilesService enElLimite = new VentanaHabilesService(configuracion,
                 Clock.fixed(vencimiento, ZoneOffset.UTC));
-        VentanaHabilesService antes = new VentanaHabilesService(configuracion,
-                Clock.fixed(vencimiento.minusSeconds(1), ZoneOffset.UTC));
+        VentanaHabilesService conAnticipacion = new VentanaHabilesService(configuracion,
+                Clock.fixed(vencimiento.minus(Duration.ofDays(5)), ZoneOffset.UTC));
+        VentanaHabilesService tarde = new VentanaHabilesService(configuracion,
+                Clock.fixed(vencimiento.plusSeconds(1), ZoneOffset.UTC));
 
-        assertTrue(dentro.dentroDeVentana(INICIO_JUEVES));
-        assertFalse(antes.dentroDeVentana(INICIO_JUEVES));
+        assertTrue(enElLimite.dentroDeVentana(INICIO_JUEVES));
+        assertTrue(conAnticipacion.dentroDeVentana(INICIO_JUEVES));
+        assertFalse(tarde.dentroDeVentana(INICIO_JUEVES));
+    }
+
+    @Test
+    void confirmarSoloExigeQueElTurnoNoHayaEmpezado() {
+        VentanaHabilesService antes = new VentanaHabilesService(configuracion,
+                Clock.fixed(INICIO_JUEVES.minusSeconds(1), ZoneOffset.UTC));
+        VentanaHabilesService alInicio = new VentanaHabilesService(configuracion,
+                Clock.fixed(INICIO_JUEVES, ZoneOffset.UTC));
+
+        assertTrue(antes.antesDelInicio(INICIO_JUEVES));
+        assertFalse(alInicio.antesDelInicio(INICIO_JUEVES));
     }
 
     @Test

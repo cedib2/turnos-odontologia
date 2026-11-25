@@ -116,7 +116,8 @@ class PublicBookingIntegrationTest extends PostgresFlywayTest {
         }
         tratamientos.saveAndFlush(new com.turnosodontologia.domain.agenda.Tratamiento(
                 TRATAMIENTO, "Fixture público", 30));
-        fecha = proximoDiaHabil(LocalDate.now(ZONA).plusDays(1));
+        // Con anticipación suficiente para estar dentro de la ventana de 48 hs hábiles (RN-AG-05).
+        fecha = proximoDiaHabil(LocalDate.now(ZONA).plusDays(10));
         inicio = fecha.atTime(13, 0).atZone(ZONA).toInstant();
         fin = inicio.plusSeconds(1800);
         recorder.clear();
@@ -220,10 +221,11 @@ class PublicBookingIntegrationTest extends PostgresFlywayTest {
         Long pacienteId = crearPaciente();
         Long profesionalId = crearProfesional();
         Long sillonId = crearSillon("S-PUB-3");
-        Instant lejano = fecha.plusDays(10).atTime(13, 0).atZone(ZONA).toInstant();
+        // Turno del próximo día hábil: ya venció la ventana para cambiarlo por link.
+        Instant cercano = proximoDiaHabil(LocalDate.now(ZONA).plusDays(1)).atTime(13, 0).atZone(ZONA).toInstant();
         CrearTurnoPublicoResponse creado = crear(crearTokenReservar(pacienteId),
                 new CrearPublicoRequest(pacienteId, profesionalId, sillonId, TRATAMIENTO,
-                        lejano, "idem-crear-3"));
+                        cercano, "idem-crear-3"));
 
         PublicApiException excepcion = org.junit.jupiter.api.Assertions.assertThrows(
                 PublicApiException.class,

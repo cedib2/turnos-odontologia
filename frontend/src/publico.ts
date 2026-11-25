@@ -11,7 +11,7 @@ const MENSAJES: Record<string, string> = {
   hueco_tomado: 'Ese horario se acaba de ocupar. Elegí otro de los disponibles.',
   fuera_de_horario: 'Ese horario está fuera del horario de atención.',
   feriado: 'Ese día es feriado y el consultorio no atiende.',
-  fuera_de_ventana: 'Este cambio no se puede hacer por el link en este momento: está fuera de la ventana de 48 horas hábiles. Comunicate con recepción.',
+  fuera_de_ventana: 'Faltan menos de 48 horas hábiles para el turno (o ya empezó): para cambiarlo, comunicate con recepción.',
   turno_inactivo: 'El turno ya no está activo (por ejemplo, porque se canceló).',
   turno_inexistente: 'No encontramos ese turno.',
   turno_ajeno: 'Este link no corresponde a ese turno.',

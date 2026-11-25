@@ -123,10 +123,10 @@ El token `RESERVAR` SHALL permanecer reutilizable para consultas hasta su `exp` 
 - **THEN** se rechaza con `410`, `requiereNuevoEnlace=true`, sin efectos y sin endpoint de reemisión en C-09
 
 ### Requirement: Ventana de 48 hs hábiles
-«48 hs hábiles» SHALL significar 2 días hábiles completos inmediatamente anteriores al día local del `inicio` del turno en `America/Argentina/Buenos_Aires`, omitiendo sábados, domingos y las fechas del catálogo de feriados. El vencimiento SHALL ser `23:59:59` del segundo día hábil anterior, y la operación está dentro de ventana si `now >= vencimiento` y `now < inicio`.
+«48 hs hábiles» SHALL significar 2 días hábiles completos inmediatamente anteriores al día local del `inicio` del turno en `America/Argentina/Buenos_Aires`, omitiendo sábados, domingos y las fechas del catálogo de feriados. El vencimiento SHALL ser `23:59:59` del segundo día hábil anterior, y la cancelación o reprogramación está dentro de ventana si `now <= vencimiento`: el paciente puede hacerla por link hasta 2 días hábiles antes del turno y, después, la hace recepción (RN-AG-05; decisión del 2026-11-25, `docs/decisiones/C-09-sentido-ventana-48hs.md`). La confirmación de asistencia no está sujeta a la ventana.
 
 #### Scenario: Dentro de ventana
-- **GIVEN** un turno con inicio próximo y una cancelación posterior al vencimiento de los 2 días hábiles
+- **GIVEN** un turno con inicio a más de 2 días hábiles y una cancelación anterior al vencimiento
 - **WHEN** se solicita cancelar o reprogramar
 - **THEN** la operación se acepta
 
@@ -136,12 +136,12 @@ El token `RESERVAR` SHALL permanecer reutilizable para consultas hasta su `exp` 
 - **THEN** sábados, domingos y feriados no cuentan como días hábiles
 
 #### Scenario: Límite inclusive y fuera de rango
-- **GIVEN** una operación exactamente en `23:59:59` del segundo día hábil anterior y otra 1 segundo antes
+- **GIVEN** una operación exactamente en `23:59:59` del segundo día hábil anterior y otra 1 segundo después
 - **WHEN** se evalúan ambas
 - **THEN** la primera está dentro de ventana y la segunda se rechaza
 
 ### Requirement: Confirmación pública
-El sistema SHALL cambiar el `estado` del turno a `confirmado` al recibir un `GESTIONAR` vigente dentro de ventana, sin modificar el hueco ni la ocupación, y SHALL emitir el evento de confirmación. Una operación rechazada MUST NOT cambiar el estado ni emitir evento.
+El sistema SHALL cambiar el `estado` del turno a `confirmado` al recibir un `GESTIONAR` vigente antes del `inicio` del turno, sin depender de la ventana de 48 hs, sin modificar el hueco ni la ocupación, y SHALL emitir el evento de confirmación. Si el turno ya empezó, MUST responder `409` con `derivarARecepcion=true`. Una operación rechazada MUST NOT cambiar el estado ni emitir evento.
 
 #### Scenario: Confirmación exitosa
 - **GIVEN** un turno `reservado` y un token `GESTIONAR` vigente
@@ -149,7 +149,7 @@ El sistema SHALL cambiar el `estado` del turno a `confirmado` al recibir un `GES
 - **THEN** el estado pasa a `confirmado`, el horario no cambia y se emite `turno.confirmado`
 
 #### Scenario: Confirmación rechazada
-- **GIVEN** un token vencido o un turno ajeno al claim
+- **GIVEN** un token vencido, un turno ajeno al claim o un turno que ya empezó
 - **WHEN** se intenta confirmar
 - **THEN** el turno conserva su estado y no se emite evento
 

@@ -143,7 +143,7 @@ function pasoConfirmar(hueco: Hueco): void {
       el('dl', { style: 'margin: 0; display: grid; gap: var(--e-2)' },
         el('dt', { class: 'campo__ayuda' }, 'Día'), el('dd', { style: 'margin: 0; font-weight: 600' }, fecha(hueco.inicio)),
         el('dt', { class: 'campo__ayuda' }, 'Horario'), el('dd', { style: 'margin: 0; font-weight: 600' }, `${hora(hueco.inicio)} a ${hora(hueco.fin)}`)),
-      el('p', { class: 'campo__ayuda' }, 'Los cambios por link están sujetos a la ventana de 48 horas hábiles del consultorio; si no se pueden hacer, te vamos a indicar que contactes a recepción.'),
+      el('p', { class: 'campo__ayuda' }, 'Podés cancelar o reprogramar por link hasta 48 horas hábiles antes del turno; después, comunicate con recepción.'),
       mensajes),
     confirmar, volver);
   confirmar.focus();

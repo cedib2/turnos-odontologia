@@ -27,7 +27,7 @@ Ajustes de tests de guarda:
 
 ## Hallazgos para resolver
 
-1. **Sentido de la ventana de 48 hs hábiles (C-09 contra C-22).** La spec `public-booking` y `VentanaHabilesService` aceptan confirmar, cancelar o reprogramar por link **solo dentro de los últimos 2 días hábiles** antes del turno (`now >= vencimiento`). La métrica de C-22 cuenta como cumplimiento lo contrario: cambios con 48 hs hábiles o más de anticipación. RN-AG-05 y DD-07 no aclaran el sentido. El frontend no promete ninguno de los dos: muestra el mensaje del backend y deriva a recepción. Lo tiene que decidir el PO.
+1. **Sentido de la ventana de 48 hs hábiles (C-09 contra C-22).** Resuelto el mismo día: ver `docs/decisiones/C-09-sentido-ventana-48hs.md`. El frontend vuelve a indicar el plazo.
 2. **Horarios pasados.** La disponibilidad pública incluye los horarios de hoy que ya pasaron. El frontend los filtra; el backend debería excluirlos.
 3. **Spring devuelve texto con `Content-Type: application/json`** cuando el pedido acepta JSON (p. ej. `credenciales-invalidas`). El cliente lo tolera leyendo el texto y parseándolo solo si es JSON válido.
 
