@@ -21,7 +21,7 @@ La adopción de la reserva online es la **métrica principal de riesgo** del pro
 - `adoption-metrics`: tablero de métricas con metodología obligatoria.
 
 ### Modified Capabilities
-- `audit-append-only-log`: el catálogo admite `metricas.consultadas`.
+- `audit-append-only-log`: `MODIFIED` de «Catálogo mínimo y granularidad por operación» y «Trazabilidad mínima de cada fila» para admitir `metricas.consultadas` con `entidad_id` nulo. Pendiente de aprobación del PO (Decisión 1 de C-05): `docs/decisiones/C-22-propuesta-evento-metricas-consultadas.md`.
 
 ## Impact
 

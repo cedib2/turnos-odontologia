@@ -23,6 +23,8 @@
 
 - Línea base: 194 tests verdes.
 - Después del cambio: **223 tests, 0 fallos, 0 errores** (`mvn test`). Nuevos: 29 (C-21: 11; C-22: 18).
+- Correcciones tras la auditoría externa (2026-11-25): `@Transactional` en `MetricasAdopcionService` (el publicador de C-05 usa `pg_advisory_xact_lock`), test `MetricasTransaccionTest` (falla sin la anotación y pasa con ella), delta `MODIFIED` de `audit-append-only-log`, follow-up de C-22, escaneo de `PrecioController` en el test de credenciales y deltas faltantes de C-17/C-18 con nombres de eventos exactos. Suite: **224 tests, 0 fallos, 0 errores**.
+- `metricas.consultadas` se agregó al catálogo sin la aprobación previa que exige la Decisión 1 de C-05; queda regularizado como propuesta en `docs/decisiones/C-22-propuesta-evento-metricas-consultadas.md` y C-22 no se archiva hasta que el PO resuelva.
 - Verificación ejecutada con PostgreSQL 16 local en lugar de Testcontainers (el entorno de desarrollo no tenía Docker); el fixture compartido no se modificó en el repositorio.
 
 ## Pendientes para el PO

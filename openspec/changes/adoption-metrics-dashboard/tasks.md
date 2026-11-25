@@ -1,6 +1,6 @@
 # Tasks
 
-Criterios de aceptación: `specs/adoption-metrics/spec.md` (6 escenarios) y `specs/audit-append-only-log/spec.md` (1 escenario). Governance BAJO.
+Criterios de aceptación: `specs/adoption-metrics/spec.md` (6 escenarios) y `specs/audit-append-only-log/spec.md` (2 requirements MODIFIED). Governance BAJO.
 
 ## 1. Modelo
 
@@ -21,4 +21,9 @@ Criterios de aceptación: `specs/adoption-metrics/spec.md` (6 escenarios) y `spe
 
 - [x] 4.1 Tests unitarios, de integración PostgreSQL, de log persistido y de controlador.
 - [x] 4.2 Suite completa en verde (ver `docs/decisiones/C-21-C-22-parte4.md`).
-- [ ] 4.3 Conectar `FuenteMetrica` de C-09, C-10 y C-18 cuando existan (responsables: Partes 2, 3 y 4).
+- [x] 4.3 `MetricasAdopcionService` con `@Transactional`: el evento comparte transacción con la consulta (requirement «Transacción compartida» de C-05).
+
+## Follow-up
+
+- Conectar `FuenteMetrica` de C-09, C-10 y C-18 cuando existan (responsables: Partes 3, 2 y 4). No bloquea el archive de C-22.
+- Aprobación del PO del evento `metricas.consultadas` (Decisión 1 de C-05): ver `docs/decisiones/C-22-propuesta-evento-metricas-consultadas.md`. **Sí bloquea el archive.**

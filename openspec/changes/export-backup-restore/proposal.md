@@ -13,7 +13,7 @@ RN-SE-03 y US-014 exigen exportación completa y respaldo periódico, y la regla
 - **Exportación completa** de datos del consultorio y **copia de historia** del paciente (consumiendo la interfaz de C-13), con vencimiento de plazo `(TBD, propuesta del informe: 48 h)` y estado `VENCIDA` si no se completa a tiempo.
 - **Respaldo programado** con `BACKUP_CRON` (nombre ya en `.env.example`, valor `(TBD)`), cifrado en reposo y retención `(TBD, propuesta: 10 años)`; **alerta** a administración ante fallo por un puerto `AlertaAdministracion` (canal `(TBD)`).
 - **Restore probado**: restauración siempre primero en una base aislada, con verificación de integridad (conteos + cadena de auditoría de C-05). Restaurar sobre la base de usuario MUST requerir un restore aislado verificado previo y una aprobación explícita registrada.
-- Cada exportación, respaldo y restore publica eventos en el log append-only de C-05 (`exportacion.*`, `respaldo.*`, `restore.*`).
+- Cada exportación, respaldo y restore publica eventos en el log append-only de C-05 (`exportacion.solicitada`, `exportacion.completada`, `exportacion.vencida`, `exportacion.fallida`, `respaldo.completado`, `respaldo.fallido`, `restore.aislado.verificado`, `restore.produccion.rechazado`, `restore.produccion.ejecutado`), cada uno a aprobar por el PO según la Decisión 1 de C-05.
 - Aporta a C-18 los identificadores de la última exportación y del último respaldo verificado.
 
 **Fuera de alcance**: proveedor cloud concreto, UI, verificación de identidad del paciente (C-13), datos financieros más allá de lo que exponga C-15.
@@ -24,7 +24,7 @@ RN-SE-03 y US-014 exigen exportación completa y respaldo periódico, y la regla
 - `export-backup-restore`: exportación, respaldo, restore aislado y su trazabilidad.
 
 ### Modified Capabilities
-- `audit-append-only-log`: el catálogo admite los eventos de exportación, respaldo y restore.
+- `audit-append-only-log`: el catálogo admite los nueve eventos nombrados arriba.
 
 ## Impact
 

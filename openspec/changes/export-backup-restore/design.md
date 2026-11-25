@@ -31,3 +31,4 @@
 
 - Sin C-13/C-15 la exportación completa sale con secciones pendientes: debe quedar visible en el manifiesto, nunca omitirse en silencio.
 - Los tests de restore necesitan una segunda base PostgreSQL aislada en Testcontainers.
+- `AuthMigrationV002Test` (Parte 1) fija `List.of(1, 2, 3, 4, 5, 6)` como versiones aplicadas: V030/V031 obligan a actualizar esa lista, coordinándolo con el dueño de la Parte 1.

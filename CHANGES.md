@@ -587,7 +587,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-21] `precio-predecible-costos`
-- **Estado**: `[ ]` pendiente — implementado y verificado el 2026-11-25 (223 tests verdes, 11 nuevos) según C-01 A5; sin archive. Monto, moneda y periodicidad `(TBD)` por `precio.plan.*`.
+- **Estado**: `[ ]` pendiente — implementado y verificado el 2026-11-25 (224 tests verdes, 11 nuevos) según C-01 A5; sin archive. Monto, moneda y periodicidad `(TBD)` por `precio.plan.*`.
 - **Scope**:
   - Superficie de consulta del precio único, público y predecible, con los costos de API detallados por separado (Meta, Mercado Pago y ARCA si aplica); soporte de la superficie `(TBD — visual-design diferido)`.
   - Modelo comercial exacto `(TBD, US-016/RN-SE-06)`; sin packs sorpresa dentro del plan (RN-NT-04, confirmar modelo `(TBD)`); reutiliza la configuración de C-10 y C-15 sin exponer secretos.
@@ -604,7 +604,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-22] `adoption-metrics-dashboard`
-- **Estado**: `[ ]` pendiente — implementado y verificado el 2026-11-25 (223 tests verdes, 18 nuevos); sin archive. Adopción online calculada; ventana, confirmaciones y evidencia `NO_DISPONIBLE` hasta que C-09/C-10/C-18 conecten su `FuenteMetrica`.
+- **Estado**: `[ ]` pendiente — implementado y verificado el 2026-11-25 (224 tests verdes, 19 nuevos); sin archive. **Bloqueado para archive** hasta que el PO apruebe el evento `metricas.consultadas` (Decisión 1 de C-05; ver `docs/decisiones/C-22-propuesta-evento-metricas-consultadas.md`). Adopción online calculada; ventana, confirmaciones y evidencia `NO_DISPONIBLE` hasta que C-09/C-10/C-18 conecten su `FuenteMetrica`.
 - **Scope**:
   - Instrumentación y consulta de la métrica principal de riesgo: % de turnos creados por paciente vía link/QR sobre el total (adopción online), con metodología y período explícitos; objetivo `(TBD, SU-03)`.
   - Consulta del cumplimiento de la ventana de 48 hs hábiles y de confirmaciones; reutiliza C-19 si se habilita `(TBD)`; presentación `(TBD — visual-design diferido)`.

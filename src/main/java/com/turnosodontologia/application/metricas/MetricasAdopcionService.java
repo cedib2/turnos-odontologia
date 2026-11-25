@@ -4,6 +4,7 @@ import com.turnosodontologia.application.AuditEventPublisher;
 import com.turnosodontologia.application.CurrentActorProvider;
 import com.turnosodontologia.domain.auditoria.AuditEvent;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -18,9 +19,11 @@ import java.util.stream.Collectors;
  * Tablero de adopción (C-22): calcula cada métrica del catálogo con metodología y
  * período explícitos y registra la consulta en auditoría. Una métrica cuya fuente
  * todavía no existe se informa como {@link EstadoMetrica#NO_DISPONIBLE}, nunca con
- * una cifra decorativa.
+ * una cifra decorativa. La consulta y su evento comparten transacción: el publicador de
+ * C-05 toma {@code pg_advisory_xact_lock} y necesita una transacción activa.
  */
 @Service
+@Transactional
 public class MetricasAdopcionService {
 
     public static final String EVENTO_CONSULTA = "metricas.consultadas";

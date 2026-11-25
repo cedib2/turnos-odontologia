@@ -8,6 +8,7 @@
 
 - [ ] 1.1 Test de migración V030 (constraints de tabla `exportaciones`, `respaldos`, `restauraciones`).
 - [ ] 1.2 `V030__export_backup_restore.sql`.
+- [ ] 1.3 Coordinar con la Parte 1 la actualización de la lista de versiones en `AuthMigrationV002Test`.
 
 ## 2. Exportación
 

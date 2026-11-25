@@ -58,8 +58,10 @@ class PrecioControllerTest {
     @Test
     void elCodigoDePrecioNoLeeVariablesDeCredenciales() throws Exception {
         Path paquete = Path.of("src", "main", "java", "com", "turnosodontologia", "application", "precio");
+        Path controlador = Path.of("src", "main", "java", "com", "turnosodontologia", "interfaces", "web",
+                "PrecioController.java");
         String codigo;
-        try (Stream<Path> archivos = Files.walk(paquete)) {
+        try (Stream<Path> archivos = Stream.concat(Files.walk(paquete), Stream.of(controlador))) {
             codigo = String.join("\n", archivos.filter(Files::isRegularFile).map(p -> {
                 try {
                     return Files.readString(p);

@@ -24,7 +24,7 @@ El cumplimiento **demostrable** es un diferenciador real: la declaración de Ley
 
 ### Modified Capabilities
 - `adoption-metrics`: la métrica `evidencia_cumplimiento` pasa de `NO_DISPONIBLE` a calculada.
-- `audit-append-only-log`: el catálogo admite `dossier.*`.
+- `audit-append-only-log`: el catálogo admite `dossier.evidencia.cargada` y `dossier.descargado`, a aprobar por el PO según la Decisión 1 de C-05.
 
 ## Impact
 
