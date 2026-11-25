@@ -1,6 +1,11 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 2
+      minimum-idle: 0
+      idle-timeout: 10000
+      max-lifetime: 30000
   jpa:
     hibernate:
       ddl-auto: validate
@@ -12,3 +17,30 @@ spring:
     clean-disabled: false
     out-of-order: true
     locations: classpath:db/migration
+
+public:
+  token:
+    issuer: turnos-odontologia-public
+  surface:
+    prefixes: /publico/v1
+
+APP_BASE_URL: http://localhost:9999
+MERCADOPAGO_ACCESS_TOKEN: test-access-token
+MERCADOPAGO_WEBHOOK_SECRET: test-webhook-secret-c15
+ARCA_BASE_URL: http://localhost:9999/arca
+ARCA_ACCESS_TOKEN: arca-token-de-prueba-no-real
+
+arca:
+  comprobante:
+    letra: C
+    punto-venta: "0001"
+
+# C-19: defaults no productivos y deterministas. Plazo y monto reales quedan
+# (TBD) -> forma de obtención (PO Parte 3 y medición del piloto).
+waitlist:
+  oferta:
+    minutos: 15
+  metricas:
+    periodo: YYYY-MM
+  deposito:
+    monto: 1.00

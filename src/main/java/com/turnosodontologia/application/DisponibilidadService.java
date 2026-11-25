@@ -57,6 +57,11 @@ public class DisponibilidadService {
         return libres;
     }
 
+    /** C-19 (W-4): validación de hueco libre reutilizando las exclusion constraints de V006. */
+    public boolean huecoDisponible(Long profesionalId, Long sillonId, Instant inicio, Instant fin) {
+        return !estaOcupado(profesionalId, sillonId, inicio, fin);
+    }
+
     private boolean estaOcupado(Long profesionalId, Long sillonId, Instant inicio, Instant fin) {
         return ocupaciones.findActivosQueSolapan(profesionalId, sillonId, inicio, fin)
                 .stream()

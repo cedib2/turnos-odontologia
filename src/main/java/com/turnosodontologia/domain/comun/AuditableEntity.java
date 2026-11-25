@@ -40,4 +40,10 @@ public abstract class AuditableEntity {
         this.activo = false;
         registrarActualizacion(autor);
     }
+
+    /** C-19 (W-4): reocupación de un hueco liberado por la waitlist. */
+    public void activar(String autor) {
+        this.activo = true;
+        registrarActualizacion(autor);
+    }
 }

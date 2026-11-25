@@ -97,6 +97,30 @@ class AuditoriaCatalogoTest extends PostgresFlywayTest {
     }
 
     @Test
+    void creacionDePresupuesto() {
+        publicar("presupuesto.creado", "presupuesto", 201L, "creado",
+                Map.of("presupuestoId", 201L, "moneda", "ARS", "total", "10.00"));
+
+        List<Map<String, Object>> filas = filas();
+        assertEquals(1, filas.size());
+        assertEquals("presupuesto.creado", filas.get(0).get("accion"));
+        assertEquals("presupuesto", filas.get(0).get("entidad"));
+        assertEquals(201L, ((Number) filas.get(0).get("entidad_id")).longValue());
+        assertTrue(integridad().verificar().valida());
+    }
+
+    @Test
+    void modificacionDePresupuesto() {
+        publicar("presupuesto.modificado", "presupuesto", 202L, "anulado",
+                Map.of("presupuestoId", 202L, "motivo", "anulado"));
+
+        List<Map<String, Object>> filas = filas();
+        assertEquals(1, filas.size());
+        assertEquals("presupuesto.modificado", filas.get(0).get("accion"));
+        assertEquals("anulado", metadataDe(filas.get(0)).get("motivo"));
+    }
+
+    @Test
     void operacionRechazadaSinFila() {
         bloqueoService.crearBloqueo(null, sillonId, DESDE, HASTA, "primer-bloqueo");
         long antes = filas().size();

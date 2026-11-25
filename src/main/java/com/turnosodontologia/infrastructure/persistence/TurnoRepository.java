@@ -18,4 +18,6 @@ public interface TurnoRepository extends JpaRepository<Turno, Long> {
             @Param("sillonId") Long sillonId,
             @Param("desde") Instant desde,
             @Param("hasta") Instant hasta);
+
+    java.util.Optional<Turno> findByTokenPublico(String tokenPublico);
 }

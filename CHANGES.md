@@ -41,6 +41,8 @@ Los IDs se conservan al editar o reordenar. No se reciclan IDs retirados. El pro
 | Parte 1 — Tronco Base | PO de esta rama | V001–V009 | V001 = C-03; V002 = C-04; V003 = C-05; V004 = C-06; V005 y V006 = C-08 (ya aplicadas). C-07 **reutiliza V005**: no crea migración si es solo CRUD sobre tablas existentes; si necesita esquema o seeds, usa un número nuevo dentro del rango (V007 en adelante). V008–V009 quedan como holgura de la Parte 1. |
 | Parte 2 | compañero | desde V010 | V010 = C-10; V011 = C-11; V012 = C-12; V013 = C-13; siguientes a asignar por su dueño |
 | Parte 3 | compañero | desde V020 | a asignar por su dueño |
+| Parte 2 | compañero | desde V010 | a asignar por su dueño |
+| Parte 3 | compañero | desde V020 | V020 = C-14; V021 = C-15; V022 en adelante queda como holgura |
 | Parte 4 | compañero | desde V030 | a asignar por su dueño |
 
 Los números históricos citados en los scopes (`C-10 = 007`, `C-11 = 008`, `C-14 = 009`, `C-15 = 010`, `C-16 = 011`, `C-17 = 012`, `C-19 = 013`) quedan **supersedidos** por esta tabla: cada dueño elige dentro de su rango y lo coordina antes de crear la migración.
@@ -350,7 +352,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 > C-09 depende del token público (C-06) y de la agenda (C-08). C-10 y C-11 arrancan en paralelo.
 
 ### [C-09] `public-booking-and-reschedule`
-- **Estado**: `[ ]` pendiente
+- **Estado**: [x] completado — implementado y verificado el 2026-11-22; 219 tests verdes, `openspec validate public-booking-and-reschedule --strict` válido; sin migraciones nuevas y sin commits
 - **Scope**:
   - Endpoints públicos indicativos sobre `/turnos`: consultar disponibilidad, crear, confirmar, cancelar y reprogramar con token (paths, verbos y versionado `(TBD)`).
   - *Write-back* real y liberación atómica del hueco; si el hueco se tomó entre consulta y confirmación, rechazo y alternativas `(TBD)`; token vencido → solicitar nuevo enlace `(TBD)`.
@@ -450,12 +452,12 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 > El alcance financiero de C-16 depende de IN-01. Mercado Pago es paridad, no diferenciador (DD-05).
 
 ### [C-14] `budgets-and-cash`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x] completado` (2026-11-23) — apply verificado: `mvn test` 241/241 en verde y `openspec validate budgets-and-cash --strict` sin errores. Change archivado el 2026-11-23 como `2026-11-23-budgets-and-cash`; specs principales sincronizados (9 requirements agregados).
 - **Scope**:
-  - Migración 009: `Presupuesto`, `Ítem` (tratamiento, cantidad, precio, descripción); total y moneda `(TBD)`; asociación opcional al turno `(TBD, RN-FI-01)`.
-  - CRUD indicativo `/presupuestos` para recepción y administración; reutilización del catálogo de C-07; impresión/PDF `(TBD)`; lectura por paciente `(TBD)`.
-  - Asiento de caja y evento de auditoría por creación/modificación; arqueo detallado en C-15.
-  - Tests: cálculo de total, ítems, permisos, asociación al turno `(TBD)`.
+  - Migración `V020` (Parte 3): `Presupuesto`, `Ítem` (tratamiento, cantidad, precio snapshot, descripción); total `NUMERIC(12,2)` en `ARS`; asociación opcional al turno (RN-FI-01).
+  - CRUD indicativo `/presupuestos` en `dev`/`test` para recepción y administración; reutilización del catálogo de C-07; impresión/PDF y lectura por paciente diferidos (D13/D14).
+  - Sin asiento de caja ni cobro (D10/D15): eventos `presupuesto.creado` y `presupuesto.modificado`; arqueo y conciliación en C-15.
+  - Tests: cálculo de total con `HALF_UP`, ítems, superficie sin credenciales de staff, asociación al turno y auditoría.
 - **Dependencias**: C-05, C-07, C-08
 - **Governance**: BAJO — CRUD de catálogo/documento; autonomía si pasan los tests
 - **Leer antes**:
@@ -468,13 +470,15 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-15] `mercadopago-deposits-reconciliation`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x] completado y archivado` (2026-11-23) — apply verificado: `mvn test` 287/287 en verde (241 de la línea base de C-14 + 46 nuevos) y `openspec validate mercadopago-deposits-reconciliation --strict` sin errores. Change archivado el 2026-11-23 como `2026-11-23-mercadopago-deposits-reconciliation`; specs principales sincronizados (9 requirements agregados y 2 modificados). Decisiones MP-1..MP-12 aprobadas por el PO en `docs/decisiones/C-15-decisiones.md`.
 - **Scope**:
-  - Migración 010: `Seña/PagoMP` (`turno_id`, `presupuesto_id` `(TBD)`, `monto`, `moneda`, `estado`, `proveedor="mercadopago"`, `external_reference`, `idempotency_key`, `fecha_aprobacion`, `conciliado` `(TBD)`).
-  - Integración REST + webhook de Mercado Pago **por paridad competitiva, no como diferenciador** (RN-FI-02, DD-05); verificación de firma `(TBD)`; idempotencia ante webhook duplicado (RN-FI-03, RN-GL-02).
-  - Conciliación turno–pago y caja/arqueo `(TBD)`; política de **reembolso y retención del hueco** ante cancelación dentro/fuera de ventana y pago rechazado `(TBD, IN-02)`.
-  - Auditoría de cada evento de dinero; costos de API visibles por separado (modelo `(TBD)`); facturación ARCA queda en C-16.
-  - Tests: webhook duplicado, pago rechazado, conciliación, reembolso `(TBD)`, auditoría del evento.
+  - Migración `V021`: tabla `senias` con `turno_id` y `presupuesto_id` opcionales sin FK física, `monto NUMERIC(12,2)`, `moneda` fija `ARS`, `estado`, `proveedor`, `payment_id`, `external_reference`, `idempotency_key`, `fecha_aprobacion` y `conciliado`, con checks y unicidad. Sin tablas de caja, asiento ni arqueo; V001–V020 intactas.
+  - Integración REST sobre `RestTemplate` sin SDK ni dependencias nuevas: `POST /v1/preferences`, `X-Idempotency-Key`, `external_reference = "senia-" + UUID` y reembolso total. Superficie `POST /senias` y `POST /senias/{id}/reembolsar` en `dev`/`test`, sin credenciales de staff ni RBAC nuevo.
+  - Webhook público `POST /publico/v1/webhooks/mercadopago` autenticado por HMAC-SHA256 local (`ts`/`v1` y `x-request-id`), sin token de C-06; `400` sin estado, auditoría ni persistencia ante firma inválida. Deduplicación en `public_idempotencia` (`pago.webhook`) dentro de la misma transacción del cambio de estado.
+  - Estados cerrados con transiciones solo desde `pendiente` y descarte de eventos tardíos; conciliación cuando `turno_id` o `presupuesto_id` resuelve a una entidad existente, con evento `pago.conciliado`, sin crear entidades ni asientos.
+  - Reembolso total e inmediato según C-01 A4, con liberación del hueco por el flujo de cancelación existente, dentro y fuera de la ventana; aviso al paciente detrás de un puerto NO-OP/simulado, sin envío real ni eventos de entrega.
+  - Auditoría de dinero: cinco tipos `pago.solicitado`, `pago.aprobado`, `pago.rechazado`, `pago.reembolsado` y `pago.conciliado`, con metadata acotada, `correlationId` propio y actores `SYSTEM`/`SIMULADO`. Sin secretos en respuestas, logs ni metadata (MP-10). Costos de API no se desglosan (C-01 A5); Mercado Pago es paridad competitiva (DD-05) y ARCA queda en C-16.
+  - Tests: firma válida/ausente/inválida, secreto no expuesto, webhook duplicado, reversión atómica, pago rechazado, contracargo, conciliación con referencia válida e inexistente, reembolso total y rechazado, y una fila de auditoría por operación confirmada.
 - **Dependencias**: C-05, C-09, C-14
 - **Governance**: CRITICO — cobros y conciliación; solo análisis y aprobación humana antes de codear
 - **Leer antes**:
@@ -487,11 +491,17 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-16] `arca-invoicing-reconciliation`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x] completado y archivado` (2026-11-23) — apply verificado: `mvn test` **320/320 en verde** (287 de la línea base de C-15 + 33 nuevos de C-16) y `openspec validate arca-invoicing-reconciliation --strict` sin errores; `openspec status --change arca-invoicing-reconciliation` 4/4 artefactos completos. Change archivado el 2026-11-23 como `2026-11-23-arca-invoicing-reconciliation`; specs principales sincronizados (11 requirements agregados y 1 modificado: `arca-invoicing` 7 y `arca-reconciliation` 2, ambos en verde con `openspec validate --specs --strict`). Aprobación humana de governance CRITICO registrada en `docs/decisiones/C-16-decisiones.md` (AR-1..AR-14). Sin commits ni push.
 - **Scope**:
-  - **Decisión `(TBD, IN-01/DD-09)`**: si se resuelve "en MVP" → Migración 011 de comprobantes/liquidación, integración ARCA (REST/SDK `(TBD)`), emisión y conciliación contra presupuesto y seña, reintentos y auditoría; tests de idempotencia y conciliación.
-  - Si se resuelve "etapa posterior" → cerrar la ficha como diferida, sin código, y dejar el alcance financiero del MVP en presupuesto + seña (RN-FI-04).
-  - La separación propuesta entre "cumplimiento normativo general" y "facturación electrónica operativa" se registra en C-01; no se elige un valor por defecto.
+  - Migración `V022`: tabla `comprobantes` con `senia_id`, `presupuesto_id`/`turno_id` opcionales sin FK física, `tipo`, `estado`, `moneda` fija `ARS`, `monto NUMERIC(12,2)`, `concepto`, `cae`, `fecha_emision`, `intentos`, `ultimo_error`, `conciliado` y auditoría. Unicidad por `(senia_id, tipo)` para permitir factura y nota de crédito sobre la misma seña reembolsada (AR-1, AR-11). Sin caja, asiento ni arqueo; V001–V021 intactas.
+  - Emisión de una sola factura por seña `aprobado` sobre el importe cobrado (nunca el saldo del presupuesto), letra `C` y punto de venta configurables, consumidor final e IVA no discriminado. Datos del receptor reutilizados de `pacientes` sin campos fiscales nuevos; dato faltante queda `pendiente` con aviso NO-OP a recepción, sin exponer DNI ni dirección (AR-4, AR-5, AR-6).
+  - Integración REST con `RestTemplate` sin SDK ni dependencia nueva: `ARCA_BASE_URL`, `ARCA_ACCESS_TOKEN`, payload y cabeceras salientes acotadas; adaptador NO-OP/simulado en `dev`/`test` con CAE determinista de prueba (`CAE-TEST-`/`NC-TEST-`) y defaults no productivos para CI (AR-7, AR-8, AR-14).
+  - Estados cerrados `pendiente|emitido|rechazado|anulado` con transiciones acotadas, reintento manual y error saneado, sin reintento automático ni outbox. Idempotencia `factura.emitir`/`nota_credito.emitir` en `public_idempotencia` con hash SHA-256, en la misma transacción del cambio de estado y la auditoría, con reversión atómica verificada (AR-9).
+  - Conciliación solo con CAE, montos iguales y seña `aprobado`+`conciliado`: actualiza únicamente el flag del comprobante e informa seña no conciliada, montos divergentes o comprobante no emitido (AR-10).
+  - Nota de crédito manual de recepción sobre seña `reembolsado`: revierte el total, anula la factura y usa su propia clave de idempotencia; sin disparo automático al finalizar el reembolso (AR-11).
+  - Superficie `POST /comprobantes`, `POST /comprobantes/{id}/reintentar`, `POST /comprobantes/{id}/nota-credito` y `GET /comprobantes/{id}` bajo `@Profile({"dev","test"})`, sin credenciales de staff ni RBAC nuevo. Liquidación contable y cierre impositivo quedan diferidos (AR-3).
+  - Auditoría con los cinco tipos aprobados `factura.emitida`, `factura.rechazada`, `factura.conciliada`, `factura.anulada` y `nota_credito.emitida`, metadata cerrada, `correlationId` propio y actores `SIMULADO`/`SYSTEM`; sin CAE, DNI ni secretos en logs o metadata (AR-12, AR-14).
+  - Tests: migración y constraints V022, persistencia y unicidad, emisión con/sin presupuesto, seña no aprobada, receptor faltante, rechazo/reintento/error saneado, idempotencia y rollback, cuatro escenarios de conciliación, nota de crédito y reenvío, auditoría y metadata, MVC y wiring `dev`/`test`.
 - **Dependencias**: C-01, C-15
 - **Governance**: CRITICO — facturación; análisis y aprobación humana explícita antes de cualquier código
 - **Leer antes**:
@@ -549,7 +559,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 > Todos los items de esta fase dependen de decisiones `(TBD)` de C-01. Si no se habilitan, se cierran como diferidos sin código.
 
 ### [C-19] `waitlist-auto-refill-metrics`
-- **Estado**: `[ ]` pendiente
+- **Estado**: [x] completado — implementado y verificado el 2026-11-23; 354 tests verdes (320 base + 34 nuevos de C-19), `openspec validate waitlist-auto-refill-metrics --strict` válido, 4/4 artefactos; migración `V023__waitlist_and_metrics.sql` aplicada sin tocar V001–V022; checkpoints W-11 documentados en `docs/decisiones/C-19-decisiones.md`; sin commits
 - **Scope**:
   - Migración 013 (si se habilita): `ListaDeEspera` (preferencias, `deposito_requerido`, estado) y `Métrica` (`sillon_id`, `periodo`, `ocupacion`, `ausentismo`, `metodologia` obligatoria).
   - Relleno automático tras cancelación/liberación, con ofrecimiento por WhatsApp (C-10), depósito configurable y adjudicación atómica; pasar al siguiente candidato si no paga en plazo `(TBD)`; doble adjudicación impedida (RN-AG-07, US-015).

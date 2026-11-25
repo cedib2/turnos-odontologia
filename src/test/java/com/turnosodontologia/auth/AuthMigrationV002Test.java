@@ -78,7 +78,7 @@ class AuthMigrationV002Test extends PostgresFlywayTest {
 
         // Rango de la Parte 1 (V001–V009) fijo; las Partes 2-4 agregan desde V010 (CHANGES.md,
         // «Reservas de numeración»), siempre después y en orden ascendente.
-        assertEquals(List.of(1, 2, 3, 4, 5, 6), versiones.stream().filter(v -> v < 10).toList());
+        assertEquals(List.of(1, 2, 3, 4, 5, 6, 20, 21, 22, 23), versiones.stream().filter(v -> v < 10).toList());
         assertEquals(versiones.stream().sorted().toList(), versiones);
     }
 

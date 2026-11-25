@@ -63,7 +63,7 @@ Cada fila SHALL enlazarse a la anterior con `hash_anterior`/`hash_actual`, SHA-2
 - **THEN** existen dos filas con `id` distintos encadenadas en orden (la segunda usa el `hash_actual` de la primera), la verificación no encuentra huecos y no hay bifurcación: ninguna fila alternativa comparte la misma predecesora inmediatamente anterior
 
 ### Requirement: Catálogo mínimo y granularidad por operación
-El catálogo autorizado en este change se limita a `turno.creado`, `turno.reprogramado`, `turno.sobreturno`, `bloqueo.creado` y `publictoken.historia.denegado`. Cada operación de dominio confirmada SHALL generar exactamente una fila; el sistema MUST NOT crear una fila por cambio de campo ni por operaciones rechazadas.
+Catálogo aprobado por escrito por el PO: `turno.creado`, `turno.reprogramado`, `turno.sobreturno`, `bloqueo.creado`, `publictoken.historia.denegado`, `presupuesto.creado`, `presupuesto.modificado`, cinco tipos de pago (C-15) y, desde C-16, `factura.emitida`, `factura.rechazada`, `factura.conciliada`, `factura.anulada`, `nota_credito.emitida`. Cada operación confirmada SHALL generar exactamente una fila; MUST NOT crear una fila por cambio de campo ni por operaciones rechazadas.
 
 #### Scenario: Creación de turno
 - **GIVEN** una creación de turno confirmada
@@ -81,7 +81,7 @@ El catálogo autorizado en este change se limita a `turno.creado`, `turno.reprog
 - **THEN** existe una sola fila de tipo `turno.sobreturno` que conserva motivo y actor (RN-GL-01)
 
 #### Scenario: Creación de bloqueo
-- **GIVEN** un bloqueo de agenda confirmado
+- **GIVEN** una creación de bloqueo confirmada
 - **WHEN** se consulta el registro
 - **THEN** existe una sola fila de tipo `bloqueo.creado` con entidad `bloqueo` y su identificador
 
@@ -94,6 +94,26 @@ El catálogo autorizado en este change se limita a `turno.creado`, `turno.reprog
 - **GIVEN** una solicitud de HISTORIA con `identidadVerificada=false` emitida por C-06
 - **WHEN** se publica `publictoken.historia.denegado` a través del mismo `AuditEventPublisher`
 - **THEN** se registra una sola fila con entidad `publictoken`, `entidad_id` nullable, sin inferir identidad verificada, y se conservan `jti`, `scope` y `pacienteId` en `metadata`
+
+#### Scenario: Eventos de dinero confirmados
+- **GIVEN** una seña con pago aprobado, conciliado y luego reembolsado
+- **WHEN** se consulta el registro de auditoría
+- **THEN** existen exactamente una fila por cada operación confirmada con los tipos `pago.solicitado`, `pago.aprobado`, `pago.conciliado` y `pago.reembolsado`
+
+#### Scenario: Operación de pago rechazada sin fila
+- **GIVEN** un webhook con firma inválida y un reenvío duplicado
+- **WHEN** se consulta el registro de auditoría
+- **THEN** no existe fila adicional de pago para esas peticiones
+
+#### Scenario: Eventos de facturación confirmados
+- **GIVEN** una factura emitida, conciliada y luego anulada por nota de crédito
+- **WHEN** se consulta el registro de auditoría
+- **THEN** existen exactamente una fila por cada operación confirmada con los tipos `factura.emitida`, `factura.conciliada`, `factura.anulada` y `nota_credito.emitida`
+
+#### Scenario: Emisión rechazada sin fila
+- **GIVEN** un intento de emisión con error del proveedor y un reenvío con la misma clave
+- **WHEN** se consulta el registro de auditoría
+- **THEN** solo existe la fila de `factura.rechazada` y no se agrega una segunda por el reenvío
 
 ### Requirement: Rechazo de campos prohibidos en metadata
 `metadata` SHALL aceptar solo claves no sensibles. El sistema MUST rechazar la publicación cuando alguna clave de la lista prohibida aparezca tras normalizarse a minúsculas sin acentos **e ignorando también los guiones bajos (`_`) y los guiones (`-`)**, incluyendo claves de objetos anidados. La lista queda definida en los escenarios, no admite valores `(TBD)` y no se amplía en este change.
@@ -176,3 +196,19 @@ Evento y operación de dominio SHALL compartir la **misma transacción de base d
 - **GIVEN** un evento de auditoría publicado dentro de la transacción de una operación de dominio
 - **WHEN** la operación de negocio hace rollback después de esa publicación
 - **THEN** no queda ninguna fila en `auditoria_log` correspondiente a ese evento
+
+### Requirement: Tipos de catálogo incorporados en C-19
+
+El catálogo aprobado incorpora `waitlist.creado`, `waitlist.ofrecido`, `waitlist.adjudicado`, `waitlist.expirado`, `turno.inasistencia` y `metrica.publicada`, con granularidad por operación confirmada. Cada operación SHALL generar exactamente una fila; rechazos y reenvíos MUST NOT generar otra.
+
+#### Scenario: Operaciones de waitlist confirmadas
+
+- **GIVEN** una entrada creada, ofrecida y adjudicada y una métrica publicada
+- **WHEN** se consulta el registro de auditoría
+- **THEN** existen exactamente una fila por operación con los tipos `waitlist.creado`, `waitlist.ofrecido`, `waitlist.adjudicado` y `metrica.publicada`
+
+#### Scenario: Oferta expirada o rechazada sin fila adicional
+
+- **GIVEN** una oferta expirada sin pago y un reenvío de la adjudicación
+- **WHEN** se consulta el registro de auditoría
+- **THEN** solo existe la fila de `waitlist.expirado` y no se agrega una segunda por el reenvío

@@ -199,3 +199,53 @@ La superficie pública que consuma tokens de `public-access-tokens` SHALL valida
 - **GIVEN** los 12 requisitos y todos los escenarios actuales de `agenda` y las guardias de C-04
 - **WHEN** se inspecciona este delta
 - **THEN** permanecen intactos: no hay `MODIFIED` ni `REMOVED`, `AgendaSurfaceTest` y `CurrentActorProviderTest` no se ajustan y `audit-event-emission` sigue en modo `SIMULADO`
+
+### Requirement: Ciclo de vida público del turno en la agenda
+Para turnos creados desde la superficie pública, el sistema SHALL persistir `estado=reservado` y `origen=link` al crear; la confirmación SHALL cambiar solo `estado` a `confirmado`; la cancelación dentro de ventana SHALL fijar `estado=cancelado` y `activo=false` y desactivar su ocupación en la misma transacción; la reprogramación SHALL conservar `estado` y `origen`. Valores fijados por decisión del PO de C-09 (RN-GL-03); otros orígenes siguen `(TBD)`.
+
+#### Scenario: Alta pública visible en agenda
+- **GIVEN** una reserva pública creada con token `RESERVAR`
+- **WHEN** se consulta la agenda del profesional
+- **THEN** el turno aparece con `estado=reservado`, `origen=link` y su ocupación activa
+
+#### Scenario: Confirmación sin mover el hueco
+- **GIVEN** un turno público `reservado`
+- **WHEN** se confirma con token `GESTIONAR`
+- **THEN** solo cambia su `estado` a `confirmado` y conserva inicio, fin, profesional y sillón
+
+#### Scenario: Cancelación que libera el hueco
+- **GIVEN** un turno público activo dentro de la ventana de 48 hs hábiles
+- **WHEN** se cancela
+- **THEN** quedan inactivos el turno y su ocupación en la misma transacción y el intervalo vuelve a ofrecerse como libre
+
+#### Scenario: Reprogramación que conserva la semántica pública
+- **GIVEN** un turno público confirmado o reservado
+- **WHEN** se reprograma dentro de ventana
+- **THEN** mantiene su `estado` y `origen`, libera el hueco anterior y ocupa el nuevo sin solapamiento
+
+#### Scenario: Delta puramente aditivo
+- **GIVEN** los 13 requisitos y todos los escenarios actuales de `agenda`
+- **WHEN** se inspecciona este delta
+- **THEN** permanecen intactos: no hay `MODIFIED` ni `REMOVED` y las guardias de C-04 y C-06 siguen vigentes
+
+### Requirement: Adjudicación de hueco liberado desde la waitlist
+
+El sistema SHALL permitir reocupar un turno cancelado cuya ocupación esté desactivada mediante el motor de waitlist, creando la ocupación por el camino de servicio ya existente y validando disponibilidad con las restricciones de solapamiento vigentes. Una misma liberación SHALL adjudicarse como máximo una vez; un reenvío o segunda adjudicación MUST NOT crear otra ocupación ni otro turno. Queda prohibido insertar directamente en `turnos`, `bloqueos` u `ocupaciones`.
+
+#### Scenario: Adjudicación de un hueco liberado
+
+- **GIVEN** un turno cancelado con su ocupación desactivada y un candidato elegible en la waitlist
+- **WHEN** se adjudica el hueco liberado
+- **THEN** se crea una sola ocupación activa para el candidato y el turno queda confirmado en la agenda
+
+#### Scenario: Reenvío sin doble adjudicación
+
+- **GIVEN** un hueco ya adjudicado a un candidato
+- **WHEN** se repite la adjudicación con la misma clave
+- **THEN** no se crea otra ocupación ni otro turno y la operación se rechaza sin efectos
+
+#### Scenario: Conflicto de solapamiento sin efecto
+
+- **GIVEN** un hueco liberado que vuelve a estar ocupado por otra operación
+- **WHEN** se intenta adjudicar al candidato
+- **THEN** la operación se rechaza, no se escribe en la agenda y no se emite evento de adjudicación
