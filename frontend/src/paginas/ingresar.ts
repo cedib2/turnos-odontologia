@@ -1,4 +1,4 @@
-import { api, ApiError } from '../api.js';
+import { api, ApiError, recordarUsuario } from '../api.js';
 import { montarLayout } from '../layout.js';
 import { $, aviso, campo, conCarga, el, vaciar } from '../ui.js';
 
@@ -40,6 +40,7 @@ formulario.addEventListener('submit', async (evento) => {
     await csrfListo;
     try {
       await api.post('/auth/login', { email: email.value.trim(), password: clave.value });
+      recordarUsuario(email.value.trim());
       const volver = new URLSearchParams(location.search).get('volver');
       location.href = volver && volver.startsWith('/') && !volver.startsWith('//') ? volver : '/agenda.html';
     } catch (error) {

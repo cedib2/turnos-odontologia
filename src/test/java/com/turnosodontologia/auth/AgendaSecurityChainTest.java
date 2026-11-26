@@ -282,7 +282,7 @@ class AgendaSecurityChainTest {
         for (String permiso : matriz.getOrDefault(codigo, List.of())) {
             String[] partes = permiso.split(":");
             jdbc.update("INSERT INTO permisos (id, recurso, accion, ambito, created_at, activo) "
-                            + "SELECT NEXT VALUE FOR permisos_id_seq, ?, ?, 'TODOS', CURRENT_TIMESTAMP, TRUE "
+                            + "SELECT NEXT VALUE FOR permisos_id_seq, ?, ?, 'todos', CURRENT_TIMESTAMP, TRUE "
                             + "WHERE NOT EXISTS (SELECT 1 FROM permisos WHERE recurso = ? AND accion = ?)",
                     partes[0], partes[1], partes[0], partes[1]);
             Long id = jdbc.queryForObject("SELECT id FROM permisos WHERE recurso = ? AND accion = ?",

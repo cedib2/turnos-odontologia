@@ -1,6 +1,6 @@
 // Encabezado, navegación responsiva y pie comunes a las páginas de staff.
 
-import { api, ApiError } from './api.js';
+import { api, ApiError, olvidarUsuario, prepararCsrf, usuarioRecordado } from './api.js';
 import type { Sesion } from './tipos.js';
 import { el, vaciar } from './ui.js';
 
@@ -54,20 +54,34 @@ export function montarLayout(actual: Seccion): void {
     el('div', { class: 'contenedor' }, 'Horarios en hora de Argentina. Datos tratados según la Ley 25.326.')));
 }
 
+function pintarSesionActiva(nodo: HTMLElement, texto: string): void {
+  nodo.replaceChildren(
+    el('span', {}, texto),
+    el('button', {
+      class: 'btn btn--fantasma btn--chico', type: 'button',
+      onclick: async () => {
+        // La sesión solo se cierra acá. Se pide un CSRF vigente por si el servidor se reinició.
+        await prepararCsrf();
+        await api.post('/auth/logout').catch(() => undefined);
+        olvidarUsuario();
+        window.location.href = '/ingresar.html';
+      },
+    }, 'Salir'));
+}
+
 async function pintarSesion(nodo: HTMLElement): Promise<void> {
   try {
     const sesion = await api.get<Sesion>('/auth/me');
-    nodo.replaceChildren(
-      el('span', {}, `Sesión: ${sesion.rol}`),
-      el('button', {
-        class: 'btn btn--fantasma btn--chico', type: 'button',
-        onclick: async () => {
-          await api.post('/auth/logout').catch(() => undefined);
-          window.location.href = '/ingresar.html';
-        },
-      }, 'Salir'));
+    const usuario = usuarioRecordado();
+    pintarSesionActiva(nodo, usuario ? `Sesión: ${usuario} (${sesion.rol})` : `Sesión: ${sesion.rol}`);
   } catch (error) {
-    const sinSesion = error instanceof ApiError && (error.status === 401 || error.status === 403);
+    // 403: el access es válido pero el rol (p. ej. recepcionista o auditor) no tiene el permiso de
+    // ámbito «propio» que C-04 exige en /auth/me. La sesión está iniciada igual.
+    if (error instanceof ApiError && error.status === 403) {
+      pintarSesionActiva(nodo, `Sesión: ${usuarioRecordado() ?? 'iniciada'}`);
+      return;
+    }
+    const sinSesion = error instanceof ApiError && error.status === 401;
     vaciar(nodo,
       sinSesion ? el('span', { title: 'En dev/test la superficie de staff no exige sesión' }, 'Sin sesión') : null,
       el('a', { class: 'btn btn--secundario btn--chico', href: '/ingresar.html' }, 'Ingresar'));

@@ -70,7 +70,59 @@ function mensajeDe(status: number, cuerpo: unknown): string {
   return `Error ${status}`;
 }
 
-export async function pedir<T>(metodo: string, ruta: string, cuerpo?: unknown): Promise<T> {
+// La sesión dura hasta que el usuario toca «Salir»: el access token vence a los 15 minutos y,
+// ante un 401, se renueva una sola vez con el refresh (cookie HttpOnly) y se repite el pedido.
+const RUTAS_SIN_RENOVACION = ['/auth/login', '/auth/refresh', '/auth/csrf', '/publico/'];
+let renovacionEnCurso: Promise<boolean> | null = null;
+
+function admiteRenovacion(ruta: string): boolean {
+  return !RUTAS_SIN_RENOVACION.some((prefijo) => ruta.startsWith(prefijo));
+}
+
+/** Pide una cookie CSRF vigente: el backend las guarda en memoria y se pierden si se reinicia. */
+export async function prepararCsrf(): Promise<void> {
+  await fetch('/auth/csrf', { credentials: 'same-origin' }).catch(() => undefined);
+}
+
+async function ejecutarRenovacion(): Promise<boolean> {
+  // Otra pestaña pudo haber renovado la sesión mientras se esperaba el turno. Un 403 de /auth/me
+  // también indica un access válido (rol sin permiso de ámbito «propio», C-04): solo 401 renueva.
+  const vigente = await fetch('/auth/me', { credentials: 'same-origin', headers: { Accept: 'application/json' } })
+    .then((r) => r.status !== 401).catch(() => false);
+  if (vigente) return true;
+  await prepararCsrf();
+  const csrf = leerCookie(COOKIE_CSRF);
+  const respuesta = await fetch('/auth/refresh', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: csrf ? { 'X-CSRF-Token': csrf } : {},
+  }).catch(() => null);
+  return respuesta !== null && respuesta.ok;
+}
+
+/**
+ * Renueva la sesión con el refresh token. Se serializa entre pestañas (Web Locks): el backend revoca
+ * toda la sesión si detecta el mismo refresh usado dos veces, como pasaría con dos pestañas a la vez.
+ */
+export function renovarSesion(): Promise<boolean> {
+  if (renovacionEnCurso) return renovacionEnCurso;
+  const candado = navigator.locks as LockManager | undefined;
+  // ejecutarRenovacion nunca rechaza: captura sus errores y responde false.
+  const intento: Promise<boolean> = candado
+    ? new Promise<boolean>((resolver) => {
+      void candado.request('turnos-renovar-sesion', async () => {
+        resolver(await ejecutarRenovacion());
+      });
+    })
+    : ejecutarRenovacion();
+  const enCurso = intento.finally(() => {
+    renovacionEnCurso = null;
+  });
+  renovacionEnCurso = enCurso;
+  return enCurso;
+}
+
+export async function pedir<T>(metodo: string, ruta: string, cuerpo?: unknown, reintento = false): Promise<T> {
   const cabeceras: Record<string, string> = { Accept: 'application/json' };
   if (cuerpo !== undefined) cabeceras['Content-Type'] = 'application/json';
   if (!METODOS_SEGUROS.has(metodo.toUpperCase())) {
@@ -88,6 +140,9 @@ export async function pedir<T>(metodo: string, ruta: string, cuerpo?: unknown): 
   } catch {
     throw new ApiError(0, null, 'No hay conexión con el servidor.');
   }
+  if (respuesta.status === 401 && !reintento && admiteRenovacion(ruta) && (await renovarSesion())) {
+    return pedir<T>(metodo, ruta, cuerpo, true);
+  }
   const datos = await leerCuerpo(respuesta);
   if (!respuesta.ok) throw new ApiError(respuesta.status, datos, mensajeDe(respuesta.status, datos));
   return datos as T;
@@ -98,6 +153,22 @@ export const api = {
   post: <T>(ruta: string, cuerpo?: unknown) => pedir<T>('POST', ruta, cuerpo ?? {}),
   put: <T>(ruta: string, cuerpo?: unknown) => pedir<T>('PUT', ruta, cuerpo ?? {}),
 };
+
+// Email del usuario que inició sesión, solo para mostrarlo en el encabezado: no es credencial
+// (la sesión vive en cookies HttpOnly). Se borra al tocar «Salir».
+const CLAVE_USUARIO = 'turnos.usuario';
+
+export function recordarUsuario(email: string): void {
+  try { localStorage.setItem(CLAVE_USUARIO, email); } catch { /* almacenamiento no disponible */ }
+}
+
+export function usuarioRecordado(): string | null {
+  try { return localStorage.getItem(CLAVE_USUARIO); } catch { return null; }
+}
+
+export function olvidarUsuario(): void {
+  try { localStorage.removeItem(CLAVE_USUARIO); } catch { /* almacenamiento no disponible */ }
+}
 
 /** Clave de idempotencia para operaciones públicas (C-09). */
 export function claveIdempotencia(prefijo: string): string {

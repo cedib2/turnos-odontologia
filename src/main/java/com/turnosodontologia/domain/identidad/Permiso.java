@@ -3,8 +3,7 @@ package com.turnosodontologia.domain.identidad;
 import com.turnosodontologia.domain.comun.AuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.Convert;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,7 +31,7 @@ public class Permiso extends AuditableEntity {
     @Column(name = "accion", nullable = false, length = 20)
     private String accion;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = AmbitoConverter.class)
     @Column(name = "ambito", nullable = false, length = 16)
     private Ambito ambito;
 

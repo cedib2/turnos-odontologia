@@ -804,9 +804,9 @@ class AuthWebTest {
                         + "SELECT NEXT VALUE FOR permisos_id_seq, 'auth', 'leer', ?, CURRENT_TIMESTAMP, TRUE "
                         + "WHERE NOT EXISTS (SELECT 1 FROM permisos "
                         + "WHERE recurso = 'auth' AND accion = 'leer' AND ambito = ?)",
-                ambito.name(), ambito.name());
+                ambito.name().toLowerCase(java.util.Locale.ROOT), ambito.name().toLowerCase(java.util.Locale.ROOT));
         Long permiso = jdbcTemplate.queryForObject("SELECT id FROM permisos "
-                + "WHERE recurso = 'auth' AND accion = 'leer' AND ambito = ?", Long.class, ambito.name());
+                + "WHERE recurso = 'auth' AND accion = 'leer' AND ambito = ?", Long.class, ambito.name().toLowerCase(java.util.Locale.ROOT));
         jdbcTemplate.update("INSERT INTO rol_permiso (rol_id, permiso_id, created_at, activo) "
                 + "VALUES (?, ?, CURRENT_TIMESTAMP, TRUE)", rol.getId(), permiso);
         return usuarioService.registrar(rol, email, password, ProveedorAutenticacion.LOCAL);

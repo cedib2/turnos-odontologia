@@ -45,6 +45,9 @@ public class AuthController {
     @Value("${auth.csrf-cookie:auth_csrf}")
     private String csrfCookie;
 
+    @Value("${auth.refresh-days:7}")
+    private long refreshDays;
+
     public AuthController(AuthService servicio, CsrfTokenStore csrf, AccessAuthenticator acceso,
                           AuthorizationService autorizaciones, UsuarioRepository usuarios,
                           LoginRateLimiter limite) {
@@ -183,10 +186,14 @@ public class AuthController {
 
     private HttpHeaders cookies(AuthService.LoginResult resultado, String csrfRotado) {
         HttpHeaders headers = new HttpHeaders();
+        // Con Max-Age las cookies sobreviven al cierre del navegador: la sesión termina con el logout
+        // o cuando vence el refresh (auth.refresh-days, que se renueva con cada rotación).
         headers.add(HttpHeaders.SET_COOKIE, ResponseCookie.from(sessionCookie, resultado.access())
-                .httpOnly(true).secure(true).sameSite("Strict").path("/").build().toString());
+                .httpOnly(true).secure(true).sameSite("Strict").path("/")
+                .maxAge(AuthService.ACCESS_SECONDS).build().toString());
         headers.add(HttpHeaders.SET_COOKIE, ResponseCookie.from(refreshCookie, resultado.refresh())
-                .httpOnly(true).secure(true).sameSite("Strict").path("/").build().toString());
+                .httpOnly(true).secure(true).sameSite("Strict").path("/")
+                .maxAge(refreshSegundos()).build().toString());
         headers.add(HttpHeaders.SET_COOKIE, cookieCSRF(csrfRotado).toString());
         return headers;
     }
@@ -198,7 +205,12 @@ public class AuthController {
 
     private ResponseCookie cookieCSRF(String valor) {
         return ResponseCookie.from(csrfCookie, valor)
-                .httpOnly(false).secure(true).sameSite("Strict").path("/").build();
+                .httpOnly(false).secure(true).sameSite("Strict").path("/")
+                .maxAge(refreshSegundos()).build();
+    }
+
+    private long refreshSegundos() {
+        return refreshDays * 24 * 60 * 60;
     }
 
     public record LoginRequest(String email, String password) {

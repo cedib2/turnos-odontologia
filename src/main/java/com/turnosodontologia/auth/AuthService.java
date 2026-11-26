@@ -18,7 +18,7 @@ import java.util.UUID;
 @Transactional
 public class AuthService {
 
-    private static final long ACCESS_SECONDS = 15 * 60;
+    static final long ACCESS_SECONDS = 15 * 60;
 
     private final UsuarioRepository usuarios;
     private final AuthSessionRepository sesiones;
