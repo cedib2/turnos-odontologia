@@ -17,8 +17,8 @@ import java.util.UUID;
  * Despacha el outbox de notificaciones (RN-NT-03): cada intento queda registrado con su número,
  * resultado y {@code proveedor_message_id}; los errores se reintentan con espera lineal hasta el
  * máximo configurado y luego la notificación pasa a {@code FALLIDA}. Antes de enviar se vuelve a
- * comprobar la aprobación de la plantilla. La periodicidad del despacho (cola/scheduler) es
- * {@code (TBD)}: se invoca {@link #procesar(Instant, int)}.
+ * comprobar la aprobación de la plantilla y que el turno siga activo. Lo invoca periódicamente
+ * {@link OutboxDispatcherProgramado} cuando {@code notificaciones.dispatcher.habilitado=true}.
  */
 @Service
 @Transactional
@@ -63,6 +63,16 @@ public class OutboxDispatcher {
             return;
         }
         int numero = notificacion.intentos() + 1;
+        // Guardia: un turno cancelado no recibe avisos aunque su notificación siga en el outbox.
+        boolean turnoActivo = store.datosTurno(notificacion.turnoId())
+                .map(NotificacionStore.DatosTurno::activo).orElse(false);
+        if (!turnoActivo) {
+            store.registrarIntento(notificacion.id(), numero, "BLOQUEADO", null, "turno-inactivo");
+            store.actualizar(notificacion.id(), EstadoNotificacion.BLOQUEADA, numero, null, "turno-inactivo");
+            store.cerrarOutbox(notificacion.id());
+            publicar("notificacion.bloqueada", notificacion, "turno-inactivo", Map.of());
+            return;
+        }
         PlantillaWhatsApp plantilla = store.plantilla(notificacion.plantillaId()).orElse(null);
         if (plantilla == null || !plantilla.aprobada()) {
             store.registrarIntento(notificacion.id(), numero, "BLOQUEADO", null, "plantilla-no-aprobada");

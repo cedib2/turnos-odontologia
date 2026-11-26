@@ -17,6 +17,7 @@ public final class AuditoriaCatalogo {
             "notificacion.bloqueada",
             "notificacion.fallida",
             "notificacion.confirmada",
+            "notificacion.anulada",
             "whatsapp.webhook.rechazado",
             "clinico.ficha.abierta",
             "clinico.anamnesis.registrada",

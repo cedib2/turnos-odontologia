@@ -1,5 +1,7 @@
 package com.turnosodontologia.application.notificaciones;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +15,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Profile({"dev", "test"})
 public class SimulatedWhatsAppGateway implements WhatsAppGateway {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SimulatedWhatsAppGateway.class);
+
     private final List<EnvioWhatsApp> enviados = new CopyOnWriteArrayList<>();
     private final AtomicInteger fallosPendientes = new AtomicInteger();
 
@@ -22,7 +26,17 @@ public class SimulatedWhatsAppGateway implements WhatsAppGateway {
             return ResultadoEnvio.error("fallo-simulado");
         }
         enviados.add(envio);
-        return ResultadoEnvio.exito("wamid.sim-" + UUID.randomUUID());
+        String messageId = "wamid.sim-" + UUID.randomUUID();
+        LOG.info("WhatsApp SIMULADO (no se envía nada): notificación {} plantilla {} a {} -> {}",
+                envio.notificacionId(), envio.codigoPlantilla(), enmascarar(envio.destinatario()), messageId);
+        return ResultadoEnvio.exito(messageId);
+    }
+
+    private static String enmascarar(String telefono) {
+        if (telefono == null || telefono.length() <= 4) {
+            return "****";
+        }
+        return "****" + telefono.substring(telefono.length() - 4);
     }
 
     public void fallarProximos(int cantidad) {

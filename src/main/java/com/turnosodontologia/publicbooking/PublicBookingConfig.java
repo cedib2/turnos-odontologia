@@ -2,6 +2,8 @@ package com.turnosodontologia.publicbooking;
 
 import com.turnosodontologia.application.AuditEventPublisher;
 import com.turnosodontologia.application.ConfiguracionSchedulingService;
+import com.turnosodontologia.application.notificaciones.NotificacionService;
+import com.turnosodontologia.application.notificaciones.NotificacionStore;
 import com.turnosodontologia.publictoken.JdbcPublicTokenMetadataStore;
 import com.turnosodontologia.publictoken.PublicIdempotencyStore;
 import com.turnosodontologia.publictoken.PublicResponseHeaders;
@@ -11,11 +13,13 @@ import com.turnosodontologia.publictoken.PublicTokenService;
 import com.turnosodontologia.publictoken.PublicTokenSigner;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
 import java.time.Clock;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -77,8 +81,23 @@ public class PublicBookingConfig {
         return new VentanaHabilesService(configuracion, reloj);
     }
 
+    /** Sin WhatsApp habilitado (test y fuera de dev): las solicitudes quedan registradas en memoria. */
     @Bean
+    @ConditionalOnProperty(name = "notificaciones.reserva.whatsapp", havingValue = "false", matchIfMissing = true)
     public NotificacionPublicaPort notificacionPublicaPort() {
         return new NotificacionSimulada();
+    }
+
+    /** Con {@code notificaciones.reserva.whatsapp=true} la reserva programa sus avisos en el outbox (C-10). */
+    @Bean
+    @ConditionalOnProperty(name = "notificaciones.reserva.whatsapp", havingValue = "true")
+    public NotificacionPublicaPort notificacionWhatsAppReserva(
+            NotificacionService notificaciones, NotificacionStore store, Clock reloj,
+            @Value("${notificaciones.recordatorio.anticipacion-horas:#{null}}") Long anticipacionHoras) {
+        if (anticipacionHoras != null && anticipacionHoras < 1) {
+            throw new IllegalArgumentException("notificaciones.recordatorio.anticipacion-horas debe ser positiva");
+        }
+        return new NotificacionWhatsAppReserva(notificaciones, store, reloj,
+                anticipacionHoras == null ? null : Duration.ofHours(anticipacionHoras));
     }
 }

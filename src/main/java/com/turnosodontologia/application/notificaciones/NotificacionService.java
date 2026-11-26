@@ -35,6 +35,24 @@ public class NotificacionService {
         this.auditoria = auditoria;
     }
 
+    /**
+     * Anula los avisos que todavía no salieron de un turno cancelado o reprogramado: quedan
+     * {@code BLOQUEADA} con el motivo, salen del outbox y cada anulación se audita. Devuelve cuántas anuló.
+     */
+    public int anularPendientes(long turnoId, String motivo) {
+        int anuladas = 0;
+        for (Long id : store.pendientesDeTurno(turnoId)) {
+            Notificacion notificacion = store.notificacion(id).orElseThrow();
+            store.actualizar(id, EstadoNotificacion.BLOQUEADA, notificacion.intentos(), null, motivo);
+            store.cerrarOutbox(id);
+            auditoria.publish(AuditEvent.de("notificacion.anulada", "notificacion", id, actores.system(), motivo,
+                    Map.of("proposito", notificacion.proposito().name(), "turnoId", turnoId),
+                    UUID.randomUUID().toString()));
+            anuladas++;
+        }
+        return anuladas;
+    }
+
     public Notificacion programar(long turnoId, Proposito proposito, String destinatario,
                                   Instant programadaPara) {
         if (destinatario == null || destinatario.isBlank()) {

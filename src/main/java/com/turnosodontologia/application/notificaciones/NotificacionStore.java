@@ -131,6 +131,23 @@ public class NotificacionStore {
                 eventoId, tipo, proveedorMessageId) == 1;
     }
 
+    /** Notificaciones del turno que todavía no salieron (estado {@code PENDIENTE}). */
+    public List<Long> pendientesDeTurno(long turnoId) {
+        return jdbc.queryForList("SELECT id FROM notificaciones WHERE turno_id = ? AND estado = 'PENDIENTE' "
+                + "ORDER BY id FOR UPDATE", Long.class, turnoId);
+    }
+
+    /** Teléfono del paciente e inicio del turno, para programar sus avisos. */
+    public Optional<DatosTurno> datosTurno(long turnoId) {
+        return jdbc.query("SELECT p.telefono, t.inicio, t.activo FROM turnos t "
+                        + "JOIN pacientes p ON p.id = t.paciente_id WHERE t.id = ?",
+                (rs, i) -> new DatosTurno(rs.getString("telefono"), rs.getTimestamp("inicio").toInstant(),
+                        rs.getBoolean("activo")), turnoId).stream().findFirst();
+    }
+
+    public record DatosTurno(String telefono, Instant inicio, boolean activo) {
+    }
+
     public Instant inicioTurno(long turnoId) {
         return jdbc.queryForObject("SELECT inicio FROM turnos WHERE id = ?", Timestamp.class, turnoId)
                 .toInstant();

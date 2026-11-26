@@ -27,3 +27,14 @@ waitlist:
     periodo: YYYY-MM
   deposito:
     monto: 1.00
+
+# C-10: circuito completo de WhatsApp en dev con el gateway SIMULADO (no se envía nada real).
+# La anticipación del recordatorio sigue (TBD): 24 h es un default no productivo de dev.
+notificaciones:
+  reserva:
+    whatsapp: true
+  dispatcher:
+    habilitado: true
+    intervalo-ms: 30000
+  recordatorio:
+    anticipacion-horas: 24
