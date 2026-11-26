@@ -1,6 +1,8 @@
 spring:
   flyway:
     out-of-order: true
+    # Datos de prueba solo en dev (ver docs/datos-de-prueba.md). Test y producción no los cargan.
+    locations: classpath:db/migration,classpath:db/datos-prueba
 
 public:
   token:
