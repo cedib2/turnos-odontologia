@@ -111,6 +111,65 @@ export function porcentaje(valor: number | null): string {
   return valor === null ? '—' : `${valor.toLocaleString('es-AR', { maximumFractionDigits: 2 })} %`;
 }
 
+/**
+ * Copia texto al portapapeles. Si la API no está disponible (p. ej. http fuera de localhost), usa un textarea
+ * temporal. Devuelve si se pudo copiar.
+ */
+export async function copiarTexto(texto: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(texto);
+      return true;
+    }
+  } catch {
+    // Se intenta la alternativa.
+  }
+  const area = el('textarea', { readonly: true, style: 'position: fixed; opacity: 0; pointer-events: none' });
+  area.value = texto;
+  (document.querySelector('dialog[open]') ?? document.body).append(area);
+  area.select();
+  let ok = false;
+  try {
+    ok = document.execCommand('copy');
+  } catch {
+    ok = false;
+  }
+  area.remove();
+  return ok;
+}
+
+/** Cambia el texto del botón por un instante para confirmar la acción y después lo restaura. */
+export function feedbackBoton(boton: HTMLButtonElement, texto: string, ms = 2000): void {
+  const original = boton.dataset['textoOriginal'] ?? boton.textContent ?? '';
+  boton.dataset['textoOriginal'] = original;
+  boton.textContent = texto;
+  boton.classList.add('btn--hecho');
+  window.clearTimeout(Number(boton.dataset['temporizador'] ?? 0));
+  boton.dataset['temporizador'] = String(window.setTimeout(() => {
+    boton.textContent = original;
+    boton.classList.remove('btn--hecho');
+  }, ms));
+}
+
+/**
+ * Teléfono apto para wa.me: solo dígitos y con código de país. Un número argentino de 10 dígitos
+ * (área + número, p. ej. «261 555-0101») se completa con 549; si empieza con 0 se quita el 0 de larga
+ * distancia. Devuelve null si no queda un número usable.
+ */
+export function telefonoWhatsApp(telefono: string | null | undefined): string | null {
+  let digitos = (telefono ?? '').replace(/\D/g, '');
+  if (digitos.startsWith('00')) digitos = digitos.slice(2);
+  else if (digitos.startsWith('0')) digitos = digitos.slice(1);
+  if (digitos.length === 10) digitos = `549${digitos}`;
+  return digitos.length >= 8 && digitos.length <= 15 ? digitos : null;
+}
+
+/** Link de wa.me con el mensaje prearmado; sin teléfono abre WhatsApp para elegir el contacto. */
+export function enlaceWhatsApp(telefono: string | null | undefined, mensaje: string): string {
+  const numero = telefonoWhatsApp(telefono);
+  return `https://wa.me/${numero ?? ''}?text=${encodeURIComponent(mensaje)}`;
+}
+
 /** «Sillón 3» a partir del número, sin duplicar el prefijo si el número ya lo trae. */
 export function etiquetaSillon(numero: string): string {
   return /^sill[oó]n\b/i.test(numero.trim()) ? numero.trim() : `Sillón ${numero}`;
@@ -126,6 +185,8 @@ export interface AccionConfirmacion {
   primaria?: boolean;
   /** Se ejecuta después de cerrar el diálogo. */
   alHacer?: () => void;
+  /** Si está, el botón NO cierra el diálogo: recibe el botón para dar feedback (p. ej. «¡Link copiado!»). */
+  enLugar?: (boton: HTMLButtonElement) => void;
 }
 
 export interface OpcionesConfirmacionTurno {
@@ -153,10 +214,11 @@ export function confirmacionTurno(opciones: OpcionesConfirmacionTurno): void {
     'aria-describedby': 'confirmacion-mensaje',
   });
   const cerrar = (despues?: () => void) => { dialogo.close(); dialogo.remove(); despues?.(); };
-  const botones = opciones.acciones.map((accion) => el('button', {
-    class: accion.primaria ? 'btn' : 'btn btn--secundario', type: 'button',
-    onclick: () => cerrar(accion.alHacer),
-  }, accion.texto));
+  const botones = opciones.acciones.map((accion) => {
+    const boton = el('button', { class: accion.primaria ? 'btn' : 'btn btn--secundario', type: 'button' }, accion.texto);
+    boton.addEventListener('click', () => (accion.enLugar ? accion.enLugar(boton) : cerrar(accion.alHacer)));
+    return boton;
+  });
 
   dialogo.append(
     el('div', { class: 'dialogo__cuerpo confirmacion' },

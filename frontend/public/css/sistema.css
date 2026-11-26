@@ -237,6 +237,17 @@ main { flex: 1; padding-block: var(--e-5) var(--e-7); }
 .btn--secundario:hover { background: var(--c-superficie-2); color: var(--c-texto); }
 .btn--fantasma { background: transparent; color: var(--c-texto-suave); }
 .btn--fantasma:hover { background: var(--c-superficie-2); color: var(--c-texto); }
+/* Enviar por WhatsApp: verde de la marca de mensajería, legible sobre el fondo oscuro y el claro. */
+.btn--whatsapp {
+  --c-wa: #25d366;
+  background: color-mix(in srgb, var(--c-wa) 14%, var(--c-superficie)); color: var(--c-texto);
+  border-color: color-mix(in srgb, var(--c-wa) 55%, transparent); gap: var(--e-2);
+}
+.btn--whatsapp:hover { background: color-mix(in srgb, var(--c-wa) 24%, var(--c-superficie)); }
+.btn__icono { display: inline-grid; place-items: center; width: 1.3rem; height: 1.3rem; border-radius: 50%;
+  background: #25d366; color: #06231d; font-size: 0.8rem; line-height: 1; }
+/* Confirmación breve de una acción (p. ej. «¡Link copiado!»). */
+.btn.btn--hecho { border-color: var(--c-acento); color: var(--c-acento); }
 .btn--peligro { background: var(--c-error); color: #fff; }
 .btn--peligro:hover { background: color-mix(in srgb, var(--c-error) 85%, #000); color: #fff; }
 .btn--chico { min-height: 2.25rem; padding: 0 var(--e-3); font-size: var(--t-sm); }

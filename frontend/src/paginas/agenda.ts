@@ -6,7 +6,10 @@ import { fecha, fechaCorta, fechaLocal, hora, instanteLocal, lunesDe, sumarDias 
 import { abrirDialogo, mensajeStaff } from '../formularios.js';
 import { montarLayout } from '../layout.js';
 import type { EnlaceReserva, EntradaAgenda, Paciente, Profesional, Sillon, Tratamiento } from '../tipos.js';
-import { $, aviso, campo, confirmacionTurno, el, etiquetaSillon, insignia, opciones, toast, vaciar } from '../ui.js';
+import {
+  $, aviso, campo, confirmacionTurno, copiarTexto, el, enlaceWhatsApp, etiquetaSillon, feedbackBoton, insignia, opciones,
+  telefonoWhatsApp, toast, vaciar,
+} from '../ui.js';
 
 montarLayout('agenda');
 const main = $('#contenido');
@@ -359,23 +362,34 @@ function dialogoEnlace(): void {
       const enlace = await api.post<EnlaceReserva>(`/pacientes/${paciente.value}/enlace-reserva`, {
         profesionalId: Number(profesional.value), codigoTratamiento: tratamiento.value, sillonId: Number(sillon.value),
       });
-      mostrarEnlace(new URL(enlace.ruta, location.origin).toString(), enlace.venceAt);
+      mostrarEnlace(new URL(enlace.ruta, location.origin).toString(), enlace.venceAt,
+        pacientes.find((p) => p.id === Number(paciente.value)));
     },
   });
 }
 
-function mostrarEnlace(direccion: string, venceAt: string): void {
+function mostrarEnlace(direccion: string, venceAt: string, paciente: Paciente | undefined): void {
   const salida = el('input', { class: 'control mono', type: 'text', readonly: true, value: direccion });
   const copiar = el('button', { class: 'btn btn--secundario', type: 'button' }, 'Copiar');
   copiar.addEventListener('click', async () => {
-    await navigator.clipboard?.writeText(direccion).catch(() => undefined);
-    copiar.textContent = 'Copiado';
+    feedbackBoton(copiar, (await copiarTexto(direccion)) ? 'Copiado' : 'No se pudo copiar');
   });
+  const saludo = paciente ? `Hola ${paciente.nombre}` : 'Hola';
+  const mensaje = `${saludo}, te compartimos el link para reservar tu turno: ${direccion}\n\n`
+    + `El link vence a las ${hora(venceAt)} y sirve para una sola reserva.`;
+  const numero = telefonoWhatsApp(paciente?.telefono);
+  const whatsapp = el('a', {
+    class: 'btn btn--whatsapp', href: enlaceWhatsApp(paciente?.telefono, mensaje), target: '_blank', rel: 'noopener noreferrer',
+    title: numero ? `Abre WhatsApp con el mensaje listo para +${numero}`
+      : 'El paciente no tiene un teléfono válido: WhatsApp se abre con el mensaje para que elijas el contacto.',
+  }, el('span', { class: 'btn__icono', 'aria-hidden': 'true' }, '✆'), 'Enviar por WhatsApp');
   abrirDialogo({
     titulo: 'Link generado',
     descripcion: `Vence a las ${hora(venceAt)}. Envialo al paciente por WhatsApp.`,
     campos: [campo('e-link', 'Link', salida), el('div', { class: 'fila' }, copiar,
-      el('a', { class: 'btn btn--fantasma', href: direccion, target: '_blank', rel: 'noopener' }, 'Abrir'))],
+      el('a', { class: 'btn btn--fantasma', href: direccion, target: '_blank', rel: 'noopener' }, 'Abrir'), whatsapp),
+    ...(numero ? [] : [el('p', { class: 'campo__ayuda', style: 'margin: 0' },
+      'Este paciente no tiene teléfono cargado: vas a poder elegir el contacto en WhatsApp.')])],
     accion: 'Listo',
     enviar: async () => undefined,
   });

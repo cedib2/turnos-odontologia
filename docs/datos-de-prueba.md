@@ -12,7 +12,7 @@ psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -1 -f src/main/resources/db/datos-prueba
 
 - Para regenerar desde cero: recrear la base y volver a aplicar las migraciones con el script. Como la auditoría y la historia clínica son append-only, el script no se puede correr dos veces sobre la misma base.
 - **Las fechas de la agenda son relativas al día de carga.** Los turnos van de 20 días hábiles atrás a 15 hacia adelante, sin sábados, domingos ni feriados. Si pasan muchos días desde la carga, hay que regenerar la base para recuperar los escenarios a futuro.
-- Todos los datos son inventados: documentos `9000xxxx`, teléfonos `+54911500000xx`, emails `@ejemplo.test` y `@turnos-odontologia.test`, matrículas `*-PRUEBA-*`, `payment_id` `PRUEBA-MP-*`, `wamid.PRUEBA-*` y CAE de prueba.
+- Todos los datos son inventados: documentos `9000xxxx`, teléfonos `549261555xxxx` (Mendoza, prefijo ficticio 555; los asigna `V901__telefonos_de_prueba.sql`: paciente 1 → `5492615550101`, paciente 2 → `5492615550102`, …), emails `@ejemplo.test` y `@turnos-odontologia.test`, matrículas `*-PRUEBA-*`, `payment_id` `PRUEBA-MP-*`, `wamid.PRUEBA-*` y CAE de prueba.
 
 ## Usuarios de staff
 

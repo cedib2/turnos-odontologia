@@ -6,7 +6,7 @@ import { fecha, fechaLocal, hora, sumarDias } from '../fechas.js';
 import { montarLayout } from '../layout.js';
 import { problemaPublico } from '../publico.js';
 import type { Disponibilidad, Hueco, TurnoPublicoCreado } from '../tipos.js';
-import { $, aviso, confirmacionTurno, conCarga, el, vaciar } from '../ui.js';
+import { $, aviso, confirmacionTurno, conCarga, copiarTexto, el, feedbackBoton, vaciar } from '../ui.js';
 
 montarLayout('paciente');
 const main = $('#contenido');
@@ -190,6 +190,12 @@ function pasoListo(turno: TurnoPublicoCreado): void {
       el('p', {}, 'Con el link de tu turno podés confirmar asistencia, reprogramar o cancelar hasta 48 horas hábiles antes.')),
     acciones: [
       { texto: 'Ver mi turno', primaria: true, alHacer: () => { location.href = enlace; } },
+      {
+        texto: 'Copiar link',
+        // Mismo enlace personal que «Ver mi turno»: confirmar asistencia, reprogramar o cancelar.
+        enLugar: (boton) => void copiarTexto(gestion.toString()).then((ok) =>
+          feedbackBoton(boton, ok ? '¡Link copiado!' : 'No se pudo copiar')),
+      },
       {
         texto: 'Reservar otro turno',
         // Cada link de reserva sirve para un solo turno (el token se consume al reservar).
