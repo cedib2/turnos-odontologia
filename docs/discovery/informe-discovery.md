@@ -1,6 +1,32 @@
-# Informe de investigación de mercado — Sistemas de gestión odontológica
+Ingenieria en Sistemas de Información
+Desarrollo de Software: Trabajo Global
 
-**Fecha de elaboración y consulta:** 19 de noviembre de 2026
+Informe de Discovery: Sistemas de gestión de turnos y agenda para consultorios odontológicos en Argentina
+
+Integrantes: Ellerbach, Lautaro · De Giuseppe, Augusto · Fornasari, Donato · Velazquez, Joaquin 
+Fecha de entrega: 26 de noviembre de 2026
+
+# Informe de Discovery: sistemas de gestión de turnos y agenda para consultorios odontológicos en Argentina
+
+# Resumen ejecutivo
+
+**Qué se investigó.** Se relevaron 22 sistemas de gestión odontológica a partir de fuentes públicas verificables (sitios oficiales, centros de ayuda, páginas de precios, términos y políticas de privacidad, notas periodísticas y reseñas con autor identificable). Once son argentinos, seis son de otros países de Latinoamérica, Europa o Brasil y cinco son de Estados Unidos, estos últimos tomados como referencia de diseño. Cada dato se clasificó como *comprobado*, *afirmación comercial* o *no evidenciado*.
+
+**Principales hallazgos.**
+
+- Agenda, odontograma, recordatorios y caja **ya son requisitos de entrada**, no diferenciadores.
+- Dos supuestos de partida resultaron falsos: varios sistemas ya cobran señas con Mercado Pago y varios declaran adecuación a la Ley 25.326. La oportunidad no es "nadie lo hace", sino **hacerlo con evidencia verificable**.
+- Los vacíos reales son cinco: precios predecibles, métricas de ausentismo y ocupación con metodología, seguridad demostrada (no solo declarada), derivación clínica auditada en la historia y relleno automático de cancelaciones con depósito.
+- Las cifras de adopción y eficacia que publican los proveedores son en su mayoría autopublicadas y, en algunos casos, se contradicen entre páginas del mismo sitio.
+- En la matriz ponderada, 16 de los 22 sistemas quedan entre 3,4 y 4,1 (Órbita 4,1; DentalCore, DentalSoft y Dentalink 4,0). Las diferencias dentro de ese grupo no son significativas con información solo pública.
+
+**Recomendación.** Analizar mediante demo a Bilog, Órbita, Dentalink, DentalCore y DentalTec. Tomar como referencia de experiencia de usuario a Órbita (conversación por WhatsApp), Curve Dental (autoagendamiento y relleno de huecos) y NexHealth (reserva sincronizada con la agenda). El MVP propuesto combina agenda sin solapamientos por profesional y sillón, reserva online con confirmación y reprogramación, WhatsApp con derivación humana registrada, ficha clínica y odontograma, seña con Mercado Pago, y trazabilidad y exportación conforme a la normativa argentina. Como diferenciadores propone un plan todo incluido con precio público y estable, un motor de ocupación y un dossier de cumplimiento descargable. La liquidación de obras sociales y la receta electrónica quedan para etapas posteriores.
+
+---
+
+# Alcance y metodología
+
+**Fecha de elaboración y consulta:** 19 de noviembre de 2026 · **Verificación manual de fuentes:** 26 de noviembre de 2026
 **Alcance:** Argentina (prioridad) · Latinoamérica · soluciones internacionales inspiradoras
 **Metodología:** búsqueda y lectura de fuentes públicas verificables — sitios oficiales, documentación y centros de ayuda, páginas de precios, términos y políticas de privacidad, marketplaces y reseñas con autor identificable, y notas periodísticas citadas con fecha. Se consultaron 60+ URLs; todas las referencias de este informe tienen fecha de consulta **2026-11-19**.
 
@@ -16,49 +42,38 @@ Criterio crítico aplicado: cuando un proveedor publica una cifra sin metodolog�
 
 ---
 
-## Nota preliminar: correcciones al informe previo
-
-El análisis de fuentes primarias obliga a rectificar dos conclusiones del documento que originó este trabajo:
-
-1. **«Ningún sistema odontológico cobra seña con Mercado Pago» es falso.** DentalSoft documenta «cobrá señas y deudas»; AgendaPro ofrece «seña online para confirmar asistencia» con integración Mercado Pago; también FLAP, DentApp y Mi Agenda Profesional publican señas vía Mercado Pago. [C]
-2. **«Ningún proveedor declara adecuación a la Ley 25.326» es falso.** Bilog (términos actualizados al 29/10/2026), Odonthia (política de privacidad) y AgendaPro (FAQ del producto dental) declaran expresamente la norma. [C] Otra cosa —no demostrada— es que exista certificación, inscripción RNBD por proveedor o auditoría pública.
-
-Además: las cifras de adopción de Bilog difieren entre páginas de su propio sitio (+1.500 clínicas/+5.000 usuarios en un caso; +3.000/+20.000 en otro); los «1.219 turnos» y «7 de cada 10 conversaciones» de Órbita son autopublicados y **no** aparecen en las notas de TN y Ámbito de julio de 2026; Odonthia publica **tres juegos de precios distintos** en fuentes oficiales; y el «ARS 14.900» de AgendaPro no está documentado. [C]
-
-**Consecuencia:** la tesis de oportunidad no puede apoyarse en «nadie lo hace». Debe apoyarse en **evidenciar mejor** lo que ya se ofrece de modo opaco o no verificable.
-
 ---
 
 # A. Tabla comparativa
 
-Ordenada por relevancia para el mercado argentino. `NE` = No evidenciado. Todas las URLs se listan en el apartado *Fuentes consultadas* (2026-11-19).
+Ordenada por relevancia para el mercado argentino. `NE` = No evidenciado. La última columna de A.1 indica la URL oficial y la fecha de consulta de cada fila; el resto de las fuentes se listan en *Referencias* (2026-11-19).
 
 ## A.1 — Identificación, agenda, turnos y automatización
 
-| # | Sistema (empresa · país) | Segmento · modalidad | Agenda | Turnos digitales | Automatización |
-|---|---|---|---|---|---|
-| 1 | **Bilog** (Bilog · AR) | Consultorio, clínica, gerenciadoras · SaaS web + app iOS/Android [C] | Diaria/semanal por profesional, arrastre, estados, presentismo; evita superposición online [C]. Duración variable, bloqueos, sobreturnos: **NE** | Link/QR, consulta, reserva y cancelación online [C]; reprogramación, chatbot transaccional, lista de espera: **NE** | Recordatorios WhatsApp/email/SMS, confirmaciones [C]; ausentes, recupero, controles, campañas: **NE** |
-| 2 | **Órbita / Hiorbita** (Órbita Global · AR) | Consultorio, clínica, red multisede · SaaS en AWS [C] | Por sillón, anti-choque en base de datos, día/semana ampliada/mes, drag & drop, bloqueos, sobreturno, lista de espera, turnos en serie [C]; duración variable: **NE** | Asistente WhatsApp 24/7 con audios: da, reagenda, cancela, confirma con botones, deriva urgencias, pide reseña [C]; API Meta oficial [C]; reserva web como producto: **NE** | Recordatorios (14 plantillas Meta, dos rondas en turnos largos), recontacto, campañas, controles automáticos [C] |
-| 3 | **Dentalink** (Healthatom/Engenis · CL) | Consultorio a multicentro, laboratorios · SaaS 100 % nube [C] | Global/diaria/semanal por profesional y sillón, estados, sobreagendamiento paralelo, reprogramación individual o masiva, duraciones por odontólogo [C]; bloqueos, lista de espera: **NE** | Agendamiento online en los tres planes [C]; turnos por WhatsApp y Contact Center IA 24/7 que agenda/confirma/reprograma/cancela [C]; lista de espera: **NE** | Recordatorios y confirmaciones WhatsApp/email, recupero de ausentes, reagendamiento y cobranza, encuestas, email marketing, tareas de control [C] |
-| 4 | **DentalTec** (Tándem Digital · AR) | Odontólogo, consultorio, círculos y federaciones (CORA) · SaaS 100 % web [C] | Turnos configurables por odontólogo, día, horario e intervalo; multi-odontólogo con secretaría y 10 roles [C]; vista semanal, sillones, duración variable, bloqueos, sobreturnos, anti-solapamientos: **NE** | Confirmación de asistencia por WhatsApp [C]; «integración oficial WhatsApp» [A]; reserva 24/7, link, web, chatbot, cancelación, reprogramación, lista de espera: **NE** | Recordatorios automáticos y confirmación por WhatsApp [C]; ausentes, recupero, controles, campañas: **NE** |
-| 5 | **DentalCore** (Alfredo Di Tullio · AR) | Consultorio y clínica; 8 países · SaaS navegador [C] | Multi-doctor día/3 días/semana/mes, mapa de calor, drag & drop, filtro, kanban, bloqueos, timer, sala de espera [C]; sillones, duración variable, sobreturnos, control de solapamientos: **NE** | Confirmación/cancelación por link vía WhatsApp, recordatorios 48/24 h [C]; bandeja compartida Meta [C]; reserva 24/7 autónoma, redes, chatbot, lista de espera: **NE** | 7 comunicaciones automáticas, 25 tipos de tareas, recall por segmentos, recupero de tratamientos no agendados, controles vencidos, calendario de contenido [C] |
-| 6 | **AgendaPro** (AgendaPro · CL/AR) | Consultorio, clínica, centro médico, multisede · SaaS + apps iOS/Android [C] | Por odontólogo, práctica y sillón; duración por práctica [C]; bloqueos, sobreturnos, anti-solapamientos: **NE** | 24/7, web, Google Maps/Reserve, WhatsApp/Instagram/Messenger vía IA, confirmar/reagendar/cancelar [C]; lista de espera: **NE** | Recordatorios WhatsApp 1/2/3 días, segmentación y recuperación [C]; «hasta 90 % menos ausencias» [A] |
-| 7 | **DentalSoft** (DentalSoft · AR) | Consultorio y clínica, multi-sucursal · nube 100 % [C] | Día/semana/mes, drag & drop, bloqueos, urgencias y sobreturnos con detección de solapamiento, multi-profesional/sucursal [C] | 24/7, web propia, confirmación/cancelación/reprogramación, portal, chatbot; WhatsApp como botón/chat [C]; lista de espera: **NE** | Recordatorios y confirmación WhatsApp/email, cobro de deudas, recuperación de inactivos, reseñas Google [C] |
-| 8 | **Odonthia** (Odonthia · AR) | Consultorio, clínica multisede, CRM clínico · web app freemium/PWA [C] | Día/semana/mes, multi-profesional [C]; bloqueos, sobreturnos, anti-solapamientos: **NE** | Reserva online propia, ficha QR, portal del paciente [C]; WhatsApp y lista de espera: **NE** en plan gratuito | WhatsApp automático y campañas de email solo en planes de pago [C]; IA por créditos [C] |
-| 9 | **DentiClick** (Maximiliano Espeche · AR/VE) | Consultorio y clínica, multilocación en plan Centro · SaaS + app iOS [C] | Día/semana/mes, estados, reprogramación [C]; bloqueos, sobreturnos, anti-solapamientos: **NE** | Mini-web con subdominio y reservas 24/7 [C]; WhatsApp, chatbot reservador, lista de espera: **NE** | Asistente IA web [C]; recordatorios WhatsApp/correo según App Store [C]; campañas: **NE** |
-| 10 | **Odonto.ar** (Odonto.ar · AR) | Independiente, consultorio, clínica hasta 10 usuarios · SaaS web [C] | Día/semana/mes, traslado, duración por motivo, disponibilidad y anticipación configurables [C]; bloqueos, sobreturnos, anti-solapamientos: **NE** | Link público 24/7, reglas de cancelación/reprogramación [C]; WhatsApp, chatbot, lista de espera: **NE** | Recordatorios/reprogramación por comunicación interna [A]; campañas y recupero: **NE** |
-| 11 | **DenPro** (Elite Digital Services LLC · .ar/UE) | Independiente, multilocalidad, cadenas/DSO, universidades · cloud [C/A] | Calendario drag & drop, multi-profesional, recurrente, lista de espera [C/A]; día/semana, sobreturnos, anti-solapamientos: **NE** | Reserva por link/QR 24/7, confirmación SMS/email [C/A]; WhatsApp, chatbot, redes: **NE** | Recordatorios SMS/email 48 h y 2 h, CRM de reactivación [A] |
-| 12 | **Dentiqa** (Violet Wave · AR/LATAM) | Clínica; sucursales en Enterprise · SaaS multi-tenant [C] | Día/semana, multi-dentista, bloqueos, reprogramación validada, evita doble reserva [C/A]; sobreturnos y anti-solapamiento explícito: **NE** | Chatbot WhatsApp 24/7 agenda/cancela, recordatorios 24 h y 2 h [C/A]; link/web y lista de espera: **NE** | Campañas WhatsApp (cumpleaños, reactivación, post-visita), CRM 7 etapas, coach IA [C/A] |
-| 13 | **Benty** (BENTY SRL · AR) | Independiente, consultorio, clínica · SaaS online [C] | Turnos por profesional, espacio y disponibilidad; listado de espera [A]; vista día/semana y anti-solapamientos: **NE** | Portal con reserva online, actualización de datos y contacto WhatsApp [C/A]; 24/7: **NE**; bot de consultas [A] | Mensajes configurables de recordatorio/confirmación, bot WhatsApp [C/A]; ausentes, recupero, campañas: **NE** |
-| 14 | **Doctocliq** (Doctocliq · PE) | Consultorio a clínica multisede · SaaS + apps [C] | Día/semana/mes, vista por sillón y profesional, agrupación por equipo (Avanzado), bloqueos, duración variable [C]; anti-solapamientos, sobreturnos: **NE** | Link propio integrable en web/redes, paciente agenda solo, confirma/reprograma/cancela [C/A]; lista de espera: **NE** | Recordatorios WhatsApp/email (50-150/mes), campañas, segmentación, reseñas; Soyla IA responde y agenda (módulo adicional) [C/A] |
-| 15 | **Dentidesk** (Dentidesk Chile SpA · CL) | Consultorios, clínicas, sindicatos, universidades · nube + apps [C] | Horarios personalizables, notas, recordatorios, reprogramación [A]; multi-profesional, sillones, anti-solapamientos sin detalle; duración variable, sobreturnos: **NE** | **WhatsApp = enlace manual a WhatsApp Web con mensajes predefinidos** [C]; confirmación automática por email [C]; reserva online paciente: **NE** | Confirmación automática por email, liquidación automática a dentistas [A]; campañas/recupero: **NE** |
-| 16 | **Clinic Cloud / Doctoralia** (Doctoralia Internet S.L. · ES) | Clínicas dentales y multiespecialidad · SaaS cloud [C] | Agendas por profesional (1/3/5 según plan), vistas, bloqueos, actualización en tiempo real [C/A]; duración variable, sobreturnos, anti-solapamientos: **NE** | Portal y **reserva 24/7 vía Doctoralia** sincronizada [C]; recordatorios SMS a convenir, lista de espera inteligente en Doctoralia Pro [A]; WhatsApp: **NE** salvo recordatorios Pro | Recordatorios, campañas email/SMS, reseñas, Noa Reception (acceso anticipado), Noa Notes/Summary de pago [C/A] |
-| 17 | **Open Dental** (Open Dental Software Inc. · US) | Consultorio cualquier tamaño · instalación local + Cloud opcional [C] | Por consultorio/profesional/empleado, Pinboard, drag & drop, búsqueda de huecos, blockouts, vistas semana [C]; anti-solapamiento no declarado; duración variable y ASAP [C] | **Web Sched** (Recall/New/Existing/ASAP): agenda online, alta automática, link para reclamar/rechazar huecos [C]; WhatsApp y chatbot: **NE** | eReminders, eConfirmations, Integrated Texting, Mass Email, recall [C] |
-| 18 | **Curve Dental** (CD Newco LLC · US) | Consultorios y grupos · PMS cloud [C] | Sidekick, vistas por sillón/profesional, incrementos configurables, blockouts, **Self-Scheduling 24/7** con permisos por tipo de cita [C/A]; anti-solapamiento: **NE** | Reserva 24/7 desde web, confirmación y recordatorios, **Smart Fill** para cancelaciones con waitlist y planes no agendados, two-way texting [C/A]; WhatsApp: **NE** | Curve GRO: recordatorios, recare, campañas por segmentos, Smart Action List [C/A] |
-| 19 | **tab32** (tab32 Inc. · US) | Consultorios (Alpine) y grupos/DSO (Summit) · cloud [C] | Columnas por sillón, ASAP/waitlist, online booking con disponibilidad en tiempo real, «no double-booking» [C/A]; multi-sede en Summit [C] | Booking nativo vía HelloPatient, portal sin login, reprogramación, formularios, depósitos para reducir cancelaciones [C/A]; WhatsApp: **NE** | AutoRemind y **Agent Layer** IA: confirmación por texto/llamada, seguimiento de ausentes, backfill, hygiene recall, reactivación [C/A] |
-| 20 | **NexHealth** (NexHealth Inc. · US) | Consultorios, grupos/DSO · capa de scheduling sincronizada vía Synchronizer [C] | Agenda del PMS; reglas por tipo de cita, horarios, duraciones y rotaciones; «prevent double bookings» por sync [C/A]; sillones/sobreturnos: **NE** | **Reserva 24/7** en web, Google Search/Maps, SMS, email, QR y redes; recalls 1-clic; **waitlist automatizada**; depósitos [C/A]; chatbot: **NE** | Recordatorios, mensajería y campañas, recall, reseñas Google [C]; Copilot en piloto limitado 2026 [A] |
-| 21 | **Weave** (Weave Communications Inc. · US) | Clínicas dentarias; plataforma de comunicación, **no PMS clínico** [C] | Calendario con write-back al PMS, tipos de cita y duraciones, disponibilidad por proveedor [C]; sillones, sobreturnos, anti-solapamientos: **NE** | Appointment Requests desde web/Google con **aprobación manual**; Online Scheduling con waitlist; confirmación SMS y cancelación/reprogramación con link [C] | Recordatorios con análisis de sentimiento, Missed Call Text, QuickFill/waitlist, recall y reactivación segmentada, reseñas [C] |
-| 22 | **BlueDental** (Morelli/Dental Morelli · BR) | Individual a clínica multi-dentista · nube, portugués [A] | «Fácil agendamento» multi-profesional y multiclínica [A]; día/semana, sillón, duración, bloqueos, sobreturnos, anti-solapamientos: **NE** | Envío de mensajes e-mail/WhatsApp para confirmar, cumpleaños y retorno [A]; **link de reserva 24/7 y chatbot: NE** | Confirmación y lembretes [A]; recupero/campañas: **NE** |
+| # | Sistema (empresa · país) | Segmento · modalidad | Agenda | Turnos digitales | Automatización | Fuente oficial y fecha de consulta |
+|---|---|---|---|---|---|---|
+| 1 | **Bilog** (Bilog · AR) | Consultorio, clínica, gerenciadoras · SaaS web + app iOS/Android [C] | Diaria/semanal por profesional, arrastre, estados, presentismo; evita superposición online [C]. Duración variable, bloqueos, sobreturnos: **NE** | Link/QR, consulta, reserva y cancelación online [C]; reprogramación, chatbot transaccional, lista de espera: **NE** | Recordatorios WhatsApp/email/SMS, confirmaciones [C]; ausentes, recupero, controles, campañas: **NE** | https://bilog.com.ar/ · 2026-11-19 |
+| 2 | **Órbita / Hiorbita** (Órbita Global · AR) | Consultorio, clínica, red multisede · SaaS en AWS [C] | Por sillón, anti-choque en base de datos, día/semana ampliada/mes, drag & drop, bloqueos, sobreturno, lista de espera, turnos en serie [C]; duración variable: **NE** | Asistente WhatsApp 24/7 con audios: da, reagenda, cancela, confirma con botones, deriva urgencias, pide reseña [C]; API Meta oficial [C]; reserva web como producto: **NE** | Recordatorios (14 plantillas Meta, dos rondas en turnos largos), recontacto, campañas, controles automáticos [C] | https://hiorbita.com/ · 2026-11-19 |
+| 3 | **Dentalink** (Healthatom/Engenis · CL) | Consultorio a multicentro, laboratorios · SaaS 100 % nube [C] | Global/diaria/semanal por profesional y sillón, estados, sobreagendamiento paralelo, reprogramación individual o masiva, duraciones por odontólogo [C]; bloqueos, lista de espera: **NE** | Agendamiento online en los tres planes [C]; turnos por WhatsApp y Contact Center IA 24/7 que agenda/confirma/reprograma/cancela [C]; lista de espera: **NE** | Recordatorios y confirmaciones WhatsApp/email, recupero de ausentes, reagendamiento y cobranza, encuestas, email marketing, tareas de control [C] | https://www.softwaredentalink.com/ar · 2026-11-19 |
+| 4 | **DentalTec** (Tándem Digital · AR) | Odontólogo, consultorio, círculos y federaciones (CORA) · SaaS 100 % web [C] | Turnos configurables por odontólogo, día, horario e intervalo; multi-odontólogo con secretaría y 10 roles [C]; vista semanal, sillones, duración variable, bloqueos, sobreturnos, anti-solapamientos: **NE** | Confirmación de asistencia por WhatsApp [C]; «integración oficial WhatsApp» [A]; reserva 24/7, link, web, chatbot, cancelación, reprogramación, lista de espera: **NE** | Recordatorios automáticos y confirmación por WhatsApp [C]; ausentes, recupero, controles, campañas: **NE** | https://web.dentaltec.com.ar/ · 2026-11-19 |
+| 5 | **DentalCore** (Alfredo Di Tullio · AR) | Consultorio y clínica; 8 países · SaaS navegador [C] | Multi-doctor día/3 días/semana/mes, mapa de calor, drag & drop, filtro, kanban, bloqueos, timer, sala de espera [C]; sillones, duración variable, sobreturnos, control de solapamientos: **NE** | Confirmación/cancelación por link vía WhatsApp, recordatorios 48/24 h [C]; bandeja compartida Meta [C]; reserva 24/7 autónoma, redes, chatbot, lista de espera: **NE** | 7 comunicaciones automáticas, 25 tipos de tareas, recall por segmentos, recupero de tratamientos no agendados, controles vencidos, calendario de contenido [C] | https://dentalcore.app/ · 2026-11-19 |
+| 6 | **AgendaPro** (AgendaPro · CL/AR) | Consultorio, clínica, centro médico, multisede · SaaS + apps iOS/Android [C] | Por odontólogo, práctica y sillón; duración por práctica [C]; bloqueos, sobreturnos, anti-solapamientos: **NE** | 24/7, web, Google Maps/Reserve, WhatsApp/Instagram/Messenger vía IA, confirmar/reagendar/cancelar [C]; lista de espera: **NE** | Recordatorios WhatsApp 1/2/3 días, segmentación y recuperación [C]; «hasta 90 % menos ausencias» [A] | https://agendapro.com/ar/dental/software-odontologico · 2026-11-19 |
+| 7 | **DentalSoft** (DentalSoft · AR) | Consultorio y clínica, multi-sucursal · nube 100 % [C] | Día/semana/mes, drag & drop, bloqueos, urgencias y sobreturnos con detección de solapamiento, multi-profesional/sucursal [C] | 24/7, web propia, confirmación/cancelación/reprogramación, portal, chatbot; WhatsApp como botón/chat [C]; lista de espera: **NE** | Recordatorios y confirmación WhatsApp/email, cobro de deudas, recuperación de inactivos, reseñas Google [C] | https://www.dentalsoft.com.ar/ · 2026-11-19 |
+| 8 | **Odonthia** (Odonthia · AR) | Consultorio, clínica multisede, CRM clínico · web app freemium/PWA [C] | Día/semana/mes, multi-profesional [C]; bloqueos, sobreturnos, anti-solapamientos: **NE** | Reserva online propia, ficha QR, portal del paciente [C]; WhatsApp y lista de espera: **NE** en plan gratuito | WhatsApp automático y campañas de email solo en planes de pago [C]; IA por créditos [C] | https://odonthia.com/ · 2026-11-19 |
+| 9 | **DentiClick** (Maximiliano Espeche · AR/VE) | Consultorio y clínica, multilocación en plan Centro · SaaS + app iOS [C] | Día/semana/mes, estados, reprogramación [C]; bloqueos, sobreturnos, anti-solapamientos: **NE** | Mini-web con subdominio y reservas 24/7 [C]; WhatsApp, chatbot reservador, lista de espera: **NE** | Asistente IA web [C]; recordatorios WhatsApp/correo según App Store [C]; campañas: **NE** | https://denticlick.app/ · 2026-11-19 |
+| 10 | **Odonto.ar** (Odonto.ar · AR) | Independiente, consultorio, clínica hasta 10 usuarios · SaaS web [C] | Día/semana/mes, traslado, duración por motivo, disponibilidad y anticipación configurables [C]; bloqueos, sobreturnos, anti-solapamientos: **NE** | Link público 24/7, reglas de cancelación/reprogramación [C]; WhatsApp, chatbot, lista de espera: **NE** | Recordatorios/reprogramación por comunicación interna [A]; campañas y recupero: **NE** | https://odonto.ar/ · 2026-11-19 |
+| 11 | **DenPro** (Elite Digital Services LLC · .ar/UE) | Independiente, multilocalidad, cadenas/DSO, universidades · cloud [C/A] | Calendario drag & drop, multi-profesional, recurrente, lista de espera [C/A]; día/semana, sobreturnos, anti-solapamientos: **NE** | Reserva por link/QR 24/7, confirmación SMS/email [C/A]; WhatsApp, chatbot, redes: **NE** | Recordatorios SMS/email 48 h y 2 h, CRM de reactivación [A] | https://www.denpro.ar/acerca-de/ · 2026-11-19 |
+| 12 | **Dentiqa** (Violet Wave · AR/LATAM) | Clínica; sucursales en Enterprise · SaaS multi-tenant [C] | Día/semana, multi-dentista, bloqueos, reprogramación validada, evita doble reserva [C/A]; sobreturnos y anti-solapamiento explícito: **NE** | Chatbot WhatsApp 24/7 agenda/cancela, recordatorios 24 h y 2 h [C/A]; link/web y lista de espera: **NE** | Campañas WhatsApp (cumpleaños, reactivación, post-visita), CRM 7 etapas, coach IA [C/A] | https://dentiqa.app/ar · 2026-11-19 |
+| 13 | **Benty** (BENTY SRL · AR) | Independiente, consultorio, clínica · SaaS online [C] | Turnos por profesional, espacio y disponibilidad; listado de espera [A]; vista día/semana y anti-solapamientos: **NE** | Portal con reserva online, actualización de datos y contacto WhatsApp [C/A]; 24/7: **NE**; bot de consultas [A] | Mensajes configurables de recordatorio/confirmación, bot WhatsApp [C/A]; ausentes, recupero, campañas: **NE** | https://benty.com.ar/ · 2026-11-19 |
+| 14 | **Doctocliq** (Doctocliq · PE) | Consultorio a clínica multisede · SaaS + apps [C] | Día/semana/mes, vista por sillón y profesional, agrupación por equipo (Avanzado), bloqueos, duración variable [C]; anti-solapamientos, sobreturnos: **NE** | Link propio integrable en web/redes, paciente agenda solo, confirma/reprograma/cancela [C/A]; lista de espera: **NE** | Recordatorios WhatsApp/email (50-150/mes), campañas, segmentación, reseñas; Soyla IA responde y agenda (módulo adicional) [C/A] | https://www.doctocliq.com/ · 2026-11-19 |
+| 15 | **Dentidesk** (Dentidesk Chile SpA · CL) | Consultorios, clínicas, sindicatos, universidades · nube + apps [C] | Horarios personalizables, notas, recordatorios, reprogramación [A]; multi-profesional, sillones, anti-solapamientos sin detalle; duración variable, sobreturnos: **NE** | **WhatsApp = enlace manual a WhatsApp Web con mensajes predefinidos** [C]; confirmación automática por email [C]; reserva online paciente: **NE** | Confirmación automática por email, liquidación automática a dentistas [A]; campañas/recupero: **NE** | https://www.dentidesk.cl/ · 2026-11-19 |
+| 16 | **Clinic Cloud / Doctoralia** (Doctoralia Internet S.L. · ES) | Clínicas dentales y multiespecialidad · SaaS cloud [C] | Agendas por profesional (1/3/5 según plan), vistas, bloqueos, actualización en tiempo real [C/A]; duración variable, sobreturnos, anti-solapamientos: **NE** | Portal y **reserva 24/7 vía Doctoralia** sincronizada [C]; recordatorios SMS a convenir, lista de espera inteligente en Doctoralia Pro [A]; WhatsApp: **NE** salvo recordatorios Pro | Recordatorios, campañas email/SMS, reseñas, Noa Reception (acceso anticipado), Noa Notes/Summary de pago [C/A] | https://clinic-cloud.com/tarifas · 2026-11-19 |
+| 17 | **Open Dental** (Open Dental Software Inc. · US) | Consultorio cualquier tamaño · instalación local + Cloud opcional [C] | Por consultorio/profesional/empleado, Pinboard, drag & drop, búsqueda de huecos, blockouts, vistas semana [C]; anti-solapamiento no declarado; duración variable y ASAP [C] | **Web Sched** (Recall/New/Existing/ASAP): agenda online, alta automática, link para reclamar/rechazar huecos [C]; WhatsApp y chatbot: **NE** | eReminders, eConfirmations, Integrated Texting, Mass Email, recall [C] | https://www.opendental.com/ · 2026-11-19 |
+| 18 | **Curve Dental** (CD Newco LLC · US) | Consultorios y grupos · PMS cloud [C] | Sidekick, vistas por sillón/profesional, incrementos configurables, blockouts, **Self-Scheduling 24/7** con permisos por tipo de cita [C/A]; anti-solapamiento: **NE** | Reserva 24/7 desde web, confirmación y recordatorios, **Smart Fill** para cancelaciones con waitlist y planes no agendados, two-way texting [C/A]; WhatsApp: **NE** | Curve GRO: recordatorios, recare, campañas por segmentos, Smart Action List [C/A] | https://www.curvedental.com/ · 2026-11-19 |
+| 19 | **tab32** (tab32 Inc. · US) | Consultorios (Alpine) y grupos/DSO (Summit) · cloud [C] | Columnas por sillón, ASAP/waitlist, online booking con disponibilidad en tiempo real, «no double-booking» [C/A]; multi-sede en Summit [C] | Booking nativo vía HelloPatient, portal sin login, reprogramación, formularios, depósitos para reducir cancelaciones [C/A]; WhatsApp: **NE** | AutoRemind y **Agent Layer** IA: confirmación por texto/llamada, seguimiento de ausentes, backfill, hygiene recall, reactivación [C/A] | https://tab32.com/ · 2026-11-19 |
+| 20 | **NexHealth** (NexHealth Inc. · US) | Consultorios, grupos/DSO · capa de scheduling sincronizada vía Synchronizer [C] | Agenda del PMS; reglas por tipo de cita, horarios, duraciones y rotaciones; «prevent double bookings» por sync [C/A]; sillones/sobreturnos: **NE** | **Reserva 24/7** en web, Google Search/Maps, SMS, email, QR y redes; recalls 1-clic; **waitlist automatizada**; depósitos [C/A]; chatbot: **NE** | Recordatorios, mensajería y campañas, recall, reseñas Google [C]; Copilot en piloto limitado 2026 [A] | https://www.nexhealth.com/ · 2026-11-19 |
+| 21 | **Weave** (Weave Communications Inc. · US) | Clínicas dentarias; plataforma de comunicación, **no PMS clínico** [C] | Calendario con write-back al PMS, tipos de cita y duraciones, disponibilidad por proveedor [C]; sillones, sobreturnos, anti-solapamientos: **NE** | Appointment Requests desde web/Google con **aprobación manual**; Online Scheduling con waitlist; confirmación SMS y cancelación/reprogramación con link [C] | Recordatorios con análisis de sentimiento, Missed Call Text, QuickFill/waitlist, recall y reactivación segmentada, reseñas [C] | https://www.getweave.com/dental · 2026-11-19 |
+| 22 | **BlueDental** (Morelli/Dental Morelli · BR) | Individual a clínica multi-dentista · nube, portugués [A] | «Fácil agendamento» multi-profesional y multiclínica [A]; día/semana, sillón, duración, bloqueos, sobreturnos, anti-solapamientos: **NE** | Envío de mensajes e-mail/WhatsApp para confirmar, cumpleaños y retorno [A]; **link de reserva 24/7 y chatbot: NE** | Confirmación y lembretes [A]; recupero/campañas: **NE** | https://www.bluedental.com.br/ · 2026-11-19 |
 
 ## A.2 — Clínico, administración, integraciones, operación, seguridad y comercio
 
@@ -69,7 +84,7 @@ Ordenada por relevancia para el mercado argentino. `NE` = No evidenciado. Todas 
 | 3 | Dentalink | Historia, odontograma/periodontograma, imágenes, videos 3D, consentimientos, ortodoncia, IA en RX y firma como adicional [C]; anamnesis estructurada: **NE** | Pagos presenciales/online, créditos, cuotas, caja, convenios y OS, inventario, comisiones, reportes y Excel [C]; señas, MP, ARCA en AR: **NE** (facturación electrónica documentada solo MX/CO) | Google Calendar **unidireccional** [C], API de pago [C], WhatsApp Business, Contact Center IA [C]; MP, ARCA, PACS: **NE** | Usuarios ilimitados, permisos por rol, multicentro, descarga de información [C]; soporte por plan [C] | AWS, cifrado y backups diarios [A]; ISO 27001 y «HIPAA practices» [A]; DPA publicado [C]; Ley 25.326: **NE** | USD 35/50/75 por profesional [C], «desde», recurrentes, sin permanencia [C]; Contact Center USD 50 con 80 conversaciones [C]; Capterra 5,0 sobre **2 reseñas** [C]; +15.000 clientes [A] |
 | 4 | DentalTec | Historia digital, odontograma interactivo CIE-10, imágenes [C]; anamnesis, perio, planes, presupuestos, RX: **NE** | **Validación de prácticas**, facturación planillas + ARCA, refacturación, liquidaciones, cuenta corriente, PDF/Excel [C]; caja, señas, MP: **NE** | **+15 OS vía SOAP**, ARCA, WhatsApp [C]; Google, API, MP, RX, firma: **NE** | 10 roles, auditoría «quién/qué/cuándo/dónde», JWT + bcrypt [C]; sucursales y exportación: **NE**; soporte 24/7 [A] | Trazabilidad y control de acceso [C]; cifrado en reposo, backup, Ley 25.326/26.529: **NE** | Demo gratis [C]; suscripción **NE**; packs WhatsApp USD 9/25/48 [C]; −64 % débitos, 2.000+ profesionales [A] |
 | 5 | DentalCore | 15 módulos, odontograma 50+ hallazgos, perio 6 sitios (clasificación 2018), RX, anamnesis versionada, 22 consentimientos, planes en 8 fases, presupuestos [C]; receta ReNaPDiS **en trámite** [C] | Factura ARCA A/B/C/E con CAE y QR, caja con arqueo, **MP QR/link**, 65 OS (14 con nomenclador), liquidaciones, analíticas [C]; señas: **NE** | MP, WhatsApp API Meta, ARCA, **importación HL7 FHIR R4/R5 y CSV**, firma [C]; Google, API pública, PACS: **NE** | Varias clínicas, 4 roles, «odontólogo sin acceso», auditoría por ficha con IP/dispositivo, exportación PDF/FHIR [C]; soporte lun-vie [C]; Academy [C] | **Registro AAIP RL-2026-29513183**, Ley 25.326 art. 12 y Disp. 60-E/2016, 2FA, cifrado, backup, rol de encargado [C]; Ley 26.529 [C] | USD 50/mes 2 usuarios + USD 10 extra (AR$ 75.000 + 15.000) [C], 1 semana gratis, migración sin costo [C]; SMS extra USD 0,35 [C]; adopción **NE**, 0 reseñas G2 [C] |
-| 6 | AgendaPro | Anamnesis, evoluciones, odontograma, RX, consentimiento y firma electrónica [C]; perio: **NE** | Caja, presupuestos, **señas/cuotas con MP**, honorarios, reportes [C]; facturación electrónica «próximamente» [A]; OS y ARCA: **NE** | Google Calendar, Google Reserve, MP, API (USD 200/mes), WhatsApp/Instagram/Messenger, CENS/FONASA [C/A] | Multisede, reportes consolidados, acceso por profesional, soporte diario [C]; auditoría/exportación: **NE** | AWS, cifrado, backups, **declara Ley 25.326 y 26.529** [A/C] | 14 días gratis; «desde $13.900 ARS» en dental vs $7.900/$15.900/$69.900 en `/planes`; IA +$15.000/profesional [C]; 30.000 clínicas/135.000 profesionales [A] |
+| 6 | AgendaPro | Anamnesis, evoluciones, odontograma, RX, consentimiento y firma electrónica [C]; perio: **NE** | Caja, presupuestos, **señas/cuotas con MP**, honorarios, reportes [C]; facturación electrónica «próximamente» [A]; OS y ARCA: **NE** | Google Calendar, Google Reserve, MP, API (USD 200/mes), WhatsApp/Instagram/Messenger, CENS/FONASA [C/A] | Multisede, reportes consolidados, acceso por profesional, soporte diario [C]; auditoría/exportación: **NE** | AWS, cifrado, backups, **declara Ley 25.326 y 26.529** [A/C] | 14 días gratis; «desde $13.900 ARS» en dental vs $7.900/$15.900/$69.900 en `/planes` (consulta 19/11); en la verificación del 26/11 los planes figuran entre $9.900 y $129.900 más empleados adicionales (ver *Verificación de fuentes*); IA +$15.000/profesional [C]; 30.000 clínicas/135.000 profesionales [A] |
 | 7 | DentalSoft | Ficha, odontograma FDI 18 estados con historial, ortodoncia, imágenes y .stl, presupuestos, planes, recetas [C]; perio: **NE** | Caja/cierres, cobros, **MP en Pro**, señas, OS y liquidaciones, PDF/Excel [C]; ARCA: **NE** | Google Calendar, WhatsApp Meta (USD 0,026/mensaje), MP [C]; API, ARCA, firma: **NE** | Usuarios por rol, multisede, migración asistida, soporte [C]; auditoría: **NE** | Multi-tenant aislado, TLS, hash, logs, Ley 25.326 y AAIP [C]; Ley 26.529: **NE** | 3 meses gratis (50 turnos), Gestión $30.000, Pro $60.000 [C]; 5,0/11 reseñas de Google en sitio propio [C/A] |
 | 8 | Odonthia | Ficha, odontograma FDI, historia versionada, perio 6 sitios, endodoncia, implantes, fotos, visor 3D, estética, presupuestos [C] | Caja, reportes, OS **sin liquidación**, comisiones, laboratorio, CSV [C]; MP y ARCA: **NE** | Google/Apple/Outlook, Claude/ChatGPT [C]; WhatsApp Business API y ARCA: **NE** | Roles, sedes, chat interno (pago), exportación/importación [C]; auditoría: **NE** | Firma con IP/dispositivo/hash y documento bloqueado [C]; validez legal no certificada; normativa AR: **NE** en producto (sí en privacidad [C]) | **Gratis ilimitado** [C]; IA $76.600 o $74.500 o $20.900 según página oficial, Max $158.100/$153.700/$46.900 [C] — **tres versiones** |
 | 9 | DentiClick | Odontograma por caras con versiones, anamnesis, alertas, RX/visor 3D, presupuestos, recetas; perio e implantes según App Store [C] | Caja, cuenta corriente, pagos/recibos, OS con nomenclador y CSV/PDF [C]; MP y ARCA: **NE** | Mini-web propia, IA [C]; WhatsApp API, Google, MP, ARCA: **NE** | Multi-profesional, roles, sucursales (Centro), backup semanal [C]; auditoría: **NE** | Supabase/Vercel fuera de AR, cifrado, copias diarias, aislamiento, Ley 25.326/26.529 y firma 25.506 [C] | Gratis 1 profesional/30 pacientes; Consultorio US$12, Clínica US$29, Centro US$35 [C]; sin ratings suficientes [C] |
@@ -87,6 +102,35 @@ Ordenada por relevancia para el mercado argentino. `NE` = No evidenciado. Todas 
 | 21 | Weave | Formularios digitales; **ficha, odontograma e imágenes: NE** (no es PMS) [C] | Text-to-Pay, Online Bill Pay, BNPL, planes, recordatorios de cobro [C]; facturación AR: **NE** | Write-back al PMS, VoIP propio [C]; API, WhatsApp, MP: **NE** | Hasta 15 teléfonos, IVR, colas, app, onboarding 1:1 [C] | HIPAA/BAA **NE** en páginas consultadas [NE] | Desde USD 199/mes; SMS 1.500/3.000/15.000 [C]; «9 pacientes puntuales más por semana» [A] |
 | 22 | BlueDental | Odontograma visual por diente/cara/arcada, prontuário, planejamento, orçamento desde el odontograma [A] | Financiero, contas a pagar/receber, comisiones, estoque, recibos [A] | WhatsApp Web vinculado (no API documentada) [A]; API, pagos, RX, firma: **NE** | Multiclínica, niveles de acceso, soporte lun-vie [A] | «Criptografia avançada e backups automáticos» [A]; LGPD/Ley 25.326: **NE** | «100 % gratuito» [A] vs Capterra US$ 5,98/mes y **0 reseñas** [C] — contradicción; +8.500 usuarios [A] |
 
+## A.3 — Fortalezas y limitaciones por sistema
+
+Síntesis de lo documentado en A.1 y A.2; las limitaciones marcadas como NE significan *no evidenciado*, no que la función no exista.
+
+| # | Sistema | Fortalezas evidentes | Limitaciones evidentes |
+|---|---|---|---|
+| 1 | Bilog | Circuito clínico-administrativo completo, obras sociales y liquidaciones, app móvil, soporte local, plan gratuito | Planes Lite y Premium a cotizar; cifras de adopción contradictorias entre páginas; API, Mercado Pago y señas NE |
+| 2 | Órbita | Asistente de WhatsApp con derivación clínica, API oficial de Meta, odontograma por voz, Mercado Pago y ARCA | Precio «a cotizar» y costos de Meta aparte; métricas autopublicadas; reserva web NE |
+| 3 | Dentalink | Agenda flexible, Contact Center IA, recupero de ausentes, precios publicados por profesional | Facturación ARCA, señas y Mercado Pago NE; Google Calendar unidireccional; pocas reseñas verificables |
+| 4 | DentalTec | Validación de prácticas contra +15 obras sociales, facturación con ARCA, 10 roles y auditoría | Reserva online y precio de suscripción NE; WhatsApp cobrado en packs |
+| 5 | DentalCore | Cumplimiento documentado (registro AAIP, 2FA), FHIR, ARCA, Mercado Pago, 65 obras sociales, precio público | Sin reserva 24/7 autónoma ni portal de paciente; receta electrónica en trámite; adopción y reseñas NE |
+| 6 | AgendaPro | Reserva 24/7 multicanal con IA, seña con Mercado Pago, multisede | Precios inconsistentes entre páginas; facturación electrónica «próximamente»; obras sociales y ARCA NE |
+| 7 | DentalSoft | Precios públicos en ARS, señas con Mercado Pago, detección de solapamientos, declaración AAIP | Ley 26.529, ARCA y API NE; Mercado Pago solo en plan Pro |
+| 8 | Odonthia | Plan gratuito, odontograma y periodontograma completos, reserva online propia | Tres juegos de precios en fuentes oficiales; WhatsApp solo en planes de pago; Mercado Pago y ARCA NE |
+| 9 | DentiClick | Plan gratuito, precio bajo, mini-web con reservas 24/7 | WhatsApp API, Mercado Pago y ARCA NE; backup semanal; sin ratings suficientes |
+| 10 | Odonto.ar | Link público 24/7, planes en ARS, cifrado y aislamiento por fila | WhatsApp, ARCA y caja NE; Mercado Pago solo para la suscripción; adopción NE |
+| 11 | DenPro | Odontograma, periodontograma, multimoneda, reserva por link/QR | Orientado al mercado europeo; Mercado Pago, ARCA y obras sociales argentinas NE |
+| 12 | Dentiqa | Chatbot de WhatsApp con API oficial, campañas, audit logs | No procesa pagos de pacientes; ARCA y Ley 25.326 NE; pocos clientes declarados |
+| 13 | Benty | Autogestión de pacientes, Ley 25.326 y 26.529 declaradas | Precios no publicados; Mercado Pago y ARCA NE; adopción NE |
+| 14 | Doctocliq | Odontograma y periodontograma completos, plan gratuito, precio bajo | Cobros y facturación electrónica solo para otros países; sin cumplimiento argentino declarado |
+| 15 | Dentidesk | Odontograma con varias nomenclaturas, multisucursal | WhatsApp es un enlace manual; sin precio público; sin reserva online del paciente; facturación chilena |
+| 16 | Clinic Cloud | Captación vía Doctoralia, reserva sincronizada | Facturación y normativa españolas; odontograma solo en plan Max; no aplicable a Argentina |
+| 17 | Open Dental | Web Sched con write-back, agenda madura, búsqueda de huecos | Orientado a EE.UU.; instalación local; WhatsApp NE |
+| 18 | Curve Dental | Smart Fill, autoagendamiento con permisos por tipo de cita | Solo EE.UU.; sin precio público |
+| 19 | tab32 | SOC 2 verificado por tercero, agentes IA, precio público | Orientado a EE.UU.; WhatsApp NE; tarifas por claim |
+| 20 | NexHealth | Reserva 24/7 sincronizada, waitlist automatizada y depósitos | Depende del sistema de gestión de la clínica; sin ficha propia; sin precio público |
+| 21 | Weave | Comunicación unificada, recordatorios y QuickFill | No es un sistema clínico; solicitudes con aprobación manual; desde USD 199/mes |
+| 22 | BlueDental | Odontograma visual, multiclínica, gratuito (declarado) | Contradicción entre «gratis» y el precio en Capterra; portugués; WhatsApp Web; normativa argentina NE |
+
 ---
 
 # B. Matriz de puntuación (0-5)
@@ -94,6 +138,17 @@ Ordenada por relevancia para el mercado argentino. `NE` = No evidenciado. Todas 
 Pesos definidos por el requerimiento: turnos y automatización **25 %**; funcionalidad odontológica clínica **20 %**; integraciones locales y WhatsApp **15 %**; administración, cobros y facturación **15 %**; experiencia del paciente **10 %**; seguridad, exportación y trazabilidad **10 %**; precio y facilidad de adopción **5 %**.
 
 **Regla de puntuación:** se puntúa solo lo públicamente demostrado. `No evidenciado` se penaliza conservadoramente; una afirmación comercial [A] no equivale a funcionalidad comprobada. Puntajes provisionales, sensibles a verificación en demo. Diferencias inferiores a 0,3 puntos no son significativas.
+
+**Significado de las notas (0-5):**
+
+| Nota | Significado |
+|---|---|
+| 0 | Sin evidencia pública del criterio (No evidenciado en todos sus componentes) |
+| 1 | Solo afirmación comercial [A], sin demostración |
+| 2 | Cobertura parcial comprobada, con limitaciones relevantes para Argentina |
+| 3 | Cubre lo básico del criterio con evidencia comprobada [C] |
+| 4 | Cobertura amplia y comprobada, con pocos vacíos |
+| 5 | Cobertura completa, comprobada y con diferenciales demostrados |
 
 | # | Sistema | Turnos 25 % | Clínica 20 % | Integr. 15 % | Admin 15 % | Paciente 10 % | Segur. 10 % | Precio 5 % | **Total** |
 |---|---|---|---|---|---|---|---|---|---|
@@ -103,24 +158,24 @@ Pesos definidos por el requerimiento: turnos y automatización **25 %**; funcion
 | 3 | Dentalink | 4,5 | 4,5 | 3,5 | 3,5 | 4,0 | 3,5 | 3,5 | **4,0** |
 | 6 | AgendaPro | 4,5 | 3,5 | 4,0 | 3,5 | 4,5 | 3,5 | 3,0 | **3,9** |
 | 1 | Bilog | 4,0 | 4,5 | 3,0 | 4,0 | 4,0 | 3,0 | 3,0 | **3,8** |
-| 20 | tab32 | 4,5 | 4,0 | 2,5 | 3,0 | 4,0 | 4,0 | 4,5 | **3,8** |
+| 19 | tab32 | 4,5 | 4,0 | 2,5 | 3,0 | 4,0 | 4,0 | 4,5 | **3,8** |
 | 14 | Doctocliq | 4,0 | 4,5 | 3,0 | 3,0 | 4,0 | 2,5 | 4,5 | **3,7** |
 | 18 | Curve Dental | 4,5 | 4,5 | 2,0 | 3,0 | 4,5 | 3,0 | 2,5 | **3,7** |
 | 17 | Open Dental | 4,5 | 4,5 | 2,0 | 3,0 | 3,5 | 3,5 | 3,0 | **3,6** |
-| 21 | NexHealth | 5,0 | 2,0 | 4,0 | 2,5 | 5,0 | 3,5 | 2,5 | **3,6** |
-| 13 | Dentiqa | 3,5 | 4,0 | 3,5 | 2,5 | 3,5 | 3,5 | 3,5 | **3,5** |
+| 20 | NexHealth | 5,0 | 2,0 | 4,0 | 2,5 | 5,0 | 3,5 | 2,5 | **3,6** |
+| 12 | Dentiqa | 3,5 | 4,0 | 3,5 | 2,5 | 3,5 | 3,5 | 3,5 | **3,5** |
 | 4 | DentalTec | 3,0 | 3,5 | 4,0 | 4,5 | 2,5 | 3,5 | 2,5 | **3,5** |
 | 16 | Clinic Cloud | 4,0 | 3,5 | 2,0 | 3,0 | 4,5 | 3,5 | 4,0 | **3,5** |
 | 8 | Odonthia | 3,5 | 4,5 | 2,5 | 2,5 | 3,5 | 3,5 | 3,5 | **3,4** |
 | 9 | DentiClick | 3,5 | 4,0 | 2,0 | 3,0 | 3,5 | 3,5 | 4,5 | **3,4** |
 | 11 | DenPro | 3,5 | 4,0 | 2,0 | 3,0 | 3,0 | 3,0 | 4,0 | **3,2** |
 | 15 | Dentidesk | 2,5 | 4,5 | 1,5 | 4,0 | 2,5 | 2,5 | 2,0 | **3,0** |
-| 12 | Benty | 3,0 | 3,5 | 2,0 | 3,0 | 3,0 | 3,0 | 2,0 | **2,9** |
+| 13 | Benty | 3,0 | 3,5 | 2,0 | 3,0 | 3,0 | 3,0 | 2,0 | **2,9** |
 | 10 | Odonto.ar | 3,0 | 3,5 | 1,5 | 2,0 | 3,0 | 3,5 | 4,0 | **2,8** |
-| 19 | Weave | 4,0 | 1,0 | 3,0 | 2,5 | 4,5 | 2,0 | 2,5 | **2,8** |
+| 21 | Weave | 4,0 | 1,0 | 3,0 | 2,5 | 4,5 | 2,0 | 2,5 | **2,8** |
 | 22 | BlueDental | 2,5 | 3,5 | 1,5 | 3,0 | 3,0 | 2,0 | 5,0 | **2,8** |
 
-**Lectura prudente.** El agrupamiento en 3,4–4,1 es más informativo que el orden exacto: las diferencias dentro del grupo están dentro del margen de error de una evaluación basada solo en fuentes públicas. Bilog lidera en *evidencia pública y adopción declarada*, no necesariamente en calidad de producto. DentalCore y DentalSoft destacan por *precio y cumplimiento documentado*; Órbita y Dentalink por *automatización*; NexHealth, Curve y tab32 son referencias de *diseño de reserva*, no productos adoptables en Argentina. Weave y BlueDental puntúan bajo por su naturaleza (capa de comunicación y producto gratuito, respectivamente), no por falta de valor en su nicho.
+**Lectura prudente.** El grupo superior (16 de los 22 sistemas, entre 3,4 y 4,1) es más informativo que el orden exacto: las diferencias dentro del grupo están dentro del margen de error de una evaluación basada solo en fuentes públicas. Bilog lidera en *evidencia pública y adopción declarada*, no necesariamente en calidad de producto. DentalCore y DentalSoft destacan por *precio y cumplimiento documentado*; Órbita y Dentalink por *automatización*; NexHealth, Curve y tab32 son referencias de *diseño de reserva*, no productos adoptables en Argentina. Weave y BlueDental puntúan bajo por su naturaleza (capa de comunicación y producto gratuito, respectivamente), no por falta de valor en su nicho.
 
 ---
 
@@ -158,7 +213,7 @@ Solo cuando hay evidencia concreta; se distingue el hecho de la promesa:
 
 Corregidos con la evidencia de la sección preliminar:
 
-1. **Transparencia y estabilidad de precios — vacío real.** Odonthia publica tres precios incompatibles; AgendaPro muestra $13.900 en la página dental y $7.900/$15.900/$69.900 en `/planes`; Órbita pasó a «precio a cotizar» y factura costos de Meta aparte; DentalTec separa WhatsApp en packs USD 9/25/48. No es falta de precios: es falta de **precio predecible**.
+1. **Transparencia y estabilidad de precios — vacío real.** Odonthia publica tres precios incompatibles; AgendaPro mostraba $13.900 en la página dental y $7.900/$15.900/$69.900 en `/planes` (19/11), y un rango de $9.900 a $129.900 en la verificación del 26/11; Órbita pasó a «precio a cotizar» y factura costos de Meta aparte; DentalTec separa WhatsApp en packs USD 9/25/48. No es falta de precios: es falta de **precio predecible**.
 2. **Métricas verificables de ocupación y ausentismo — vacío real.** Todos prometen reducciones (−64 % débitos, −40 % ausentismo, «hasta 90 % menos ausencias»), ninguno publica metodología, muestra ni período. La oportunidad es entregar métricas auditables por sillón y clínica.
 3. **Seguridad como evidencia, no como adjetivo — vacío real.** Hay declaraciones de Ley 25.326, ISO 27001 e HIPAA, pero no se encontraron informes de auditoría, inscripciones RNBD por proveedor ni cláusulas AAIP 198/2023 publicadas para subprocessors (AWS, Meta, Claude). El marco normativo exige más: Ley 25.326 (arts. 2, 7, 9, 12, 21, 25), Ley 26.529 (art. 14, copia en 48 h) y Decreto 1089/2012 (conservación por 10 años, firma electrónica Ley 25.506).
 4. **Handoff clínico auditado — vacío parcial.** Existe derivación, pero no se evidencia trazabilidad de la derivación dentro de la historia clínica ni override humano registrado.
@@ -169,7 +224,7 @@ Corregidos con la evidencia de la sección preliminar:
 
 1. **Cumplimiento demostrable como funcionalidad de producto.** Dossier descargable con DPA responsable/encargado, cláusulas AAIP 198/2023 para subprocessors, RNBD, roles, logs inmutables, exportación en 48 h, retención 10 años, firma electrónica y procedimiento INTIMA/CONSTA del pagador. Diferencia frente a «somos seguros».
 2. **Precio todo-incluido y predecible.** Un solo plan con recordatorios, seña, respuesta IA y handoff incluidos; sin packs de mensajes ni módulos sorpresa. Ataca la principal irritación observable.
-3. **Motor de ocupación.** Waitlist con relleno automático, depósito configurable, regla de liberación por 48 hs hábiles, conciliación con Mercado Pago y comprobante ARCA. Integra lo que hoy está repartido entre tres proveedores.
+3. **Motor de ocupación.** Waitlist con relleno automático, depósito configurable, regla de liberación configurable (se propone 48 hs hábiles como valor inicial, hipótesis de diseño a validar), conciliación con Mercado Pago y comprobante ARCA. Integra lo que hoy está repartido entre tres proveedores.
 4. **IA con seguridad clínica auditable.** Reglas explícitas de derivación ante síntomas, registro de cada handoff en la historia, override humano y métricas de precisión publicadas.
 5. **Foso local de integración.** Conector con WhatsApp Business API + ARCA + obras sociales + FHIR, con exportación gratuita. Ningún competidor reúne las cuatro con evidencia pública.
 
@@ -202,7 +257,7 @@ Corregidos con la evidencia de la sección preliminar:
 ### Imprescindible
 
 - Agenda multiprofesional y multisillón, con duración variable, bloqueos, sobreturnos, prevención de solapamientos y bloqueo en base de datos.
-- Reserva online por link/QR con confirmación, cancelación y reprogramación, con **ventana de 48 hs hábiles** y *write-back* real a la agenda.
+- Reserva online por link/QR con confirmación, cancelación y reprogramación, con **ventana de liberación configurable** (valor inicial propuesto: 48 hs hábiles; es una hipótesis de diseño a validar, no un dato de mercado) y *write-back* real a la agenda.
 - WhatsApp Business API con plantillas aprobadas, recordatorios y **handoff humano registrado**.
 - Ficha clínica, anamnesis, odontograma FDI con dientes temporales, periodontograma, presupuestos y evolución firmada con matrícula.
 - Caja, señas con Mercado Pago, facturación ARCA y conciliación.
@@ -224,9 +279,49 @@ Corregidos con la evidencia de la sección preliminar:
 - API pública, Google Calendar bidireccional e interoperabilidad FHIR completa.
 - IA conversacional amplia con reglas clínicas auditables y multisede avanzada.
 
+### Primer change sugerido para el ciclo OPSX
+
+**Crear un turno evitando solapamientos por profesional y por sillón/box.** Pertenece al bloque imprescindible del MVP, tiene reglas de negocio verificables (duración de la prestación, sillón, solapamientos y turno que empieza justo cuando termina otro) y es lo bastante acotado para completarse como una sola funcionalidad.
+
 ---
 
-# Fuentes consultadas
+# Verificación de fuentes
+
+Se abrieron personalmente cinco fuentes de distinto tipo (sitio oficial, página de precios, centro de ayuda, política de privacidad y nota periodística) para comprobar afirmaciones del informe. Fecha de verificación: 26 de noviembre de 2026 (las filas 1 y 2 tienen la fecha por completar).
+
+| # | Tipo y fuente (URL · fecha de consulta) | Qué afirmaba el informe | Qué encontramos nosotros | Resultado y corrección |
+|---|---|---|---|---|
+| 1 | **Sitio oficial:** Bilog · https://bilog.com.ar/ y https://bilog.com.ar/funcionalidades · consultada el [AAAA-MM-DD] | Cifras de adopción contradictorias entre páginas del mismo sitio (+1.500 clínicas / +5.000 usuarios vs. +3.000 / +20.000) | [COMPLETAR: qué cifra de clínicas y usuarios aparece hoy en cada una de las dos páginas] | [COMPLETAR: Confirmado / Corregido, y qué se cambió en el informe] |
+| 2 | **Página de precios:** AgendaPro · https://agendapro.com/ar/planes y https://agendapro.com/ar/dental/software-odontologico · consultada el [AAAA-MM-DD] | «Desde $13.900» en la página dental vs. $7.900 / $15.900 / $69.900 en `/planes` | Los planes van desde $9.900 hasta $129.900, más cobro por empleados adicionales | **Corregido:** se actualizaron los valores en A.2 y C.3 y se aclaró que los precios cambian con el tiempo |
+| 3 | **Centro de ayuda:** Dentalink · https://ayuda.softwaredentalink.com/es/articles/9493145-integra-dentalink-con-google-calendar · consultada el 2026-11-26 | Integración con Google Calendar **unidireccional** | [COMPLETAR: el artículo ¿describe la sincronización como unidireccional? Indicar qué dice] | [COMPLETAR: Confirmado o Corregido] |
+| 4 | **Privacidad / términos:** DentalCore · https://dentalcore.app/privacidad · consultada el 2026-11-26 | Registro AAIP RL-2026-29513183, Ley 25.326 art. 12 y rol de encargado | La política declara adecuación a la Ley 25.326 y establece el rol de encargado del tratamiento de los datos de los pacientes [COMPLETAR: confirmar que figura el número de registro AAIP] | **Confirmado** |
+| 5 | **Nota periodística:** TN, 16/07/2026 · https://tn.com.ar/tecno/novedades/2026/07/16/tres-jovenes-argentinos-crearon-una-ia-que-responde-consulta-y-gestiona-turnos-medicos-por-whatsapp/ · consultada el 2026-11-26 | Derivación clínica de Órbita documentada en la nota; los «1.219 turnos» y «7 de cada 10 conversaciones» **no** figuran en ella | La derivación clínica figura en la nota; las dos cifras no aparecen | **Confirmado:** el informe ya las trataba como afirmaciones autopublicadas [A]; sin cambios |
+
+## Hallazgos y correcciones aplicadas al informe
+
+De las cinco fuentes verificadas, tres se confirmaron o se confirmaron con precisión (DentalCore, TN sobre Órbita y, a completar, Dentalink) y dos requirieron revisión (AgendaPro y, a completar, Bilog).
+
+- **AgendaPro (secciones A.2 y C.3):** el informe citaba «desde $13.900» en la página dental y $7.900 / $15.900 / $69.900 en `/planes`. Al consultar la página de planes se encontró un rango de $9.900 a $129.900 más empleados adicionales. Se corrigieron los valores y se dejó constancia de ambas fechas de consulta.
+- **Bilog (sección A.2 y correcciones al borrador):** [COMPLETAR: qué cifras de adopción se encontraron en cada página y cómo se reescribió la celda].
+- **Órbita (sección C.2):** se confirmó que la derivación clínica figura en la nota de TN y que las cifras de turnos y conversaciones no; el informe ya las marcaba como autopublicadas, por lo que no requirió cambios.
+- **Dentalink y DentalCore:** [COMPLETAR Dentalink]; la declaración de DentalCore sobre la Ley 25.326 y el rol de encargado figura en su política de privacidad.
+
+**Lección metodológica:** los precios y las cifras de adopción son los datos que más cambian y los que peor sostienen una afirmación comercial. Por eso el informe los trata como datos fechados y no como hechos permanentes.
+
+### Correcciones incorporadas al borrador inicial
+
+Al contrastar el borrador inicial con fuentes primarias se rectificaron dos conclusiones:
+
+1. **«Ningún sistema odontológico cobra seña con Mercado Pago» es falso.** DentalSoft documenta «cobrá señas y deudas»; AgendaPro ofrece «seña online para confirmar asistencia» con integración Mercado Pago; también FLAP, DentApp y Mi Agenda Profesional publican señas vía Mercado Pago. [C]
+2. **«Ningún proveedor declara adecuación a la Ley 25.326» es falso.** Bilog (términos actualizados al 29/10/2026), Odonthia (política de privacidad) y AgendaPro (FAQ del producto dental) declaran expresamente la norma. [C] Otra cosa —no demostrada— es que exista certificación, inscripción RNBD por proveedor o auditoría pública.
+
+Además: las cifras de adopción de Bilog difieren entre páginas de su propio sitio (+1.500 clínicas/+5.000 usuarios en un caso; +3.000/+20.000 en otro); los «1.219 turnos» y «7 de cada 10 conversaciones» de Órbita son autopublicados y **no** aparecen en las notas de TN y Ámbito de julio de 2026; Odonthia publica **tres juegos de precios distintos** en fuentes oficiales; y el «ARS 14.900» de AgendaPro no está documentado. [C]
+
+**Consecuencia:** la tesis de oportunidad no puede apoyarse en «nadie lo hace». Debe apoyarse en **evidenciar mejor** lo que ya se ofrece de modo opaco o no verificable.
+
+---
+
+# Referencias
 
 Todas las URLs fueron consultadas el **19 de noviembre de 2026**. Se agrupan por sistema; cuando una afirmación del texto tiene una fuente específica, el apartado A la identifica por su contenido.
 
