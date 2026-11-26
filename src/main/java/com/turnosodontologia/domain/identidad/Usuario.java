@@ -44,6 +44,10 @@ public class Usuario extends AuditableEntity {
     @Column(name = "ultimo_acceso")
     private Instant ultimoAcceso;
 
+    /** Profesional del staff que representa este usuario (V033); define el ámbito {@code propio}. */
+    @Column(name = "profesional_id")
+    private Long profesionalId;
+
     protected Usuario() {
     }
 
@@ -56,5 +60,10 @@ public class Usuario extends AuditableEntity {
 
     public void registrarAcceso(Instant fecha) {
         this.ultimoAcceso = fecha;
+    }
+
+    /** Vincula (o desvincula con {@code null}) el usuario con un profesional. */
+    public void vincularProfesional(Long profesionalId) {
+        this.profesionalId = profesionalId;
     }
 }

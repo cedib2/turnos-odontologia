@@ -44,7 +44,8 @@ Los IDs se conservan al editar o reordenar. No se reciclan IDs retirados. El pro
 | Parte 2 | compañero | desde V010 | a asignar por su dueño |
 | Parte 3 | compañero | desde V020 | V020 = C-14; V021 = C-15; V022 en adelante queda como holgura |
 | Parte 4 | compañero | desde V030 | a asignar por su dueño |
-| Parte 4 | Joaquín Adrián Velázquez Carrera | desde V030 | V030 = C-17 (`cumplimiento_operaciones`); V031 = C-18 (`dossier_items`, `subprocesadores`). |
+| Parte 4 | Joaquín Adrián Velázquez Carrera | desde V030 | V030 = C-17 (`cumplimiento_operaciones`); V031 = C-18 (`dossier_items`, `subprocesadores`); V032 = C-17, elimina `export_backup_restore_operacion` (unificación). |
+| Integración | José Donato Fornasari Donadel | V033 | V033 = roles de staff: `usuarios.profesional_id` y `ficha_clinica:leer` con ámbito `todos` para el administrador ([decisión](docs/decisiones/roles-staff-ambito-propio.md)). Se numera después de V032 para no requerir `outOfOrder`. |
 
 Los números históricos citados en los scopes (`C-10 = 007`, `C-11 = 008`, `C-14 = 009`, `C-15 = 010`, `C-16 = 011`, `C-17 = 012`, `C-19 = 013`) quedan **supersedidos** por esta tabla: cada dueño elige dentro de su rango y lo coordina antes de crear la migración.
 
@@ -353,7 +354,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 > C-09 depende del token público (C-06) y de la agenda (C-08). C-10 y C-11 arrancan en paralelo.
 
 ### [C-09] `public-booking-and-reschedule`
-- **Estado**: [x] completado — implementado y verificado el 2026-11-22; 219 tests verdes, `openspec validate public-booking-and-reschedule --strict` válido; sin migraciones nuevas y sin commits
+- **Estado**: [x] completado — implementado y verificado el 2026-11-22; 219 tests verdes, `openspec validate public-booking-and-reschedule --strict` válido; sin migraciones nuevas y sin commits Ventana de 48 hs corregida el 2026-11-25: el paciente cancela o reprograma por link hasta 2 días hábiles antes del turno y confirma hasta el inicio; ver [`docs/decisiones/C-09-sentido-ventana-48hs.md`](docs/decisiones/C-09-sentido-ventana-48hs.md).
 - **Scope**:
   - Endpoints públicos indicativos sobre `/turnos`: consultar disponibilidad, crear, confirmar, cancelar y reprogramar con token (paths, verbos y versionado `(TBD)`).
   - *Write-back* real y liberación atómica del hueco; si el hueco se tomó entre consulta y confirmación, rechazo y alternativas `(TBD)`; token vencido → solicitar nuevo enlace `(TBD)`.
@@ -519,11 +520,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 > La declaración de Ley 25.326 ya no diferencia: hace falta evidencia descargable (RN-SE-04).
 
 ### [C-17] `export-backup-restore`
-<<<<<<< HEAD
-- **Estado**: `[x]` completado
-=======
-- **Estado**: `[ ]` pendiente — implementado en `feat/Parte4-J-Velazquez` (V030, 12 tests); governance ALTO: **espera revisión humana** antes de archivar. Ver [`docs/decisiones/Parte4-C17-C18-C21-C22-checkpoints.md`](docs/decisiones/Parte4-C17-C18-C21-C22-checkpoints.md)
->>>>>>> origin/feat/Parte4-J-Velazquez
+- **Estado**: `[x]` completado y archivado (2026-11-25) — unificado: se conserva la implementación de `feat/Parte4-J-Velazquez` (`application/cumplimiento`, tabla `cumplimiento_operaciones` de V030, cifrado AES-256-GCM y restore verificado en entorno aislado) y se retira el paquete `export/` de `feat/parte4-Joaquin`; V032 elimina su tabla `export_backup_restore_operacion` sin editar V030. `mvn test` 471/471 en verde. Decisión: [`docs/decisiones/C-17-unificacion-implementaciones.md`](docs/decisiones/C-17-unificacion-implementaciones.md). Copia por paciente ampliada: incluye la historia clínica (tablas de C-11/C-12 y la vista vigente de C-13 vía `ProveedorHistoriaClinica`), presupuestos, señas y comprobantes (C-14/C-15/C-16), notificaciones (C-10) y la lista de espera ligada a sus turnos (C-19). `lista_espera.candidato_id` no se usa como filtro: no tiene FK ni está confirmado que sea un id de paciente `(TBD)`. Control de acceso: `/cumplimiento/**` y `/metricas/**` quedan protegidos fuera de `dev`/`test` por `CumplimientoRbacPolicy` (sesión de C-04, CSRF y permisos de V001); ver [`docs/decisiones/Parte4-rbac-cumplimiento.md`](docs/decisiones/Parte4-rbac-cumplimiento.md).
 - **Scope**:
   - Migración 012: registro de exportaciones, respaldos y restauraciones (formato, plazos y destino `(TBD)`).
   - Exportación completa de datos y copia de historia en 48 h `(TBD, IN-05/IN-06)`; formatos `(TBD)`; cifrado en reposo y ubicación de datos/subprocesadores `(TBD, RN-SE-05)`.
@@ -619,7 +616,7 @@ Paso │ Agente A (Backend Core)        │ Agente B (Backend Aux)          │ 
 ---
 
 ### [C-22] `adoption-metrics-dashboard`
-- **Estado**: `[ ]` pendiente — implementado y verificado (9 tests) por contrato con C-09 (`token_publico`, `inicioAnterior`); se marca `[x]` cuando C-09 emita esos datos
+- **Estado**: `[x]` completado y archivado (2026-11-25) — con C-09, C-10 y C-19 integrados: la cancelación y la reprogramación por link informan `inicioAnterior`, las confirmaciones se calculan desde el outbox de C-10 y la ocupación y el ausentismo se muestran tal como los publica C-19 por sillón y mes (sin agregarlos). Metas `(TBD)` hasta el piloto. Tests: `MetricasAdopcionTest` (7), `CalculadoraHorasHabilesTest` (4) y aserciones en `PublicBookingIntegrationTest`.
 - **Scope**:
   - Instrumentación y consulta de la métrica principal de riesgo: % de turnos creados por paciente vía link/QR sobre el total (adopción online), con metodología y período explícitos; objetivo `(TBD, SU-03)`.
   - Consulta del cumplimiento de la ventana de 48 hs hábiles y de confirmaciones; reutiliza C-19 si se habilita `(TBD)`; presentación `(TBD — visual-design diferido)`.

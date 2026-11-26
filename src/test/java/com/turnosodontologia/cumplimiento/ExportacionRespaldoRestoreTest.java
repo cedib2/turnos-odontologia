@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.turnosodontologia.application.cumplimiento.ExportacionService;
 import com.turnosodontologia.application.cumplimiento.OperacionCumplimiento;
 import com.turnosodontologia.application.cumplimiento.RespaldoService;
+import com.turnosodontologia.domain.agenda.Turno;
 import com.turnosodontologia.domain.identidad.Paciente;
 import com.turnosodontologia.support.PostgresFixture;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,14 +46,16 @@ class ExportacionRespaldoRestoreTest extends CumplimientoPostgresTest {
 
     private Paciente ana;
     private Paciente beto;
+    private Turno anaTurno;
+    private Turno betoTurno;
 
     @BeforeEach
     void sembrar() {
         fixtures.sembrarCatalogo();
         ana = fixtures.paciente("DOC-ANA", "Ana");
         beto = fixtures.paciente("DOC-BETO", "Beto");
-        fixtures.turno(ana, "S-P4-1", 9, "recepcion");
-        fixtures.turno(beto, "S-P4-2", 10, "recepcion");
+        anaTurno = fixtures.turno(ana, "S-P4-1", 9, "recepcion");
+        betoTurno = fixtures.turno(beto, "S-P4-2", 10, "recepcion");
         jdbcTemplate.update("INSERT INTO usuarios (rol_id, email, hash_password) "
                 + "VALUES (4, 'admin.p4@consultorio.test', 'HASH-SECRETO-P4')");
     }
@@ -87,17 +90,33 @@ class ExportacionRespaldoRestoreTest extends CumplimientoPostgresTest {
     }
 
     @Test
-    void copiaPorPacienteSoloIncluyeSusDatosYDeclaraHistoriaPendiente() throws Exception {
+    void copiaPorPacienteIncluyeSuHistoriaYSusDatosFinancierosSinLosDeOtro() throws Exception {
+        datosClinicosYFinancieros(anaTurno, "EVOLUCION-ANA", "REF-ANA");
+        datosClinicosYFinancieros(betoTurno, "EVOLUCION-BETO", "REF-BETO");
+
         OperacionCumplimiento operacion = exportaciones.exportar("PACIENTE", ana.getId(), "Ley 26.529 art. 14");
 
         JsonNode contenido = mapper.readTree(exportaciones.descargar(operacion.id(), null));
         JsonNode tablas = contenido.get("tablas");
         assertEquals(1, tablas.get("pacientes").size());
         assertTrue(tablas.get("pacientes").get(0).asText().contains("DOC-ANA"));
-        assertEquals(1, tablas.get("turnos").size());
-        assertFalse(contenido.toString().contains("DOC-BETO"));
-        assertEquals(2, tablas.size());
-        assertTrue(contenido.get("anexos").get("historiaClinica").asText().contains("C-13"));
+        for (String tabla : List.of("turnos", "fichas_clinicas", "evoluciones", "presupuestos", "senias",
+                "notificaciones")) {
+            assertEquals(1, tablas.get(tabla).size(), "una fila de Ana en " + tabla);
+        }
+        assertTrue(tablas.get("evoluciones").get(0).asText().contains("EVOLUCION-ANA"));
+        assertTrue(tablas.get("senias").get(0).asText().contains("REF-ANA"));
+        assertFalse(tablas.has("auditoria_log"), "la copia por paciente no incluye el log de auditoría");
+        assertFalse(tablas.has("usuarios"));
+        String texto = contenido.toString();
+        assertFalse(texto.contains("DOC-BETO"));
+        assertFalse(texto.contains("EVOLUCION-BETO"));
+        assertFalse(texto.contains("REF-BETO"));
+
+        JsonNode historia = contenido.get("anexos").get("historiaClinica");
+        assertTrue(historia.isObject(), "la vista vigente de la historia llega por ProveedorHistoriaClinica");
+        assertEquals(ana.getId(), historia.get("pacienteId").asLong());
+        assertEquals("EVOLUCION-ANA", historia.get("evoluciones").get(0).get("texto").asText());
         assertEquals(ana.getId(), jdbcTemplate.queryForObject(
                 "SELECT (metadata->>'pacienteId')::bigint FROM auditoria_log WHERE accion = 'exportacion.completada'",
                 Long.class));
@@ -184,5 +203,22 @@ class ExportacionRespaldoRestoreTest extends CumplimientoPostgresTest {
 
     private long contar(String sql) {
         return jdbcTemplate.queryForObject(sql, Long.class);
+    }
+
+    /** Ficha con una evolución, presupuesto, seña del turno y notificación, todo del paciente del turno. */
+    private void datosClinicosYFinancieros(Turno turno, String evolucion, String referencia) {
+        Long paciente = turno.getPaciente().getId();
+        Long ficha = jdbcTemplate.queryForObject(
+                "INSERT INTO fichas_clinicas (paciente_id) VALUES (?) RETURNING id", Long.class, paciente);
+        jdbcTemplate.update("INSERT INTO evoluciones (ficha_id, profesional_id, version, texto, autor_nombre, "
+                + "autor_modo) VALUES (?, ?, 1, ?, 'Profesional', 'SIMULADO')",
+                ficha, turno.getProfesional().getId(), evolucion);
+        jdbcTemplate.update("INSERT INTO presupuestos (paciente_id, turno_id, total) VALUES (?, ?, 1000)",
+                paciente, turno.getId());
+        jdbcTemplate.update("INSERT INTO senias (turno_id, monto, external_reference, idempotency_key) "
+                + "VALUES (?, 500, ?, ?)", turno.getId(), referencia, "idem-" + referencia);
+        jdbcTemplate.update("INSERT INTO notificaciones (turno_id, proposito, destinatario, estado, programada_para, "
+                + "idempotency_key) VALUES (?, 'RECORDATORIO', '+5491100000000', 'PENDIENTE', now(), ?)",
+                turno.getId(), "notif-" + referencia);
     }
 }

@@ -45,6 +45,8 @@ class CurrentActorProviderTest {
                 Path.of("src", "main", "resources"));
         Path paqueteAuth = Path.of("src", "main", "java", "com", "turnosodontologia", "auth")
                 .toAbsolutePath();
+        // static/ es la salida compilada del frontend (código de cliente que llama a /auth), no del servidor.
+        Path frontendCompilado = Path.of("src", "main", "resources", "static").toAbsolutePath();
 
         for (Path raiz : raices) {
             if (!Files.exists(raiz)) {
@@ -52,7 +54,8 @@ class CurrentActorProviderTest {
             }
             try (var paths = Files.walk(raiz)) {
                 for (Path path : paths.filter(Files::isRegularFile)
-                        .filter(ruta -> !ruta.toAbsolutePath().startsWith(paqueteAuth)).toList()) {
+                        .filter(ruta -> !ruta.toAbsolutePath().startsWith(paqueteAuth))
+                        .filter(ruta -> !ruta.toAbsolutePath().startsWith(frontendCompilado)).toList()) {
                     String contenido = Files.readString(path);
                     for (String prohibido : prohibidos) {
                         if (contenido.contains(prohibido)) {

@@ -33,7 +33,7 @@ El evento SHALL identificar al actor suministrado por el proveedor vigente de C-
 - **THEN** la instantánea registra identificador, nombre, rol y `jti` del usuario y su modo es `REAL`
 
 ### Requirement: Emisión para operaciones relevantes de agenda
-El sistema SHALL emitir y persistir un evento por la creación de turno, la reprogramación, el sobreturno con override y la creación de bloqueos, y también SHALL persistir `publictoken.historia.denegado` cuando C-06 lo emite, sin cambiar su semántica de identidad no verificada. En el sobreturno, el evento MUST incluir el `motivo` y el `actor` que autorizaron la excepción (RN-GL-01). Cada evento SHALL generar una sola fila en `auditoria_log`. El catálogo SHALL añadir los nombres inmutables `EXPORT_REQUESTED`, `EXPORT_COMPLETED`, `EXPORT_FAILED`, `BACKUP_EXECUTED`, `BACKUP_FAILED`, `RESTORE_DRY_RUN_VERIFIED`, `RESTORE_EXECUTED`, con `correlationId`, actor, `occurredAt`, motivo y resultado.
+El sistema SHALL emitir y persistir un evento por la creación de turno, la reprogramación, el sobreturno con override y la creación de bloqueos, y también SHALL persistir `publictoken.historia.denegado` cuando C-06 lo emite, sin cambiar su semántica de identidad no verificada. En el sobreturno, el evento MUST incluir el `motivo` y el `actor` que autorizaron la excepción (RN-GL-01). Cada evento SHALL generar una sola fila en `auditoria_log`. Para C-17, el catálogo SHALL incluir `exportacion.solicitada`, `exportacion.completada`, `exportacion.fallida`, `exportacion.descargada`, `respaldo.completado`, `respaldo.fallido`, `restore.verificado` y `restore.fallido`, con entidad `cumplimiento_operacion`, el identificador de la operación, actor, motivo, `correlationId` y metadata con tipo, alcance, estado y, cuando corresponda, checksum, filas o error.
 
 #### Scenario: Evento de sobreturno
 - **GIVEN** un sobreturno confirmado con motivo y actor
@@ -55,30 +55,30 @@ El sistema SHALL emitir y persistir un evento por la creación de turno, la repr
 - **WHEN** se emite `publictoken.historia.denegado` a través del publicador real
 - **THEN** se persiste una sola fila con entidad `publictoken` y `entidad_id` nullable, sin tratar el actor como identidad verificada
 
-#### Scenario: Eventos inmutables de exportación
-- **GIVEN** una exportación solicitada y completada por un actor
-- **WHEN** se emiten sus eventos a través de `AuditEventPublisher`
-- **THEN** se persisten exactamente `EXPORT_REQUESTED` y `EXPORT_COMPLETED`, cada uno con `correlationId`, actor, `occurredAt`, motivo/metadata y resultado, sin endpoint REST ni permiso de lectura nuevo
+#### Scenario: Eventos de exportación
+- **GIVEN** una exportación solicitada, completada y descargada por un actor
+- **WHEN** se consulta el registro de auditoría persistido
+- **THEN** existen `exportacion.solicitada`, `exportacion.completada` y `exportacion.descargada` con entidad `cumplimiento_operacion` y el identificador de la operación, sin endpoint REST productivo ni permiso de lectura nuevo
 
 #### Scenario: Evento de fallo de exportación
 - **GIVEN** una exportación que termina en error
 - **WHEN** se emite el evento de resultado
-- **THEN** se persiste `EXPORT_FAILED` con el motivo del error, la correlación y el resultado fallido, sin fila de éxito
+- **THEN** se persiste `exportacion.fallida` con el error en la metadata, sin evento de éxito para esa operación
 
-#### Scenario: Eventos de respaldo ejecutado y fallido
-- **GIVEN** un respaldo ejecutado y un respaldo que falla por indisponibilidad del destino
+#### Scenario: Eventos de respaldo completado y fallido
+- **GIVEN** un respaldo completado y un respaldo que falla por falta de clave de cifrado
 - **WHEN** se emiten sus eventos
-- **THEN** se persisten `BACKUP_EXECUTED` y `BACKUP_FAILED` como nombres exactos e inmutables, con motivo/metadata y resultado
+- **THEN** se persisten `respaldo.completado`, con checksum en la metadata, y `respaldo.fallido`, con el error
 
-#### Scenario: Eventos de restore verificado y ejecutado
-- **GIVEN** un restore en entorno aislado con cadena y conteos verificados
-- **WHEN** se emiten los eventos de verificación y ejecución
-- **THEN** se persisten `RESTORE_DRY_RUN_VERIFIED` y `RESTORE_EXECUTED` con la misma correlación y `occurredAt`
+#### Scenario: Eventos de restore verificado y fallido
+- **GIVEN** un restore en entorno aislado verificado fila por fila y otro cuyo artefacto fue alterado
+- **WHEN** se emiten sus eventos
+- **THEN** se persisten `restore.verificado`, con la cantidad de filas, y `restore.fallido`, con el error
 
 #### Scenario: Correlación distinta entre operaciones de exportación y respaldo
 - **GIVEN** una exportación y un respaldo independientes
-- **WHEN** se emiten sus eventos del catálogo ampliado
-- **THEN** cada operación conserva su propio `correlationId` y no se reutiliza entre eventos ni operaciones
+- **WHEN** se emiten sus eventos
+- **THEN** cada evento conserva su propio `correlationId` y no se reutiliza entre eventos ni operaciones
 
 ### Requirement: Correlación de eventos
 Cada evento SHALL llevar un `correlationId` que permita agrupar los eventos generados por una misma operación de agenda. El `correlationId` MUST ser distinto entre operaciones independientes.

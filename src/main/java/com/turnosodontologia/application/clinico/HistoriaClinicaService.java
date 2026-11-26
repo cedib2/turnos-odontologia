@@ -2,6 +2,8 @@ package com.turnosodontologia.application.clinico;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.turnosodontologia.application.AccesoFueraDeAlcanceException;
+import com.turnosodontologia.application.AlcanceProfesional;
 import com.turnosodontologia.application.AuditEventPublisher;
 import com.turnosodontologia.application.CurrentActorProvider;
 import com.turnosodontologia.domain.auditoria.ActorSimulado;
@@ -30,7 +32,7 @@ import java.util.UUID;
  * </ul>
  */
 @Service
-@Transactional(noRollbackFor = AccesoClinicoDenegadoException.class)
+@Transactional(noRollbackFor = {AccesoClinicoDenegadoException.class, AccesoFueraDeAlcanceException.class})
 public class HistoriaClinicaService {
 
     static final String CREAR = "crear";
@@ -42,12 +44,16 @@ public class HistoriaClinicaService {
     private final AuditEventPublisher auditoria;
     private final ObjectMapper mapper = new ObjectMapper();
 
+    private final AlcanceProfesional alcances;
+
     public HistoriaClinicaService(JdbcTemplate jdbc, CurrentActorProvider actores,
-                                  AutorizacionClinica autorizacion, AuditEventPublisher auditoria) {
+                                  AutorizacionClinica autorizacion, AuditEventPublisher auditoria,
+                                  AlcanceProfesional alcances) {
         this.jdbc = jdbc;
         this.actores = actores;
         this.autorizacion = autorizacion;
         this.auditoria = auditoria;
+        this.alcances = alcances;
     }
 
     public long abrirFicha(long pacienteId, Long turnoId) {
@@ -170,16 +176,62 @@ public class HistoriaClinicaService {
         return version;
     }
 
-    @Transactional(readOnly = true, noRollbackFor = AccesoClinicoDenegadoException.class)
+    // No es de solo lectura: una denegación registra clinico.acceso.denegado en la auditoría y debe confirmarse.
+    @Transactional(noRollbackFor = {AccesoClinicoDenegadoException.class, AccesoFueraDeAlcanceException.class})
     public HistoriaClinica consultar(long fichaId) {
         ActorSimulado actor = actores.current();
         autorizacion.exigir(actor, LEER, fichaId);
+        exigirAlcance(actor, fichaId);
         return leer(fichaId);
     }
 
     /**
+     * Ficha vigente de un paciente, con las mismas reglas de lectura que {@link #consultar(long)}. Usa la
+     * transacción de la clase (no de solo lectura): una denegación registra {@code clinico.acceso.denegado}.
+     */
+    public java.util.Optional<HistoriaClinica> fichaDelPaciente(long pacienteId) {
+        // El permiso se verifica antes de buscar: sin él, ni siquiera se revela si el paciente tiene ficha.
+        ActorSimulado actor = actores.current();
+        autorizacion.exigir(actor, LEER, null);
+        exigirAlcancePaciente(actor, pacienteId);
+        java.util.Optional<Long> ficha = jdbc.queryForList("SELECT id FROM fichas_clinicas WHERE paciente_id = ?",
+                Long.class, pacienteId).stream().findFirst();
+        if (ficha.isEmpty()) {
+            return java.util.Optional.empty();
+        }
+        return java.util.Optional.of(consultar(ficha.get()));
+    }
+
+    /**
+     * Ámbito {@code propio} de {@code ficha_clinica:leer} (odontólogo en el seed V001): solo fichas de pacientes
+     * que tienen o tuvieron un turno con el profesional del actor.
+     */
+    private void exigirAlcance(ActorSimulado actor, long fichaId) {
+        Long paciente = jdbc.queryForList("SELECT paciente_id FROM fichas_clinicas WHERE id = ?", Long.class, fichaId)
+                .stream().findFirst().orElseThrow(() -> new IllegalArgumentException("Ficha inexistente: " + fichaId));
+        exigirAlcancePaciente(actor, paciente);
+    }
+
+    /** El ámbito se evalúa por paciente: sin permiso sobre él no se revela si tiene ficha. */
+    private void exigirAlcancePaciente(ActorSimulado actor, long pacienteId) {
+        AlcanceProfesional.Alcance alcance = alcances.de(actor, java.util.Set.of(AutorizacionClinica.RECURSO), LEER);
+        if (alcance.todos()) {
+            return;
+        }
+        Boolean atendido = jdbc.queryForObject(
+                "SELECT EXISTS (SELECT 1 FROM turnos WHERE paciente_id = ? AND profesional_id = ?)",
+                Boolean.class, pacienteId, alcance.profesionalId());
+        if (!Boolean.TRUE.equals(atendido)) {
+            auditoria.publish(AuditEvent.de("clinico.acceso.denegado", "paciente", pacienteId, actor,
+                    "fuera-de-alcance", Map.of("accion", LEER, "ambito", "propio"), UUID.randomUUID().toString()));
+            throw new AccesoFueraDeAlcanceException("ficha_de_paciente_no_atendido");
+        }
+    }
+
+    /**
      * Historia vigente del titular, sin control de rol de staff. Solo para el acceso del paciente
-     * (C-13), que autoriza por token {@code HISTORIA} y verificación de identidad antes de llamar.
+     * (C-13), que autoriza por token {@code HISTORIA} y verificación de identidad antes de llamar, y para
+     * la copia por paciente de C-17, que la autoriza como operación de exportación.
      */
     @Transactional(readOnly = true)
     public java.util.Optional<HistoriaClinica> historiaDelTitular(long pacienteId) {

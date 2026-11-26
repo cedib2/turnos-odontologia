@@ -1,5 +1,5 @@
-# Placeholder de tests JUnit
+# Tests
 
-Los tests JUnit de `src/test/java/` se incorporan en `C-03`, cuando se resuelvan y descarguen las dependencias declaradas en `pom.xml`.
+Los tests son JUnit 5 y se ejecutan con `mvn test`. Los de integración usan PostgreSQL con Testcontainers, así que requieren Docker en ejecución.
 
-En `C-02` no se ejecuta Maven ni se instalan dependencias. El verificación ejecutable de este change es el harness sin dependencias externas `tests/SmokeTest.java` (compilado con `javac`, ejecutado con `java`).
+El smoke test del scaffold base de `C-02` vive en `com/turnosodontologia/SmokeTest.java`. Originalmente era un harness sin dependencias en `tests/SmokeTest.java`, compilado con `javac`, de antes de que el proyecto usara Maven.

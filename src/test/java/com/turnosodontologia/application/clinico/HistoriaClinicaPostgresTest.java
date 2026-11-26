@@ -45,6 +45,7 @@ class HistoriaClinicaPostgresTest extends PostgresFlywayTest {
                 Long.class);
         profesionalId = jdbcTemplate.queryForObject("INSERT INTO profesionales (matricula, nombre, apellido) "
                 + "VALUES ('MP-CL-1', 'Dra.', 'Sosa') RETURNING id", Long.class);
+        ActorConmutable.vincularOdontologo(jdbcTemplate, profesionalId);
         Long sillon = jdbcTemplate.queryForObject("INSERT INTO sillones (numero, consultorio_id) VALUES ('S-CL', 1) "
                 + "RETURNING id", Long.class);
         Long tratamiento = jdbcTemplate.queryForObject("INSERT INTO tratamientos (codigo, nombre, duracion_minutos) "

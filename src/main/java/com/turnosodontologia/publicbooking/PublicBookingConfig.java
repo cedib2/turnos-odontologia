@@ -9,6 +9,7 @@ import com.turnosodontologia.publictoken.PublicTokenMetadataStore;
 import com.turnosodontologia.publictoken.PublicTokenSanitizer;
 import com.turnosodontologia.publictoken.PublicTokenService;
 import com.turnosodontologia.publictoken.PublicTokenSigner;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,7 +52,7 @@ public class PublicBookingConfig {
     public PublicTokenService publicTokenService(PublicTokenSigner firmador,
                                                  PublicTokenMetadataStore metadatos,
                                                  AuditEventPublisher eventos,
-                                                 Clock reloj) {
+                                                 @Qualifier("publicClock") Clock reloj) {
         return new PublicTokenService(firmador, metadatos, eventos, reloj, new PublicTokenSanitizer());
     }
 

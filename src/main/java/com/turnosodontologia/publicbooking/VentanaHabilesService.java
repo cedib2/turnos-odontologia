@@ -34,9 +34,18 @@ public final class VentanaHabilesService {
         return dia.atTime(LocalTime.of(23, 59, 59)).atZone(zona).toInstant();
     }
 
+    /**
+     * El paciente puede cancelar o reprogramar por link hasta el vencimiento inclusive (23:59:59 del segundo
+     * día hábil anterior al turno). Después, el cambio lo hace recepción (RN-AG-05; decisión del 2026-11-25,
+     * ver docs/decisiones/C-09-sentido-ventana-48hs.md).
+     */
     public boolean dentroDeVentana(Instant inicio) {
-        Instant ahora = reloj.instant();
-        return !ahora.isBefore(vencimiento(inicio)) && ahora.isBefore(inicio);
+        return !reloj.instant().isAfter(vencimiento(inicio));
+    }
+
+    /** Si el turno todavía no empezó: la confirmación de asistencia no depende de la ventana. */
+    public boolean antesDelInicio(Instant inicio) {
+        return reloj.instant().isBefore(inicio);
     }
 
     private boolean esHabil(LocalDate dia) {

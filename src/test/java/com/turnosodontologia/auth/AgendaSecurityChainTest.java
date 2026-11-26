@@ -108,10 +108,10 @@ class AgendaSecurityChainTest {
     }
 
     @Test
-    void fueraDeDevTestHayDosCadenasYLaDeAgendaNoTocaAuth() {
+    void fueraDeDevTestHayTresCadenasYLaDeAgendaNoTocaAuth() {
         List<SecurityFilterChain> cadenas = context.getBean("springSecurityFilterChain", FilterChainProxy.class)
                 .getFilterChains();
-        assertEquals(2, cadenas.size());
+        assertEquals(3, cadenas.size(), "auth, agenda y cumplimiento");
 
         DefaultSecurityFilterChain agenda = cadenas.stream().map(DefaultSecurityFilterChain.class::cast)
                 .filter(c -> c.getRequestMatcher().matches(new MockHttpServletRequest("GET", "/agenda")))
@@ -121,6 +121,58 @@ class AgendaSecurityChainTest {
             assertTrue(agenda.getRequestMatcher().matches(new MockHttpServletRequest("GET", ruta)), ruta);
         }
         assertFalse(agenda.getRequestMatcher().matches(new MockHttpServletRequest("GET", "/auth/me")));
+
+        DefaultSecurityFilterChain cumplimiento = cadenas.stream().map(DefaultSecurityFilterChain.class::cast)
+                .filter(c -> c.getRequestMatcher().matches(new MockHttpServletRequest("GET", "/metricas")))
+                .findFirst().orElseThrow();
+        for (String ruta : List.of("/cumplimiento/dossier", "/cumplimiento/respaldos/1/restore-aislado",
+                "/metricas/adopcion")) {
+            assertTrue(cumplimiento.getRequestMatcher().matches(new MockHttpServletRequest("GET", ruta)), ruta);
+        }
+        assertFalse(cumplimiento.getRequestMatcher().matches(new MockHttpServletRequest("GET", "/precio")),
+                "/precio es público");
+    }
+
+    @Test
+    void cumplimientoSinSesionResponde401() throws Exception {
+        mockMvc.perform(get("/metricas/actor"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("token-invalido"));
+    }
+
+    @Test
+    void auditorLeeMetricasPeroNoRespalda() throws Exception {
+        String access = login("auditor-" + System.nanoTime() + "@example.com", "auditor").access();
+
+        mockMvc.perform(get("/metricas/actor").cookie(sesion(access)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.modo").value("REAL"))
+                .andExpect(jsonPath("$.rol").value("AUDITOR"));
+        mockMvc.perform(post("/cumplimiento/respaldos").cookie(sesion(access), csrfCookie(csrf.emitir()))
+                        .header("X-CSRF-Token", ultimoCsrf))
+                .andExpect(status().isForbidden())
+                .andExpect(content().string("acceso-denegado"));
+    }
+
+    @Test
+    void recepcionistaNoAccedeACumplimiento() throws Exception {
+        String access = login("recep-cumpl-" + System.nanoTime() + "@example.com", "recepcionista").access();
+
+        mockMvc.perform(get("/metricas/actor").cookie(sesion(access)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void administradorRespaldaConCsrfYNoSinEl() throws Exception {
+        String access = login("admin-cumpl-" + System.nanoTime() + "@example.com", "administrador").access();
+
+        mockMvc.perform(post("/cumplimiento/respaldos").cookie(sesion(access)))
+                .andExpect(status().isForbidden())
+                .andExpect(content().string("csrf-invalido"));
+        mockMvc.perform(post("/cumplimiento/respaldos").cookie(sesion(access), csrfCookie(csrf.emitir()))
+                        .header("X-CSRF-Token", ultimoCsrf))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.modo").value("REAL"));
     }
 
     @Test
@@ -224,7 +276,9 @@ class AgendaSecurityChainTest {
         Rol rol = rolRepository.findByCodigo(codigo).orElseGet(() -> rolService.registrar(codigo, codigo));
         Map<String, List<String>> matriz = Map.of(
                 "recepcionista", List.of("agenda:crear", "agenda:actualizar", "turno:leer"),
-                "odontologo", List.of("agenda:leer"));
+                "odontologo", List.of("agenda:leer"),
+                "auditor", List.of("auditoria:leer", "configuracion:leer"),
+                "administrador", List.of("auditoria:leer", "exportacion:crear"));
         for (String permiso : matriz.getOrDefault(codigo, List.of())) {
             String[] partes = permiso.split(":");
             jdbc.update("INSERT INTO permisos (id, recurso, accion, ambito, created_at, activo) "
@@ -258,6 +312,16 @@ class AgendaSecurityChainTest {
 
         @PostMapping("/turnos")
         ActorSimulado crear() {
+            return actores.current();
+        }
+
+        @GetMapping("/metricas/actor")
+        ActorSimulado metricas() {
+            return actores.current();
+        }
+
+        @PostMapping("/cumplimiento/respaldos")
+        ActorSimulado respaldar() {
             return actores.current();
         }
     }

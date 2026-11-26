@@ -115,19 +115,72 @@ class MetricasAdopcionTest extends CumplimientoPostgresTest {
     }
 
     @Test
-    void tableroDeclaraLoNoDisponibleEnLugarDeInventarCifras() {
+    void tableroSinDatosNoInventaCifras() {
         List<Metrica> tablero = metricas.tablero(DESDE, HASTA, "tablero");
 
         assertEquals(List.of(MetricasService.ADOPCION, MetricasService.VENTANA, MetricasService.CONFIRMACIONES,
                 MetricasService.OCUPACION, MetricasService.AUSENTISMO, MetricasService.DOSSIER),
                 tablero.stream().map(Metrica::codigo).toList());
-        assertEquals(Metrica.NO_DISPONIBLE, tablero.get(2).estado());
-        assertEquals(Metrica.DIFERIDA, tablero.get(3).estado());
-        assertEquals(Metrica.DIFERIDA, tablero.get(4).estado());
+        tablero.subList(2, 5).forEach(m -> assertEquals(Metrica.SIN_DATOS, m.estado()));
         tablero.subList(2, 5).forEach(m -> assertNull(m.valor()));
         assertEquals(12L, tablero.get(5).denominador());
         assertEquals(1, jdbcTemplate.queryForObject(
                 "SELECT count(*) FROM auditoria_log WHERE accion = 'metricas.consultadas'", Integer.class));
+    }
+
+    @Test
+    void confirmacionesCuentanTurnosConfirmadosSobreSolicitudesEnviadas() {
+        Paciente paciente = fixtures.paciente("DOC-CONFIRMA", "Ana");
+        Turno confirmado = fixtures.turno(paciente, "S-C-1", 9, "recepcion");
+        Turno sinRespuesta = fixtures.turno(paciente, "S-C-2", 10, "recepcion");
+        Turno noEnviado = fixtures.turno(paciente, "S-C-3", 11, "recepcion");
+        notificacion(confirmado, "CONFIRMADA", "wamid-1");
+        notificacion(sinRespuesta, "ENTREGADA", "wamid-2");
+        notificacion(noEnviado, "PENDIENTE", null);
+
+        Metrica confirmaciones = metricas.tablero(DESDE, HASTA, null).get(2);
+
+        assertEquals(MetricasService.CONFIRMACIONES, confirmaciones.codigo());
+        assertEquals(Metrica.CALCULADA, confirmaciones.estado());
+        assertEquals(1L, confirmaciones.numerador());
+        assertEquals(2L, confirmaciones.denominador());
+        assertEquals(new BigDecimal("50.00"), confirmaciones.valor());
+    }
+
+    @Test
+    void ocupacionYAusentismoMuestranLoPublicadoPorC19SinAgregar() {
+        java.time.YearMonth mes = java.time.YearMonth.now(java.time.ZoneId.of("America/Argentina/Buenos_Aires"));
+        metricaC19(1L, mes.toString(), "72.5000", "4.0000");
+        metricaC19(2L, mes.toString(), "60.0000", null);
+        metricaC19(1L, mes.minusMonths(6).toString(), "10.0000", "1.0000");
+
+        List<Metrica> tablero = metricas.tablero(DESDE, HASTA, null);
+        Metrica ocupacion = tablero.get(3);
+        Metrica ausentismo = tablero.get(4);
+
+        assertEquals(Metrica.CALCULADA, ocupacion.estado());
+        assertNull(ocupacion.valor());
+        List<?> porSillon = (List<?>) ocupacion.detalle().get("porSillonYMes");
+        assertEquals(2, porSillon.size());
+        assertEquals(new BigDecimal("72.5000"), ((Map<?, ?>) porSillon.get(0)).get("valor"));
+        assertEquals("metodologia C-19", ((Map<?, ?>) porSillon.get(0)).get("metodologia"));
+        assertEquals(Metrica.CALCULADA, ausentismo.estado());
+        assertEquals(1, ((List<?>) ausentismo.detalle().get("porSillonYMes")).size());
+    }
+
+    private void notificacion(Turno turno, String estado, String mensajeProveedor) {
+        jdbcTemplate.update("""
+                INSERT INTO notificaciones (turno_id, proposito, destinatario, estado, proveedor_message_id,
+                                            programada_para, idempotency_key)
+                VALUES (?, 'CONFIRMACION', '+5491100000000', ?, ?, now(), ?)
+                """, turno.getId(), estado, mensajeProveedor, "idem-" + UUID.randomUUID());
+    }
+
+    private void metricaC19(long sillon, String periodo, String ocupacion, String ausentismo) {
+        jdbcTemplate.update("""
+                INSERT INTO metricas_ocupacion (sillon_id, periodo, ocupacion, ausentismo, metodologia, calculada_en)
+                VALUES (?, ?, ?::numeric, ?::numeric, 'metodologia C-19', now())
+                """, sillon, periodo, ocupacion, ausentismo);
     }
 
     private void reprogramacion(Instant fecha, Instant inicioAnterior) {

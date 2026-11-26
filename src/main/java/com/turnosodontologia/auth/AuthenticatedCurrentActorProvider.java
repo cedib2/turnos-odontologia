@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 /**
  * Implementación real de {@link CurrentActorProvider} fuera de dev/test.
  *
- * <p>Toma el {@link AuthenticatedActor} que {@link AgendaAccessFilter} dejó en el contexto
+ * <p>Toma el {@link AuthenticatedActor} que {@link RbacAccessFilter} dejó en el contexto
  * de seguridad y lo adapta con {@link AuthenticatedActorAdapter}. Sin actor autenticado
  * falla cerrado ({@link AccesoDenegadoException}); nunca cae al actor simulado. El actor de
  * sistema conserva el modo {@code SYSTEM} para tareas internas sin request.

@@ -1,7 +1,9 @@
 package com.turnosodontologia.interfaces.web;
 
 import com.turnosodontologia.application.AgendaConsultaService;
+import com.turnosodontologia.application.AlcanceProfesional;
 import com.turnosodontologia.application.EntradaAgenda;
+import com.turnosodontologia.application.SimulatedCurrentActorProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +16,11 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -26,11 +33,40 @@ class AgendaControllerTest {
     @Mock
     private AgendaConsultaService consulta;
 
+    @Mock
+    private AlcanceProfesional alcances;
+
     private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(new AgendaController(consulta)).build();
+        lenient().when(alcances.de(any(), anySet(), eq("leer"))).thenReturn(AlcanceProfesional.Alcance.completo());
+        mockMvc = MockMvcBuilders.standaloneSetup(
+                        new AgendaController(consulta, alcances, new SimulatedCurrentActorProvider()))
+                .setControllerAdvice(new ErroresStaffAdvice())
+                .build();
+    }
+
+    @Test
+    void conAmbitoPropioSinFiltroSeUsaLaAgendaDelProfesionalVinculado() throws Exception {
+        when(alcances.de(any(), anySet(), eq("leer"))).thenReturn(new AlcanceProfesional.Alcance(false, 7L));
+        when(consulta.porDia(7L, null, LocalDate.of(2026, 12, 28))).thenReturn(List.of());
+
+        mockMvc.perform(get("/agenda/dia").param("fecha", "2026-12-28"))
+                .andExpect(status().isOk());
+
+        verify(consulta).porDia(7L, null, LocalDate.of(2026, 12, 28));
+    }
+
+    @Test
+    void conAmbitoPropioPedirLaAgendaDeOtroProfesionalResponde403() throws Exception {
+        when(alcances.de(any(), anySet(), eq("leer"))).thenReturn(new AlcanceProfesional.Alcance(false, 7L));
+
+        mockMvc.perform(get("/agenda/dia").param("fecha", "2026-12-28").param("profesionalId", "8"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.error").value("agenda_de_otro_profesional"));
+
+        verify(consulta, never()).porDia(any(), any(), any());
     }
 
     @Test

@@ -3,11 +3,13 @@ package com.turnosodontologia.interfaces.web;
 import com.turnosodontologia.application.clinico.HistoriaClinica;
 import com.turnosodontologia.application.clinico.HistoriaClinicaService;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -38,6 +40,13 @@ public class FichaClinicaController {
     @GetMapping("/{id}")
     public HistoriaClinica consultar(@PathVariable long id) {
         return servicio.consultar(id);
+    }
+
+    /** Ficha de un paciente, para buscarla sin conocer su id; 404 si el paciente todavía no tiene ficha. */
+    @GetMapping(params = "pacienteId")
+    public ResponseEntity<HistoriaClinica> porPaciente(@RequestParam long pacienteId) {
+        return servicio.fichaDelPaciente(pacienteId).map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/{id}/anamnesis")

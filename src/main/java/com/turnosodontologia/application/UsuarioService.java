@@ -28,4 +28,12 @@ public class UsuarioService {
                 : credencial;
         return repository.saveAndFlush(new Usuario(rol, email, almacenada, proveedor));
     }
+
+    /** Vincula el usuario con un profesional para el ámbito {@code propio} (agenda y ficha clínica). */
+    public Usuario vincularProfesional(Long usuarioId, Long profesionalId) {
+        Usuario usuario = repository.findById(usuarioId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario inexistente: " + usuarioId));
+        usuario.vincularProfesional(profesionalId);
+        return repository.saveAndFlush(usuario);
+    }
 }
