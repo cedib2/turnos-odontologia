@@ -4,11 +4,12 @@ import { api, ApiError } from './api.js';
 import type { Sesion } from './tipos.js';
 import { el, vaciar } from './ui.js';
 
-export type Seccion = 'inicio' | 'agenda' | 'cumplimiento' | 'ingresar' | 'paciente';
+export type Seccion = 'inicio' | 'agenda' | 'fichas' | 'cumplimiento' | 'ingresar' | 'paciente';
 
 const ENLACES: { seccion: Seccion; href: string; texto: string }[] = [
   { seccion: 'inicio', href: '/', texto: 'Inicio' },
   { seccion: 'agenda', href: '/agenda.html', texto: 'Agenda' },
+  { seccion: 'fichas', href: '/fichas.html', texto: 'Fichas' },
   { seccion: 'cumplimiento', href: '/cumplimiento.html', texto: 'Cumplimiento' },
 ];
 

@@ -11,7 +11,7 @@ Los diferenciadores del producto son el **precio predecible y todo incluido**, l
 | Lenguaje | Java 17 |
 | Framework | Spring Boot 3.5 (Web, Security, Data JPA) |
 | Base de datos | PostgreSQL |
-| Migraciones | Flyway (`src/main/resources/db/migration`, V001–V032) |
+| Migraciones | Flyway (`src/main/resources/db/migration`, V001–V033) |
 | Tests | JUnit 5 + Testcontainers (PostgreSQL) |
 | Frontend | TypeScript vanilla (solo `tsc`), sin framework; servido por Spring Boot |
 | Build | Maven (backend) y npm (frontend) |
@@ -36,7 +36,7 @@ mvn -B -DskipTests compile
 mvn -B test
 ```
 
-La suite completa tiene 488 tests. No requiere variables de entorno: el perfil `test` usa valores no productivos.
+La suite completa tiene 498 tests. No requiere variables de entorno: el perfil `test` usa valores no productivos.
 
 ## Cómo ejecutar la aplicación
 
@@ -87,6 +87,7 @@ El frontend vive en [`frontend/`](frontend/): TypeScript vanilla compilado con `
 | Gestión del turno | `/turno.html` | Paciente (link con token `GESTIONAR`) |
 | Ingreso | `/ingresar.html` | Staff |
 | Agenda | `/agenda.html` | Recepción y odontólogos |
+| Fichas clínicas | `/fichas.html` | Odontólogos y administración (búsqueda por paciente, odontograma FDI, evoluciones) |
 | Cumplimiento | `/cumplimiento.html` | Administración y auditoría |
 
 Se compila a `src/main/resources/static`, desde donde lo sirve Spring Boot en el mismo origen que la API. Hay que compilarlo antes de `mvn package` o `mvn spring-boot:run`:
@@ -94,6 +95,8 @@ Se compila a `src/main/resources/static`, desde donde lo sirve Spring Boot en el
 ```bash
 cd frontend && npm ci && npm run build
 ```
+
+En el perfil `dev` el actor simulado es un recepcionista. Para probar otro rol sin login, por ejemplo un odontólogo vinculado al profesional 1, agregá `--turnos.simulado.rol=odontologo --turnos.simulado.profesional-id=1` al arrancar. El odontólogo ve solo su agenda y las fichas de sus pacientes; ver [`docs/decisiones/roles-staff-ambito-propio.md`](docs/decisiones/roles-staff-ambito-propio.md).
 
 Para desarrollar, `npm run watch` recompila al guardar. El sistema de diseño (tokens, componentes y puntos de quiebre) está documentado en [`frontend/DISENO.md`](frontend/DISENO.md), y las decisiones en [`docs/decisiones/frontend-typescript-vanilla.md`](docs/decisiones/frontend-typescript-vanilla.md).
 

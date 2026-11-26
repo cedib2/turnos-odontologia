@@ -19,7 +19,7 @@ class Migration023Test extends PostgresFlywayTest {
                 .map(info -> info.getVersion().getVersion())
                 .collect(Collectors.toSet());
         assertEquals(Set.of("001", "002", "003", "004", "005", "006", "010", "011", "012", "013",
-                "020", "021", "022", "023", "030", "031", "032"), versiones);
+                "020", "021", "022", "023", "030", "031", "032", "033"), versiones);
 
         for (String tabla : List.of("turnos", "ocupaciones", "senias", "public_idempotencia")) {
             assertEquals(1, countTabla(tabla), "V001-V022 quedó alterada: " + tabla);

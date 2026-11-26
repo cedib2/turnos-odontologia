@@ -96,6 +96,45 @@ export interface EntradaAgenda {
   detalle: string | null;
 }
 
+export interface TurnoVista {
+  id: number;
+  inicio: Instante;
+  fin: Instante;
+  estado: string;
+  activo: boolean;
+  profesionalId: number;
+  sillonId: number;
+}
+
+// Ficha clínica (C-11/C-12)
+export interface RegistroOdontograma {
+  id: number;
+  piezaFdi: number;
+  temporal: boolean;
+  cara: string | null;
+  estado: string;
+  version: number;
+  fecha: Instante;
+  autor: string;
+}
+
+export interface HistoriaClinica {
+  fichaId: number;
+  pacienteId: number;
+  historiaVersion: number;
+  anamnesis: {
+    id: number;
+    version: number;
+    respuestas: Record<string, unknown>;
+    textoLibre: string | null;
+    fecha: Instante;
+    autor: string;
+  } | null;
+  odontograma: RegistroOdontograma[];
+  evoluciones: { id: number; profesionalId: number; version: number; reemplazaId: number | null; texto: string; fecha: Instante; autor: string }[];
+  consentimientos: { id: number; tipo: string; version: number; texto: string; fecha: Instante; autor: string }[];
+}
+
 // Cumplimiento (C-17/C-18) y métricas (C-22)
 export interface Metrica {
   codigo: string;

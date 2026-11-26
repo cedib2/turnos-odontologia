@@ -18,7 +18,7 @@
 Aprobados junto con el frontend, todos en la superficie indicativa de `dev`/`test`:
 
 - `DirectorioController`: `GET /pacientes`, `/profesionales` y `/sillones` (DTOs, no entidades) y `POST /pacientes/{id}/enlace-reserva`, que emite el token `RESERVAR` de C-06 (1 hora) y devuelve el link. Exige profesional, **sillón** y tratamiento: la reserva pública rechaza crear un turno sin sillón (`sillonId_requerido`), así que un link sin sillón mostraría horarios imposibles de reservar.
-- `ConflictoDeDatosAdvice`: en los controladores de staff, una violación de integridad responde 409 en lugar de 500; las restricciones de exclusión de la agenda (RN-AG-01) se informan como `solapamiento`.
+- `ErroresStaffAdvice` (antes `ConflictoDeDatosAdvice`): en los controladores de staff, una violación de integridad responde 409 en lugar de 500, y las restricciones de exclusión de la agenda (RN-AG-01) se informan como `solapamiento`. Después se amplió con 400, 403 y 409 para validaciones, permisos y estados.
 
 Ajustes de tests de guarda:
 

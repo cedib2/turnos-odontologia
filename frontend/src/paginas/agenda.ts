@@ -44,7 +44,8 @@ const resultado = el('div', { 'aria-live': 'polite' });
 const acciones = el('div', { class: 'fila' },
   el('button', { class: 'btn', type: 'button', onclick: () => dialogoTurno() }, 'Nuevo turno'),
   el('button', { class: 'btn btn--secundario', type: 'button', onclick: () => dialogoBloqueo() }, 'Bloqueo'),
-  el('button', { class: 'btn btn--secundario', type: 'button', onclick: () => dialogoEnlace() }, 'Link de reserva'));
+  el('button', { class: 'btn btn--secundario', type: 'button', onclick: () => dialogoEnlace() }, 'Link de reserva'),
+  el('button', { class: 'btn btn--secundario', type: 'button', onclick: () => dialogoPaciente() }, 'Nuevo paciente'));
 
 vaciar(main,
   el('div', { class: 'fila fila--entre titulo-pagina' }, el('div', {}, titulo, subtitulo), acciones),
@@ -123,9 +124,11 @@ function vistaDia(entradas: EntradaAgenda[]): HTMLElement {
         el('div', { class: 'evento__meta' }, `${nombreProfesional(entrada.profesionalId)} · ${nombreSillon(entrada.sillonId)}`)),
       el('div', { class: 'fila', style: 'justify-content: flex-end; gap: var(--e-2)' },
         insigniaEstado(entrada),
-        entrada.tipo === 'turno' && entrada.detalle !== 'cancelado'
-          ? el('button', { class: 'btn btn--fantasma btn--chico', type: 'button', onclick: () => dialogoSobreturno(entrada) }, 'Sobreturno')
-          : null))));
+        ...(entrada.tipo === 'turno' && entrada.detalle !== 'cancelado' ? [
+          el('button', { class: 'btn btn--fantasma btn--chico', type: 'button', onclick: () => dialogoReprogramar(entrada) }, 'Reprogramar'),
+          el('button', { class: 'btn btn--fantasma btn--chico', type: 'button', onclick: () => dialogoSobreturno(entrada) }, 'Sobreturno'),
+          el('button', { class: 'btn btn--fantasma btn--chico', type: 'button', onclick: () => dialogoCancelar(entrada) }, 'Cancelar'),
+        ] : [])))));
 }
 
 function vistaSemana(entradas: EntradaAgenda[], lunes: string): HTMLElement {
@@ -217,6 +220,68 @@ function dialogoBloqueo(): void {
       toast('Bloqueo creado.');
       dia = diaBloqueo.value;
       void cargar();
+    },
+  });
+}
+
+function dialogoReprogramar(entrada: EntradaAgenda): void {
+  const diaNuevo = el('input', { class: 'control', type: 'date', value: fechaLocal(entrada.inicio) });
+  const horaNueva = el('input', { class: 'control', type: 'time', step: 900, value: hora(entrada.inicio) });
+  abrirDialogo({
+    titulo: `Reprogramar el turno #${entrada.id}`,
+    descripcion: 'Respeta horarios, feriados y solapamientos. Recepción puede reprogramar aunque falten menos de 48 hs hábiles.',
+    campos: [el('div', { class: 'formulario__fila' }, campo('r-dia', 'Nuevo día', diaNuevo), campo('r-hora', 'Nueva hora', horaNueva))],
+    accion: 'Reprogramar',
+    validar: () => (!diaNuevo.value || !horaNueva.value ? 'Elegí el nuevo día y la hora.' : null),
+    enviar: async () => {
+      await api.post(`/turnos/${entrada.id}/reprogramacion`, { nuevoInicio: instanteLocal(diaNuevo.value, horaNueva.value) });
+      toast('Turno reprogramado.');
+      dia = diaNuevo.value;
+      void cargar();
+    },
+  });
+}
+
+function dialogoCancelar(entrada: EntradaAgenda): void {
+  const motivo = el('textarea', { class: 'control', rows: 3, maxlength: 300, required: true,
+    placeholder: 'Ej.: el paciente avisó por teléfono' });
+  abrirDialogo({
+    titulo: `Cancelar el turno #${entrada.id}`,
+    descripcion: `${fecha(entrada.inicio)}, ${hora(entrada.inicio)} hs. El horario queda libre y el motivo se registra en la auditoría.`,
+    campos: [campo('c-motivo', 'Motivo', motivo)],
+    accion: 'Cancelar turno',
+    validar: () => (motivo.value.trim() ? null : 'El motivo es obligatorio.'),
+    enviar: async () => {
+      await api.post(`/turnos/${entrada.id}/cancelacion`, { motivo: motivo.value.trim() });
+      toast('Turno cancelado.');
+      void cargar();
+    },
+  });
+}
+
+function dialogoPaciente(): void {
+  const tipo = selector([{ valor: 'DNI', texto: 'DNI' }, { valor: 'PASAPORTE', texto: 'Pasaporte' }, { valor: 'CUIT', texto: 'CUIT' }], undefined, 'DNI');
+  const documento = el('input', { class: 'control', type: 'text', inputmode: 'numeric', maxlength: 32, autocomplete: 'off' });
+  const nombre = el('input', { class: 'control', type: 'text', maxlength: 120, autocomplete: 'off' });
+  const apellido = el('input', { class: 'control', type: 'text', maxlength: 120, autocomplete: 'off' });
+  const telefono = el('input', { class: 'control', type: 'tel', maxlength: 40, placeholder: '+54 9 11 …' });
+  abrirDialogo({
+    titulo: 'Nuevo paciente',
+    descripcion: 'El teléfono se usa para los avisos por WhatsApp.',
+    campos: [
+      el('div', { class: 'formulario__fila' }, campo('p-tipo', 'Tipo de documento', tipo), campo('p-documento', 'Número', documento)),
+      el('div', { class: 'formulario__fila' }, campo('p-nombre', 'Nombre', nombre), campo('p-apellido', 'Apellido', apellido)),
+      campo('p-telefono', 'Teléfono', telefono),
+    ],
+    accion: 'Dar de alta',
+    validar: () => ([documento, nombre, apellido, telefono].some((c) => !c.value.trim()) ? 'Completá todos los campos.' : null),
+    enviar: async () => {
+      const nuevo = await api.post<Paciente>('/pacientes', {
+        documentoTipo: tipo.value, documento: documento.value.trim(), nombre: nombre.value.trim(),
+        apellido: apellido.value.trim(), telefono: telefono.value.trim(),
+      });
+      pacientes = [...pacientes, nuevo].sort((a, b) => a.apellido.localeCompare(b.apellido));
+      toast(`Paciente ${nuevo.apellido}, ${nuevo.nombre} dado de alta.`);
     },
   });
 }

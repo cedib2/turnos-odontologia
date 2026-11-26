@@ -45,6 +45,7 @@ Los IDs se conservan al editar o reordenar. No se reciclan IDs retirados. El pro
 | Parte 3 | compañero | desde V020 | V020 = C-14; V021 = C-15; V022 en adelante queda como holgura |
 | Parte 4 | compañero | desde V030 | a asignar por su dueño |
 | Parte 4 | Joaquín Adrián Velázquez Carrera | desde V030 | V030 = C-17 (`cumplimiento_operaciones`); V031 = C-18 (`dossier_items`, `subprocesadores`); V032 = C-17, elimina `export_backup_restore_operacion` (unificación). |
+| Integración | José Donato Fornasari Donadel | V033 | V033 = roles de staff: `usuarios.profesional_id` y `ficha_clinica:leer` con ámbito `todos` para el administrador ([decisión](docs/decisiones/roles-staff-ambito-propio.md)). Se numera después de V032 para no requerir `outOfOrder`. |
 
 Los números históricos citados en los scopes (`C-10 = 007`, `C-11 = 008`, `C-14 = 009`, `C-15 = 010`, `C-16 = 011`, `C-17 = 012`, `C-19 = 013`) quedan **supersedidos** por esta tabla: cada dueño elige dentro de su rango y lo coordina antes de crear la migración.
 

@@ -3,6 +3,7 @@ package com.turnosodontologia.support;
 import com.turnosodontologia.application.CurrentActorProvider;
 import com.turnosodontologia.domain.auditoria.ActorSimulado;
 import org.springframework.context.annotation.Bean;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.context.annotation.Primary;
 
 /** Proveedor de actor para tests clínicos: permite simular cada rol y modo. */
@@ -16,6 +17,16 @@ public class ActorConmutable implements CurrentActorProvider {
 
     public void usar(ActorSimulado actor) {
         this.actual = actor;
+    }
+
+    /**
+     * Crea el usuario del actor {@link #ODONTOLOGO} vinculado al profesional dado (V033): su permiso
+     * {@code ficha_clinica:leer} tiene ámbito {@code propio} y exige ese vínculo.
+     */
+    public static void vincularOdontologo(JdbcTemplate jdbc, long profesionalId) {
+        jdbc.update("INSERT INTO usuarios (id, rol_id, email, proveedor, profesional_id) "
+                + "SELECT ?, r.id, ?, 'LOCAL', ? FROM roles r WHERE r.codigo = 'odontologo'",
+                ODONTOLOGO.usuarioId(), "dra.sosa." + ODONTOLOGO.usuarioId() + "@consultorio.test", profesionalId);
     }
 
     @Override
