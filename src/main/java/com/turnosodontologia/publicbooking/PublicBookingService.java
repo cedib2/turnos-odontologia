@@ -156,7 +156,9 @@ public class PublicBookingService {
         notificaciones.solicitar(guardado.getId(), "turno.crear");
 
         return new CrearTurnoPublicoResponse(guardado.getId(), inicio, fin,
-                guardado.getEstado(), guardado.getOrigen(), tokenGestionar);
+                guardado.getEstado(), guardado.getOrigen(), tokenGestionar,
+                tratamiento.getNombre(), profesional.getNombre() + " " + profesional.getApellido(),
+                etiquetaSillon(sillon.getNumero()), sillon.getConsultorio() == null ? null : sillon.getConsultorio().getNombre());
     }
 
     @Transactional
@@ -330,5 +332,14 @@ public class PublicBookingService {
         } catch (RuntimeException ex) {
             throw new PublicApiException(HttpStatus.BAD_REQUEST, motivo);
         }
+    }
+
+    /** «Sillón 3» a partir del número, sin duplicar el prefijo si el número ya lo trae. */
+    private static String etiquetaSillon(String numero) {
+        if (numero == null) {
+            return null;
+        }
+        String limpio = numero.trim();
+        return limpio.toLowerCase(java.util.Locale.ROOT).matches("^sill[oó]n\\b.*") ? limpio : "Sillón " + limpio;
     }
 }

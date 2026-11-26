@@ -110,3 +110,72 @@ export function confirmar(titulo: string, texto: string, accion = 'Confirmar', p
 export function porcentaje(valor: number | null): string {
   return valor === null ? '—' : `${valor.toLocaleString('es-AR', { maximumFractionDigits: 2 })} %`;
 }
+
+/** «Sillón 3» a partir del número, sin duplicar el prefijo si el número ya lo trae. */
+export function etiquetaSillon(numero: string): string {
+  return /^sill[oó]n\b/i.test(numero.trim()) ? numero.trim() : `Sillón ${numero}`;
+}
+
+export interface DatoTurno {
+  etiqueta: string;
+  valor: string;
+}
+
+export interface AccionConfirmacion {
+  texto: string;
+  primaria?: boolean;
+  /** Se ejecuta después de cerrar el diálogo. */
+  alHacer?: () => void;
+}
+
+export interface OpcionesConfirmacionTurno {
+  /** Tipo de turno o motivo (p. ej. «Consulta y diagnóstico»). */
+  motivo: string;
+  /** Estado real del turno: solo `confirmado` muestra «✓ Confirmado». */
+  estado: string;
+  datos: DatoTurno[];
+  /** Texto del banner informativo. */
+  mensaje: Hijo;
+  acciones: AccionConfirmacion[];
+}
+
+function insigniaEstado(estado: string): HTMLElement {
+  const valor = estado.toLowerCase();
+  if (valor === 'confirmado') return insignia('✓ Confirmado', 'ok');
+  if (valor === 'reservado') return insignia('Reservado', 'marca');
+  return insignia(valor.charAt(0).toUpperCase() + valor.slice(1), 'info');
+}
+
+/** Ventana de confirmación de un turno recién creado: resumen, aviso y acciones. */
+export function confirmacionTurno(opciones: OpcionesConfirmacionTurno): void {
+  const dialogo = el('dialog', {
+    class: 'dialogo dialogo--confirmacion', 'aria-labelledby': 'confirmacion-titulo',
+    'aria-describedby': 'confirmacion-mensaje',
+  });
+  const cerrar = (despues?: () => void) => { dialogo.close(); dialogo.remove(); despues?.(); };
+  const botones = opciones.acciones.map((accion) => el('button', {
+    class: accion.primaria ? 'btn' : 'btn btn--secundario', type: 'button',
+    onclick: () => cerrar(accion.alHacer),
+  }, accion.texto));
+
+  dialogo.append(
+    el('div', { class: 'dialogo__cuerpo confirmacion' },
+      el('div', { class: 'confirmacion__icono', 'aria-hidden': 'true' }, '✓'),
+      el('h2', { id: 'confirmacion-titulo', class: 'confirmacion__titulo' }, '¡Turno creado!'),
+      el('section', { class: 'confirmacion__tarjeta', 'aria-label': 'Datos del turno' },
+        el('div', { class: 'confirmacion__cabecera' },
+          el('strong', { class: 'confirmacion__motivo' }, opciones.motivo),
+          insigniaEstado(opciones.estado)),
+        el('dl', { class: 'confirmacion__datos' },
+          ...opciones.datos.flatMap((dato) => [el('dt', {}, dato.etiqueta), el('dd', {}, dato.valor)]))),
+      el('div', { class: 'confirmacion__banner', id: 'confirmacion-mensaje', role: 'note' },
+        el('span', { class: 'confirmacion__banner-icono', 'aria-hidden': 'true' }, 'i'),
+        el('div', {}, opciones.mensaje))),
+    el('div', { class: 'dialogo__acciones confirmacion__acciones' }, ...botones));
+  // Escape equivale a la última acción (cerrar / volver).
+  const ultima = opciones.acciones[opciones.acciones.length - 1];
+  dialogo.addEventListener('cancel', (evento) => { evento.preventDefault(); cerrar(ultima?.alHacer); });
+  document.body.append(dialogo);
+  dialogo.showModal();
+  botones.find((_, i) => opciones.acciones[i]?.primaria)?.focus();
+}

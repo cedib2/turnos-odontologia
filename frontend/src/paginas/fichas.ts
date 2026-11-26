@@ -5,7 +5,7 @@ import { api, ApiError } from '../api.js';
 import { fechaHora } from '../fechas.js';
 import { abrirDialogo, mensajeStaff } from '../formularios.js';
 import { montarLayout } from '../layout.js';
-import type { HistoriaClinica, Paciente, Profesional, RegistroOdontograma } from '../tipos.js';
+import type { EnlaceReserva, HistoriaClinica, Paciente, Profesional, RegistroOdontograma } from '../tipos.js';
 import { $, aviso, campo, conCarga, el, insignia, opciones, toast, vaciar } from '../ui.js';
 
 montarLayout('fichas');
@@ -68,7 +68,7 @@ async function cargarFicha(): Promise<void> {
           vaciar(detalle, encabezado(paciente), aviso('error', mensajeStaff(falla)));
         }
       }));
-      vaciar(detalle, encabezado(paciente),
+      vaciar(detalle, el('div', { class: 'fila fila--entre' }, encabezado(paciente), botonEnlace(paciente)),
         el('section', { class: 'tarjeta pila' }, el('p', { style: 'margin: 0' }, 'Este paciente todavía no tiene ficha clínica.'), abrir));
       return;
     }
@@ -88,10 +88,41 @@ function pintarFicha(paciente: Paciente, historia: HistoriaClinica): void {
     el('div', { class: 'fila fila--entre' }, encabezado(paciente),
       el('div', { class: 'fila' },
         insignia(`Versión ${historia.historiaVersion}`, 'marca'),
+        botonEnlace(paciente),
         el('button', { class: 'btn btn--secundario btn--chico', type: 'button', onclick: () => dialogoEvolucion(historia) }, 'Nueva evolución'))),
     tarjetaOdontograma(historia),
     tarjetaEvoluciones(historia),
     el('div', { class: 'rejilla rejilla--2' }, tarjetaAnamnesis(historia), tarjetaConsentimientos(historia)));
+}
+
+// ---------- Link para que el paciente vea su propia historia (C-13) ----------
+
+function botonEnlace(paciente: Paciente): HTMLElement {
+  return el('button', {
+    class: 'btn btn--secundario btn--chico', type: 'button', onclick: () => void generarEnlace(paciente),
+  }, 'Link para el paciente');
+}
+
+async function generarEnlace(paciente: Paciente): Promise<void> {
+  try {
+    const enlace = await api.post<EnlaceReserva>(`/pacientes/${paciente.id}/enlace-historia`);
+    const url = new URL(enlace.ruta, location.origin).toString();
+    const texto = el('input', { class: 'control', type: 'text', readonly: true, value: url });
+    abrirDialogo({
+      titulo: 'Link de la historia clínica',
+      descripcion: `Enviáselo a ${paciente.nombre} ${paciente.apellido}. Solo muestra su propia historia, `
+        + `pide confirmar su identidad y vence el ${fechaHora(enlace.venceAt)}.`,
+      campos: [campo('enlace-historia', 'Link', texto)],
+      accion: 'Copiar link',
+      enviar: async () => {
+        await navigator.clipboard?.writeText(url).catch(() => undefined);
+        toast('Link copiado.');
+      },
+    });
+    texto.select();
+  } catch (error) {
+    toast(mensajeStaff(error), 'error');
+  }
 }
 
 // ---------- Odontograma FDI ----------

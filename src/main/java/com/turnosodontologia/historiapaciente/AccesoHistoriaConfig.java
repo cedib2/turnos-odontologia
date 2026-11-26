@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.time.Clock;
 
@@ -16,9 +17,16 @@ import java.time.Clock;
 public class AccesoHistoriaConfig {
 
     @Bean
-    @Profile({"dev", "test"})
+    @Profile("test")
     SimulatedVerificadorIdentidad verificadorIdentidadSimulado() {
         return new SimulatedVerificadorIdentidad();
+    }
+
+    /** Dev: el titular se identifica con su número de documento, solo para probar el flujo (no es el real). */
+    @Bean
+    @Profile("dev")
+    VerificadorIdentidadDocumentoDev verificadorIdentidadDocumentoDev(JdbcTemplate jdbc) {
+        return new VerificadorIdentidadDocumentoDev(jdbc);
     }
 
     @Bean

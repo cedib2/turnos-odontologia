@@ -1,12 +1,12 @@
 // Agenda del staff (C-08): vista por día y por semana, alta de turnos, bloqueos y sobreturnos, y
 // emisión del link de reserva del paciente.
 
-import { api } from '../api.js';
+import { api, usuarioRecordado } from '../api.js';
 import { fecha, fechaCorta, fechaLocal, hora, instanteLocal, lunesDe, sumarDias } from '../fechas.js';
 import { abrirDialogo, mensajeStaff } from '../formularios.js';
 import { montarLayout } from '../layout.js';
 import type { EnlaceReserva, EntradaAgenda, Paciente, Profesional, Sillon, Tratamiento } from '../tipos.js';
-import { $, aviso, campo, el, insignia, opciones, toast, vaciar } from '../ui.js';
+import { $, aviso, campo, confirmacionTurno, el, etiquetaSillon, insignia, opciones, toast, vaciar } from '../ui.js';
 
 montarLayout('agenda');
 const main = $('#contenido');
@@ -29,7 +29,7 @@ const nombreProfesional = (id: number | null) => {
 };
 const nombreSillon = (id: number | null) => {
   const s = sillones.find((x) => x.id === id);
-  return s ? `Sillón ${s.numero}` : id === null ? '—' : `Sillón #${id}`;
+  return s ? etiquetaSillon(s.numero) : id === null ? '—' : `Sillón #${id}`;
 };
 
 // Encabezado y barra de herramientas
@@ -155,7 +155,7 @@ function selector(items: { valor: string; texto: string }[], vacio?: string, val
   return select;
 }
 const itemsProfesionales = () => profesionales.map((p) => ({ valor: String(p.id), texto: `${p.nombre} ${p.apellido}` }));
-const itemsSillones = () => sillones.map((s) => ({ valor: String(s.id), texto: `Sillón ${s.numero}` }));
+const itemsSillones = () => sillones.map((s) => ({ valor: String(s.id), texto: etiquetaSillon(s.numero) }));
 const itemsPacientes = () => pacientes.map((p) => ({ valor: String(p.id), texto: `${p.apellido}, ${p.nombre} (${p.documento})` }));
 const itemsTratamientos = () => tratamientos.map((t) => ({ valor: t.codigo, texto: `${t.nombre} · ${t.duracionMinutos} min` }));
 
@@ -180,15 +180,41 @@ function dialogoTurno(): void {
     validar: () => (!paciente.value || !profesional.value || !sillon.value || !tratamiento.value || !diaTurno.value || !horaTurno.value
       ? 'Completá todos los campos.' : null),
     enviar: async () => {
-      await api.post('/turnos', {
+      const creado = await api.post<{ inicio: string; fin: string; estado: string }>('/turnos', {
         pacienteId: Number(paciente.value), profesionalId: Number(profesional.value), sillonId: Number(sillon.value),
         codigoTratamiento: tratamiento.value, inicio: instanteLocal(diaTurno.value, horaTurno.value),
         estado: estado.value, origen: 'recepcion',
       });
-      toast('Turno creado.');
       dia = diaTurno.value;
       void cargar();
+      const datos = [Number(paciente.value), Number(profesional.value), Number(sillon.value)] as const;
+      // Se abre después de que el formulario se cierra, para no apilar dos diálogos.
+      window.setTimeout(() => mostrarTurnoCreado(creado, ...datos, tratamiento.value), 0);
     },
+  });
+}
+
+/** Resumen del turno recién creado por el staff, con el aviso que recibe el paciente. */
+function mostrarTurnoCreado(turno: { inicio: string; fin: string; estado: string }, pacienteId: number,
+                            profesionalId: number, sillonId: number, codigoTratamiento: string): void {
+  const p = pacientes.find((x) => x.id === pacienteId);
+  const t = tratamientos.find((x) => x.codigo === codigoTratamiento);
+  confirmacionTurno({
+    motivo: t?.nombre ?? codigoTratamiento,
+    estado: turno.estado,
+    datos: [
+      { etiqueta: 'Paciente', valor: p ? `${p.apellido}, ${p.nombre}` : `Paciente #${pacienteId}` },
+      { etiqueta: 'Día', valor: fecha(turno.inicio) },
+      { etiqueta: 'Horario', valor: `${hora(turno.inicio)} a ${hora(turno.fin)} hs` },
+      { etiqueta: 'Profesional', valor: nombreProfesional(profesionalId) },
+      { etiqueta: 'Consultorio', valor: nombreSillon(sillonId) },
+    ],
+    mensaje: el('p', {}, 'Se programó la confirmación por WhatsApp al paciente y un recordatorio antes del turno. '
+      + 'Si se cancela o reprograma, los avisos pendientes se actualizan solos.'),
+    acciones: [
+      { texto: 'Crear otro turno', primaria: true, alHacer: () => dialogoTurno() },
+      { texto: 'Volver a la agenda' },
+    ],
   });
 }
 
@@ -290,7 +316,8 @@ function dialogoSobreturno(entrada: EntradaAgenda): void {
   const diaNuevo = el('input', { class: 'control', type: 'date', value: fechaLocal(entrada.inicio) });
   const horaNueva = el('input', { class: 'control', type: 'time', step: 300, value: hora(entrada.inicio) });
   const motivo = el('textarea', { class: 'control', maxlength: 300, required: true });
-  const actor = el('input', { class: 'control', type: 'text', maxlength: 120, placeholder: 'Quién autoriza' });
+  // Con sesión iniciada, el backend exige que autorice el mismo usuario: se precarga su email.
+  const actor = el('input', { class: 'control', type: 'text', maxlength: 120, placeholder: 'Quién autoriza', value: usuarioRecordado() ?? '' });
   abrirDialogo({
     titulo: `Sobreturno del turno #${entrada.id}`,
     descripcion: 'Excepción auditada (C-01 C1): mueve el turno aunque se superponga, con motivo y responsable.',

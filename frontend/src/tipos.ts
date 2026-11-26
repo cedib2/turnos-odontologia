@@ -32,6 +32,11 @@ export interface TurnoPublicoCreado {
   estado: string;
   origen: string;
   tokenGestionar: string;
+  /** Nombres para mostrar en la confirmación (pueden faltar). */
+  tratamiento?: string | null;
+  profesional?: string | null;
+  sillon?: string | null;
+  consultorio?: string | null;
 }
 
 export interface TurnoGestionado {
@@ -133,6 +138,12 @@ export interface HistoriaClinica {
   odontograma: RegistroOdontograma[];
   evoluciones: { id: number; profesionalId: number; version: number; reemplazaId: number | null; texto: string; fecha: Instante; autor: string }[];
   consentimientos: { id: number; tipo: string; version: number; texto: string; fecha: Instante; autor: string }[];
+}
+
+/** Historia del titular vista con su link (C-13). */
+export interface HistoriaDelTitular {
+  tieneFicha: boolean;
+  historia: HistoriaClinica | null;
 }
 
 // Cumplimiento (C-17/C-18) y métricas (C-22)

@@ -32,6 +32,7 @@ public final class AuditoriaCatalogo {
             "historia.paciente.consultada",
             "historia.paciente.exportada",
             "historia.paciente.denegada",
+            "historia.paciente.enlace_emitido",
             "presupuesto.creado",
             "presupuesto.modificado",
             "pago.solicitado",

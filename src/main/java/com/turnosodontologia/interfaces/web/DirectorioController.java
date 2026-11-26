@@ -1,9 +1,12 @@
 package com.turnosodontologia.interfaces.web;
 
+import com.turnosodontologia.application.AuditEventPublisher;
+import com.turnosodontologia.application.CurrentActorProvider;
 import com.turnosodontologia.application.PacienteService;
 import com.turnosodontologia.application.UsuarioService;
 import com.turnosodontologia.domain.agenda.Profesional;
 import com.turnosodontologia.domain.agenda.Sillon;
+import com.turnosodontologia.domain.auditoria.AuditEvent;
 import com.turnosodontologia.domain.identidad.DocumentoTipo;
 import com.turnosodontologia.domain.identidad.Paciente;
 import com.turnosodontologia.infrastructure.persistence.PacienteRepository;
@@ -30,6 +33,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -44,6 +48,7 @@ import java.util.UUID;
 public class DirectorioController {
 
     static final String RUTA_RESERVA = "/reservar.html";
+    static final String RUTA_HISTORIA = "/mi-historia.html";
 
     private final PacienteRepository pacientes;
     private final ProfesionalRepository profesionales;
@@ -53,11 +58,16 @@ public class DirectorioController {
     private final Clock reloj;
     private final PacienteService altaPacientes;
     private final UsuarioService usuarios;
+    private final CurrentActorProvider actores;
+    private final AuditEventPublisher auditoria;
 
     public DirectorioController(PacienteRepository pacientes, ProfesionalRepository profesionales,
                                 SillonRepository sillones, PublicTokenService tokens, PublicTokenSigner firmador,
                                 @Qualifier("publicClock") Clock reloj, PacienteService altaPacientes,
-                                UsuarioService usuarios) {
+                                UsuarioService usuarios, CurrentActorProvider actores,
+                                AuditEventPublisher auditoria) {
+        this.actores = actores;
+        this.auditoria = auditoria;
         this.altaPacientes = altaPacientes;
         this.usuarios = usuarios;
         this.pacientes = pacientes;
@@ -184,5 +194,27 @@ public class DirectorioController {
                 .queryParam("sillon", request.sillonId());
         return new EnlaceReservaResponse(token, ruta.encode().build().toUriString(),
                 Instant.ofEpochSecond(ahora + scope.vigenciaSegundos()));
+    }
+
+    /**
+     * Emite el link para que el paciente vea su propia historia clínica (C-13): token {@code HISTORIA} atado a
+     * este paciente. El paciente además confirma su identidad al abrirlo. La emisión queda auditada.
+     */
+    @PostMapping("/pacientes/{id}/enlace-historia")
+    public EnlaceReservaResponse enlaceHistoria(@PathVariable Long id) {
+        if (!pacientes.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "paciente_inexistente");
+        }
+        long ahora = reloj.instant().getEpochSecond();
+        PublicTokenScope scope = PublicTokenScope.HISTORIA;
+        String jti = "jti-" + UUID.randomUUID();
+        String token = tokens.emitir(new PublicTokenClaims(jti, firmador.emisor(),
+                "paciente-" + id, String.valueOf(id), scope, ahora, ahora + scope.vigenciaSegundos(), null, false));
+        auditoria.publish(AuditEvent.de("historia.paciente.enlace_emitido", "paciente", id, actores.current(),
+                "", Map.of("jti", jti, "venceAt", Instant.ofEpochSecond(ahora + scope.vigenciaSegundos()).toString()),
+                UUID.randomUUID().toString()));
+        String ruta = UriComponentsBuilder.fromPath(RUTA_HISTORIA).queryParam("token", token)
+                .encode().build().toUriString();
+        return new EnlaceReservaResponse(token, ruta, Instant.ofEpochSecond(ahora + scope.vigenciaSegundos()));
     }
 }

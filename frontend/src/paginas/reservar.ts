@@ -6,7 +6,7 @@ import { fecha, fechaLocal, hora, sumarDias } from '../fechas.js';
 import { montarLayout } from '../layout.js';
 import { problemaPublico } from '../publico.js';
 import type { Disponibilidad, Hueco, TurnoPublicoCreado } from '../tipos.js';
-import { $, aviso, conCarga, el, vaciar } from '../ui.js';
+import { $, aviso, confirmacionTurno, conCarga, el, vaciar } from '../ui.js';
 
 montarLayout('paciente');
 const main = $('#contenido');
@@ -156,11 +156,13 @@ function pasoListo(turno: TurnoPublicoCreado): void {
   gestion.searchParams.set('turno', String(turno.turnoId));
   gestion.searchParams.set('inicio', turno.inicio);
   gestion.searchParams.set('fin', turno.fin);
+  const enlace = gestion.pathname + gestion.search;
   const copiar = el('button', { class: 'btn btn--secundario btn--bloque', type: 'button' }, 'Copiar link de mi turno');
   copiar.addEventListener('click', async () => {
     await navigator.clipboard?.writeText(gestion.toString()).catch(() => undefined);
     copiar.textContent = 'Link copiado';
   });
+  const otro = el('div', { 'aria-live': 'polite' });
 
   vaciar(contenido,
     aviso('ok', el('p', {}, el('strong', {}, '¡Listo! Tu turno quedó reservado.'))),
@@ -168,6 +170,33 @@ function pasoListo(turno: TurnoPublicoCreado): void {
       el('p', { class: 'metrica__valor', style: 'font-size: var(--t-xl)' }, `${hora(turno.inicio)} hs`),
       el('p', {}, fecha(turno.inicio)),
       el('p', { class: 'campo__ayuda' }, 'Guardá el link de tu turno: con él podés confirmar asistencia, reprogramar o cancelar.')),
-    el('a', { class: 'btn btn--bloque', href: gestion.pathname + gestion.search }, 'Ver mi turno'),
-    copiar);
+    el('a', { class: 'btn btn--bloque', href: enlace }, 'Ver mi turno'),
+    copiar, otro);
+
+  const datos = [
+    { etiqueta: 'Día', valor: fecha(turno.inicio) },
+    { etiqueta: 'Horario', valor: `${hora(turno.inicio)} a ${hora(turno.fin)} hs` },
+  ];
+  const consultorio = [turno.consultorio, turno.sillon].filter(Boolean).join(' · ');
+  if (consultorio) datos.push({ etiqueta: 'Consultorio', valor: consultorio });
+  if (turno.profesional) datos.push({ etiqueta: 'Profesional', valor: turno.profesional });
+
+  confirmacionTurno({
+    motivo: turno.tratamiento ?? 'Turno odontológico',
+    estado: turno.estado,
+    datos,
+    mensaje: el('div', {},
+      el('p', {}, 'Te enviamos la confirmación por WhatsApp y te vamos a recordar el turno antes de la fecha.'),
+      el('p', {}, 'Con el link de tu turno podés confirmar asistencia, reprogramar o cancelar hasta 48 horas hábiles antes.')),
+    acciones: [
+      { texto: 'Ver mi turno', primaria: true, alHacer: () => { location.href = enlace; } },
+      {
+        texto: 'Reservar otro turno',
+        // Cada link de reserva sirve para un solo turno (el token se consume al reservar).
+        alHacer: () => vaciar(otro, aviso('info', el('p', {},
+          'Cada link sirve para una sola reserva. Para otro turno, pedile un link nuevo al consultorio por WhatsApp.'))),
+      },
+      { texto: 'Cerrar' },
+    ],
+  });
 }
