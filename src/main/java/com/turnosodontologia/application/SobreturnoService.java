@@ -1,5 +1,6 @@
 package com.turnosodontologia.application;
 
+import com.turnosodontologia.application.notificaciones.AvisosTurno;
 import com.turnosodontologia.domain.agenda.Ocupacion;
 import com.turnosodontologia.domain.agenda.Turno;
 import com.turnosodontologia.domain.auditoria.ActorSimulado;
@@ -26,17 +27,20 @@ public class SobreturnoService {
     private final ConfiguracionSchedulingService configuracion;
     private final CurrentActorProvider actorProvider;
     private final AuditEventPublisher publisher;
+    private final AvisosTurno avisos;
 
     public SobreturnoService(TurnoRepository turnos,
                              OcupacionRepository ocupaciones,
                              ConfiguracionSchedulingService configuracion,
                              CurrentActorProvider actorProvider,
-                             AuditEventPublisher publisher) {
+                             AuditEventPublisher publisher,
+                             AvisosTurno avisos) {
         this.turnos = turnos;
         this.ocupaciones = ocupaciones;
         this.configuracion = configuracion;
         this.actorProvider = actorProvider;
         this.publisher = publisher;
+        this.avisos = avisos;
     }
 
     public Turno reprogramarConSobreturno(Long turnoId, Instant nuevoInicio,
@@ -96,6 +100,7 @@ public class SobreturnoService {
         metadata.put("nuevoFin", nuevoFin.toString());
         publisher.publish(AuditEvent.de("turno.sobreturno", "turno", guardado.getId(),
                 autor, motivo, metadata, UUID.randomUUID().toString()));
+        avisos.reprogramado(guardado.getId());
         return guardado;
     }
 }

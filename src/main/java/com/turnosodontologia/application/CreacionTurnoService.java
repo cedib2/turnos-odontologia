@@ -1,5 +1,6 @@
 package com.turnosodontologia.application;
 
+import com.turnosodontologia.application.notificaciones.AvisosTurno;
 import com.turnosodontologia.domain.agenda.Ocupacion;
 import com.turnosodontologia.domain.agenda.Profesional;
 import com.turnosodontologia.domain.agenda.Sillon;
@@ -34,6 +35,7 @@ public class CreacionTurnoService {
     private final ConfiguracionSchedulingService configuracion;
     private final CurrentActorProvider actorProvider;
     private final AuditEventPublisher publisher;
+    private final AvisosTurno avisos;
 
     public CreacionTurnoService(PacienteRepository pacientes,
                                 ProfesionalRepository profesionales,
@@ -43,7 +45,8 @@ public class CreacionTurnoService {
                                 OcupacionRepository ocupaciones,
                                 ConfiguracionSchedulingService configuracion,
                                 CurrentActorProvider actorProvider,
-                                AuditEventPublisher publisher) {
+                                AuditEventPublisher publisher,
+                                AvisosTurno avisos) {
         this.pacientes = pacientes;
         this.profesionales = profesionales;
         this.sillones = sillones;
@@ -53,6 +56,7 @@ public class CreacionTurnoService {
         this.configuracion = configuracion;
         this.actorProvider = actorProvider;
         this.publisher = publisher;
+        this.avisos = avisos;
     }
 
     public Turno crearTurno(Long pacienteId, Long profesionalId, Long sillonId,
@@ -89,6 +93,7 @@ public class CreacionTurnoService {
         publisher.publish(AuditEvent.creacionTurno(guardado.getId(), actor, "",
                 Map.of("estado", estado, "origen", origen,
                         "codigoTratamiento", codigoTratamiento, "duracionMinutos", duracion)));
+        avisos.creado(guardado.getId());
         return guardado;
     }
 

@@ -31,7 +31,7 @@ waitlist:
 # C-10: circuito completo de WhatsApp en dev con el gateway SIMULADO (no se envía nada real).
 # La anticipación del recordatorio sigue (TBD): 24 h es un default no productivo de dev.
 notificaciones:
-  reserva:
+  turnos:
     whatsapp: true
   dispatcher:
     habilitado: true

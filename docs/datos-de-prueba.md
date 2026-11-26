@@ -70,7 +70,7 @@ Asignación de sillones en la agenda generada: Giménez → 1, Sosa → 2, Ruiz 
 - Los tokens públicos **no se siembran**: los firma la aplicación con el secreto del entorno.
 
 ### WhatsApp: confirmación y recordatorio (C-10)
-- En dev el circuito funciona completo con el **gateway simulado** (no se envía nada real): una reserva por link programa la confirmación y el recordatorio (24 h antes), y el despachador procesa la cola cada 30 s. Cada envío simulado queda en el log como `WhatsApp SIMULADO`. Ver [`decisiones/C-10-conexion-reserva-y-dispatcher.md`](decisiones/C-10-conexion-reserva-y-dispatcher.md).
+- En dev el circuito funciona completo con el **gateway simulado** (no se envía nada real): cada turno creado por link o por el staff programa la confirmación y el recordatorio (24 h antes); reprogramar o cancelar anula lo pendiente, y el despachador procesa la cola cada 30 s. Cada envío simulado queda en el log como `WhatsApp SIMULADO`. Ver [`decisiones/C-10-conexion-reserva-y-dispatcher.md`](decisiones/C-10-conexion-reserva-y-dispatcher.md).
 - Al arrancar, el despachador también procesa los avisos pendientes ya vencidos de estos datos.
 - Plantillas:
   - 2 `turno_confirmacion_v1` y 3 `turno_recordatorio_v1`, ambas APROBADAS.

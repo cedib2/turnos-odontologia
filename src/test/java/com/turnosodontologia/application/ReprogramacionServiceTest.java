@@ -59,7 +59,7 @@ class ReprogramacionServiceTest {
     @BeforeEach
     void setUp() {
         service = new ReprogramacionService(turnos, ocupaciones, configuracion,
-                actorProvider, publisher);
+                actorProvider, publisher, com.turnosodontologia.application.notificaciones.AvisosTurno.NINGUNO);
         lenient().when(actorProvider.current()).thenReturn(ActorSimulado.recepcionista());
     }
 

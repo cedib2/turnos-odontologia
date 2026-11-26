@@ -66,7 +66,8 @@ class CreacionTurnoServiceTest {
         ConfiguracionSchedulingService configuracion = new ConfiguracionSchedulingService(
                 tratamientos, null, null);
         service = new CreacionTurnoService(pacientes, profesionales, sillones, tratamientos,
-                turnos, ocupaciones, configuracion, new SimulatedCurrentActorProvider(), publisher);
+                turnos, ocupaciones, configuracion, new SimulatedCurrentActorProvider(), publisher,
+                com.turnosodontologia.application.notificaciones.AvisosTurno.NINGUNO);
     }
 
     @Test

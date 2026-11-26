@@ -1,5 +1,6 @@
 package com.turnosodontologia.application;
 
+import com.turnosodontologia.application.notificaciones.AvisosTurno;
 import com.turnosodontologia.domain.agenda.Ocupacion;
 import com.turnosodontologia.domain.agenda.Turno;
 import com.turnosodontologia.domain.auditoria.ActorSimulado;
@@ -25,17 +26,20 @@ public class ReprogramacionService {
     private final ConfiguracionSchedulingService configuracion;
     private final CurrentActorProvider actorProvider;
     private final AuditEventPublisher publisher;
+    private final AvisosTurno avisos;
 
     public ReprogramacionService(TurnoRepository turnos,
                                  OcupacionRepository ocupaciones,
                                  ConfiguracionSchedulingService configuracion,
                                  CurrentActorProvider actorProvider,
-                                 AuditEventPublisher publisher) {
+                                 AuditEventPublisher publisher,
+                                 AvisosTurno avisos) {
         this.turnos = turnos;
         this.ocupaciones = ocupaciones;
         this.configuracion = configuracion;
         this.actorProvider = actorProvider;
         this.publisher = publisher;
+        this.avisos = avisos;
     }
 
     public Turno reprogramar(Long turnoId, Instant nuevoInicio, String actor) {
@@ -89,6 +93,7 @@ public class ReprogramacionService {
         metadata.put("nuevoFin", nuevoFin.toString());
         publisher.publish(AuditEvent.de("turno.reprogramado", "turno", guardado.getId(),
                 autor, "reprogramación", metadata, UUID.randomUUID().toString()));
+        avisos.reprogramado(guardado.getId());
         return guardado;
     }
 }

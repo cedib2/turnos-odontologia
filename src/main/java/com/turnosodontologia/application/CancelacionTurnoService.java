@@ -1,5 +1,6 @@
 package com.turnosodontologia.application;
 
+import com.turnosodontologia.application.notificaciones.AvisosTurno;
 import com.turnosodontologia.domain.agenda.Ocupacion;
 import com.turnosodontologia.domain.agenda.Turno;
 import com.turnosodontologia.domain.auditoria.ActorSimulado;
@@ -26,13 +27,16 @@ public class CancelacionTurnoService {
     private final OcupacionRepository ocupaciones;
     private final CurrentActorProvider actores;
     private final AuditEventPublisher publisher;
+    private final AvisosTurno avisos;
 
     public CancelacionTurnoService(TurnoRepository turnos, OcupacionRepository ocupaciones,
-                                   CurrentActorProvider actores, AuditEventPublisher publisher) {
+                                   CurrentActorProvider actores, AuditEventPublisher publisher,
+                                   AvisosTurno avisos) {
         this.turnos = turnos;
         this.ocupaciones = ocupaciones;
         this.actores = actores;
         this.publisher = publisher;
+        this.avisos = avisos;
     }
 
     public Turno cancelar(Long turnoId, String motivo) {
@@ -58,6 +62,7 @@ public class CancelacionTurnoService {
         metadata.put("inicioAnterior", inicioAnterior);
         publisher.publish(AuditEvent.de("turno.cancelado", "turno", guardado.getId(), actor, motivo.trim(),
                 metadata, UUID.randomUUID().toString()));
+        avisos.cancelado(guardado.getId());
         return guardado;
     }
 }

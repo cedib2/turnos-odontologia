@@ -1,5 +1,6 @@
 package com.turnosodontologia.depositpayments;
 
+import com.turnosodontologia.application.notificaciones.AvisosTurno;
 import com.turnosodontologia.application.AuditEventPublisher;
 import com.turnosodontologia.domain.auditoria.ActorSimulado;
 import com.turnosodontologia.domain.auditoria.AuditEvent;
@@ -28,11 +29,13 @@ public class SeniaService {
     private final MercadoPagoPort mercadoPago;
     private final NotificacionPagoPort notificaciones;
     private final MercadoPagoIdempotencyStore idempotencia;
+    private final AvisosTurno avisos;
 
     public SeniaService(SeniaRepository senias, TurnoRepository turnos,
                         PresupuestoRepository presupuestos, AuditEventPublisher auditoria,
                         MercadoPagoPort mercadoPago, NotificacionPagoPort notificaciones,
-                        MercadoPagoIdempotencyStore idempotencia) {
+                        MercadoPagoIdempotencyStore idempotencia,
+                        AvisosTurno avisos) {
         this.senias = senias;
         this.turnos = turnos;
         this.presupuestos = presupuestos;
@@ -40,6 +43,7 @@ public class SeniaService {
         this.mercadoPago = mercadoPago;
         this.notificaciones = notificaciones;
         this.idempotencia = idempotencia;
+        this.avisos = avisos;
     }
 
     @Transactional
@@ -135,8 +139,10 @@ public class SeniaService {
         senia.marcarReembolsada();
         senias.saveAndFlush(senia);
         if (senia.getTurnoId() != null) {
-            turnos.findById(senia.getTurnoId()).ifPresent(
-                    turno -> turno.cancelar(actor.nombre()));
+            turnos.findById(senia.getTurnoId()).ifPresent(turno -> {
+                turno.cancelar(actor.nombre());
+                avisos.cancelado(turno.getId());
+            });
         }
         publicar("pago.reembolsado", senia, actor, "reembolso total");
         return new RefundResponse(senia.getId(), senia.getEstado(), senia.getMonto());

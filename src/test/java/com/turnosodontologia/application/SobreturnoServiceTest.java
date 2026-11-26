@@ -58,7 +58,7 @@ class SobreturnoServiceTest {
     @BeforeEach
     void setUp() {
         service = new SobreturnoService(turnos, ocupaciones, configuracion,
-                actorProvider, publisher);
+                actorProvider, publisher, com.turnosodontologia.application.notificaciones.AvisosTurno.NINGUNO);
         lenient().when(actorProvider.current()).thenReturn(
                 com.turnosodontologia.domain.auditoria.ActorSimulado.recepcionista());
     }
