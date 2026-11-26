@@ -4,7 +4,7 @@ Juego de datos ficticio para probar cada funcionalidad del MVP de punta a punta 
 
 - Script: [`src/main/resources/db/datos-prueba/V900__datos_de_prueba.sql`](../src/main/resources/db/datos-prueba/V900__datos_de_prueba.sql)
 - Se carga **solo con el perfil `dev`**: `application-dev.yml` agrega `classpath:db/datos-prueba` a las ubicaciones de Flyway. Los tests (`application-test.yml`) y producción no lo cargan.
-- Carga manual sobre una base que ya tiene V001..V031:
+- Carga manual sobre una base que ya tiene V001..V033:
 
 ```bash
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -1 -f src/main/resources/db/datos-prueba/V900__datos_de_prueba.sql
@@ -23,7 +23,7 @@ Contraseña de todos: **`Prueba1234!`** (`POST /auth/login`)
 | `admin@turnos-odontologia.test` | administrador | Todos los permisos |
 | `recepcion@turnos-odontologia.test` | recepcionista | |
 | `recepcion2@turnos-odontologia.test` | recepcionista | |
-| `lgimenez@turnos-odontologia.test` | odontologo | Dra. Laura Giménez (profesional 1) |
+| `lgimenez@turnos-odontologia.test` | odontologo | Vinculado a la Dra. Laura Giménez (profesional 1): ve solo su agenda y fichas |
 | `msosa@turnos-odontologia.test` | odontologo | Dr. Martín Sosa (profesional 2) |
 | `cruiz@turnos-odontologia.test` | odontologo | Dra. Carolina Ruiz (profesional 3) |
 | `dfernandez@turnos-odontologia.test` | odontologo | Dr. Diego Fernández (profesional 4) |

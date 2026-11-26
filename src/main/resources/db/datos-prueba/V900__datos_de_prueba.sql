@@ -127,6 +127,11 @@ INSERT INTO usuarios (id, rol_id, email, hash_password, proveedor, created_by, a
     (9, 1, 'paciente@turnos-odontologia.test',   '$2a$10$AUTrSVt.aa08M/IhPJu1xOyl98ikjTLmBlsfg11UQcosj9ksBWi7O', 'LOCAL', 'datos-de-prueba', TRUE),
     (10, 2, 'baja@turnos-odontologia.test',      '$2a$10$AUTrSVt.aa08M/IhPJu1xOyl98ikjTLmBlsfg11UQcosj9ksBWi7O', 'LOCAL', 'datos-de-prueba', FALSE);
 
+-- Vínculo usuario odontólogo -> profesional (V033), para el ámbito «propio» de agenda y ficha
+UPDATE usuarios SET profesional_id = v.prof
+FROM (VALUES (4, 1), (5, 2), (6, 3), (7, 4)) AS v(usuario, prof)
+WHERE usuarios.id = v.usuario;
+
 -- -------------------------------------------------------------------------------------
 -- 7. Pacientes ficticios (adultos, menores para dientes temporales, sin consentimiento,
 --    sin email, CUIT, pasaporte, dado de baja y documento reutilizado tras la baja)

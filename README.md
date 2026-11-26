@@ -48,7 +48,7 @@ docker compose up -d
 
 Para detenerla, `docker compose down`; para borrar también los datos, `docker compose down -v`.
 
-Con la base levantada, se ejecuta con el perfil `dev`. Flyway aplica las migraciones al arrancar.
+Con la base levantada, se ejecuta con el perfil `dev`. Flyway aplica las migraciones al arrancar. En `dev` también carga un juego de datos de prueba (usuarios por rol con contraseña `Prueba1234!`, pacientes, agenda, historia clínica, finanzas y más); ver [`docs/datos-de-prueba.md`](docs/datos-de-prueba.md).
 
 ```bash
 export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/turnos
